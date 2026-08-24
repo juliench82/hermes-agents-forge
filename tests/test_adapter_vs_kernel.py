@@ -9,6 +9,7 @@ from pathlib import Path
 
 from compiler.hermes_adapter import CONTRACT_VERSION, LEGACY_PROFILES, render_hermes
 from compiler.planner import build_plan
+from tests.test_hermes_adapter import legacy_source_root
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = ROOT / "examples" / "solo-founder-app-builder.tenant-spec.json"
@@ -27,7 +28,8 @@ class AdapterVsKernelTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.plan = build_plan(SPEC)
         cls._tmp = tempfile.TemporaryDirectory()
-        cls.root = render_hermes(cls.plan, Path(cls._tmp.name), ROOT)
+        cls.source_root = legacy_source_root(Path(cls._tmp.name))
+        cls.root = render_hermes(cls.plan, Path(cls._tmp.name), cls.source_root)
         cls.runtime = json.loads((cls.root / "runtime.json").read_text())
         cls.coordination = json.loads((cls.root / "coordination.json").read_text())
         cls.manifest = json.loads((cls.root / "manifest.json").read_text())
@@ -127,7 +129,7 @@ class AdapterVsKernelTests(unittest.TestCase):
     def test_legacy_profiles_unchanged_on_disk(self):
         for name in LEGACY_PROFILES:
             with self.subTest(profile=name):
-                src = ROOT / "profiles" / name / "profile.yaml"
+                src = self.source_root / "profiles" / name / "profile.yaml"
                 dst = self.root / "profiles" / name / "profile.yaml"
                 self.assertEqual(src.read_bytes(), dst.read_bytes())
 
