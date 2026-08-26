@@ -20,13 +20,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `shared/safety-*.md` docs reference Hermes 8-layer security model
 - `onboarding/` docs include `hermes skills trust` and `hermes setup --portal` steps
 - `HERMES.md` updated with skills trust guidance
+- `site/llms.txt` synced with post-PR-69 onboarding flow (added `hermes skills trust` step, updated referenced files to `HERMES.md`/`AGENTS.md`/`skills/forge/SKILL.md`/`bootstrap.manifest.json`)
+- `README.md` rewritten to align with PR-#69 bootstrap/compiler model (Quick Start, Key Docs table, Architecture diagram, Conventions)
 
 ### Removed
-- `site/index_new.html`, `site/script_new.js`, `site/styles_new.css` (stale duplicates)
+- `site/index_new.html`, `site/script_new.js`, `site/styles_new.css` (stale website redesign duplicates)
+- `site/public/SKILL.md`, `site/public/install.sh`, `site/public/start.md`, `site/public/llms.txt` (orphaned duplicates; discovery now points to GitHub or `site/llms.txt`)
+- `site/README.md` (orphaned)
+- `onboarding-loop.yaml`, `team-designer.yaml` (orphaned repository-root skills; superseded by `skills/forge/SKILL.md` and compiler/bootstrap flow)
 
 ### Fixed
-- `site/public/install.sh` synced with root `install.sh`
-- `site/public/llms.txt` synced with `site/llms.txt`
+- `site/public/install.sh` synced with root `install.sh` (before removal)
+- `site/public/llms.txt` synced with `site/llms.txt` (before removal)
 
 ## [0.1.0] — 2026-08-22
 
