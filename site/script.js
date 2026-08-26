@@ -1,6 +1,43 @@
-const navbar=document.getElementById('navbar');const toggle=document.getElementById('nav-toggle');const menu=document.getElementById('nav-menu');
-window.addEventListener('scroll',()=>navbar.classList.toggle('scrolled',window.scrollY>18),{passive:true});
-toggle?.addEventListener('click',()=>{const open=menu.classList.toggle('active');toggle.setAttribute('aria-expanded',String(open));});
-document.querySelectorAll('.nav-menu a').forEach(a=>a.addEventListener('click',()=>{menu.classList.remove('active');toggle?.setAttribute('aria-expanded','false');}));
-const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll('[data-animate]').forEach(el=>observer.observe(el));
-document.querySelectorAll('[data-copy-target]').forEach(button=>button.addEventListener('click',async()=>{const target=document.getElementById(button.dataset.copyTarget);if(!target)return;try{await navigator.clipboard.writeText(target.textContent);const original=button.innerHTML;button.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>Copied';button.style.color='#77e6ab';setTimeout(()=>{button.innerHTML=original;button.style.color=''},1600)}catch{button.textContent='Copy failed';setTimeout(()=>button.textContent='Copy',1600)}}));
+const revealItems = document.querySelectorAll('.reveal');
+const soundToggle = document.querySelector('.sound-toggle');
+let audioContext;
+let soundEnabled = false;
+
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.14 });
+
+revealItems.forEach((item) => revealObserver.observe(item));
+
+function forgeTone(frequency = 220, duration = 0.08) {
+  if (!soundEnabled) return;
+  audioContext ??= new (window.AudioContext || window.webkitAudioContext)();
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+  oscillator.frequency.exponentialRampToValueAtTime(frequency * 1.8, audioContext.currentTime + duration);
+  gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.045, audioContext.currentTime + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + duration);
+  oscillator.connect(gain).connect(audioContext.destination);
+  oscillator.start();
+  oscillator.stop(audioContext.currentTime + duration + 0.02);
+}
+
+soundToggle?.addEventListener('click', () => {
+  soundEnabled = !soundEnabled;
+  soundToggle.setAttribute('aria-pressed', String(soundEnabled));
+  soundToggle.textContent = soundEnabled ? 'Sound on' : 'Sound off';
+  if (soundEnabled) forgeTone(180, 0.14);
+});
+
+document.querySelectorAll('.forge-sound').forEach((element) => {
+  element.addEventListener('mouseenter', () => forgeTone(260, 0.055));
+  element.addEventListener('click', () => forgeTone(380, 0.1));
+});
