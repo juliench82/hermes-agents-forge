@@ -1,68 +1,69 @@
 # Hermes Agents Forge
 
-> Point your Hermes agent at this repo and provision isolated multi-profile agent teams that can implement real-world workflows.
+**Hermes-native bootstrap repository for provisioning isolated multi-profile agent teams.**
+
+Point your Hermes agent at this repo and it can:
+
+1. **Discover** bootstrap manifests (`bootstrap.manifest.json`) in the wild
+2. **Compile** tenant specs into profile bundles with roles, connectors, triggers, and policies
+3. **Provision** isolated Hermes profiles with dynamic skills, context files, and MCP integrations
+4. **Onboard** users via guided workflows with acceptance criteria and audit trails
 
 ## Quick Start
 
-### Option A: Two-Command Onboarding (Recommended)
-
 ```bash
-# 1. Install the onboarding skills
-hermes -p default skills install onboarding-loop team-designer
+# 1. Install Hermes (if not already)
+curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
 
-# 2. Run onboarding
-hermes -p default chat "Start onboarding"
+# 2. Fast setup (model + tool gateway in one OAuth)
+hermes setup --portal
+
+# 3. Trust project-local skills (required)
+hermes skills trust
+
+# 4. Install dependencies
+pip install -e ".[dev]"
+
+# 5. Run the bootstrap compiler
+python -m compiler --manifest bootstrap.manifest.json
 ```
 
-Hermes will:
-1. Ask what you want to accomplish
-2. Design a custom team of 3–7 specialist bots
-3. Create profiles with `SOUL.md` and install skills
-4. Set up Bot Mode group chat
-5. Optionally configure Buzz (or skip for later)
+## Key Docs
 
-### Option B: Manual Setup
+| File | Purpose |
+|------|---------|
+| [`HERMES.md`](./HERMES.md) | Hermes-specific context (highest priority) |
+| [`AGENTS.md`](./AGENTS.md) | Cross-tool agent instructions (Claude Code, Codex, Hermes) |
+| [`BOOTSTRAP.md`](./BOOTSTRAP.md) | Bootstrap manifest specification |
+| [`CONTRIBUTING.md`](./CONTRIBUTING.md) | How to contribute |
+| [`onboarding/START.md`](./onboarding/START.md) | Onboarding quick start |
 
-```bash
-# Clone the repo
-git clone https://github.com/juliench82/hermes-agents-forge.git
-cd hermes-agents-forge
+## Architecture
 
-# Run the installer
-./install.sh
+```
+├── bootstrap.manifest.json    # Declarative team spec
+├── compiler/                  # Bootstrap discovery, team compilation, rendering
+├── runtime/                   # Profile provisioning, skill resolution, policy enforcement
+├── catalog/                   # Versioned primitives (roles, connectors, triggers, memory, policies)
+├── onboarding/                # Templates, workflows, fixtures for user onboarding
+├── shared/                    # Cross-cutting contracts (security, context, skill, workflow policies)
+├── skills/forge/              # Project-local forge skill (SKILL.md)
+└── site/                      # Public website with llms.txt for LLM discoverability
 ```
 
-## What You Get
+## Key Conventions
 
-- A roster of specialist bots (Bot Mode)
-- Each bot has its own role, skills, and memory
-- Bots can @mention each other and hand off work
-- You can add any messenger later for human access
+- **Manifests over code**: Team specs are declarative JSON/YAML, compiled by `compiler/`
+- **Versioned primitives**: Catalog entries use semantic versioning (`1.0.0/primitive.yaml`)
+- **Hermes-native alignment**: Connectors map to MCP servers, triggers to `cronjob`, delegation to `delegate_task`
+- **Security by design**: All runtime operations reference Hermes's 8-layer security model (see `shared/safety-enforcement.md`)
 
-## Documentation
+## Testing
 
-- [BOOTSTRAP.md](./BOOTSTRAP.md) — Full setup guide
-- [onboarding/START.md](./onboarding/START.md) — Onboarding quickstart
-- [onboarding/README.md](./onboarding/README.md) — Onboarding architecture
-
-## Features
-
-- **Dynamic team creation** — Hermes analyzes your use case and proposes an optimal team
-- **Bot Mode wired in** — Every profile gets `bot_mode: true`, group chat created automatically
-- **Buzz optional** — Use any messenger (Telegram, Discord, Slack, WhatsApp) or skip entirely
-- **Hermes-native** — Everything runs as Hermes loop skills, no external orchestrator
-- **Secure skill installs** — Skills are scanned with NVIDIA SkillEvaluator before install
-
-## Example Use Cases
-
-- **E-commerce** — Customer service, order management, anomaly detection
-- **Artisans** — Appointment scheduling, invoice/quote management
-- **Professionals** — Medical secretariat, legal case tracking, real estate lead management
-- **Marketing** — Outbound campaigns, content creation, analytics
-- **Freelancers** — Back-office admin, invoicing, tax reminders
-
-See [Bibliothèı¨que de cas d'usage](./Bibliothèı¨que de cas d'usage.md) for detailed workflows.
+```bash
+pytest tests/ -v --cov
+```
 
 ## License
 
-MIT
+MIT — see [`LICENSE`](./LICENSE)
