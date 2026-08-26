@@ -1,82 +1,93 @@
-# Bootstrap Guide — Hermes Team Setup
+# Bootstrap Manifest Specification
 
-## Quick Start
+The **bootstrap manifest** (`bootstrap.manifest.json`) is the declarative team specification that drives the Hermes Agents Forge compiler.
+
+## What It Is
+
+A JSON file that defines:
+- **Tenant identity** — name, description, isolation boundaries
+- **Agent roster** — roles (architect, builder, orchestrator, etc.), skills, connectors, triggers
+- **Delegation graph** — how work flows between agents
+- **Security policies** — approval gates, secret handling, isolation rules
+- **Onboarding workflows** — acceptance criteria, audit trails, handoff contracts
+
+## Schema
+
+Validated against [`schemas/bootstrap-manifest.v1.schema.json`](./schemas/bootstrap-manifest.v1.schema.json).
+
+## Minimal Example
+
+```json
+{
+  "$schema": "./schemas/bootstrap-manifest.v1.schema.json",
+  "tenant": {
+    "name": "solo-founder-app-builder",
+    "description": "Single-founder app development team",
+    "isolation": {
+      "dataNamespace": "solo-founder"
+    }
+  },
+  "agents": [
+    {
+      "id": "orchestrator",
+      "role": "orchestrator",
+      "isolation": {
+        "dataNamespace": "solo-founder.orchestrator"
+      },
+      "skills": ["coordinate-task"],
+      "connectors": ["github"],
+      "triggers": ["cron"]
+    },
+    {
+      "id": "builder",
+      "role": "builder",
+      "isolation": {
+        "dataNamespace": "solo-founder.builder"
+      },
+      "skills": ["implement-feature"],
+      "connectors": ["github"],
+      "requiresApprovalFor": ["git.push"]
+    }
+  ],
+  "delegation": [
+    {"from": "orchestrator", "to": "builder", "condition": "task.type == 'implementation'"}
+  ],
+  "policies": {
+    "approvalGates": ["git.push", "github.write"],
+    "secretHandling": "hermes-vault"
+  }
+}
+```
+
+## How the Compiler Uses It
 
 ```bash
-# 1. Install the onboarding skills
-hermes -p default skills install onboarding-loop team-designer
-
-# 2. Run onboarding
-hermes -p default chat "Start onboarding"
+python -m compiler --manifest bootstrap.manifest.json
 ```
 
-This launches an interactive flow that:
-1. Asks about your use case, role, and goals
-2. Generates a custom team of 3–7 specialist bots
-3. Creates profiles with `SOUL.md` and installs skills
-4. Sets up a team group chat (Bot Mode)
-5. Optionally configures Buzz (or skip for later)
+The compiler (`compiler/`):
+1. **Validates** the manifest against the v1 schema
+2. **Discovers** bootstrap manifests in the wild (for activation)
+3. **Compiles** the tenant spec into profile bundles
+4. **Renders** Hermes-compatible outputs:
+   - `runtime.json` — agent definitions, skills, connectors, routing
+   - `coordination.json` — delegation graph, handoff contracts, workflows
+   - `manifest.json` — bundle metadata, security flags, fingerprint
+   - Profile assets (`profiles/<role>/profile.yaml`, `skill.md`)
 
-## What Gets Created
+## Key Conventions
 
-- **Profiles**: `~/.hermes/profiles/<bot-name>/` with:
-  - `config.yaml` (bot_mode enabled)
-  - `SOUL.md` (role description + skills)
-- **Group chat**: `team-main` with all bots as members
-- **Skills**: Installed per profile based on the team design
+- **Manifests over code**: Team specs are declarative JSON, compiled by `compiler/`
+- **Versioned primitives**: Catalog entries (`catalog/`) use semantic versioning (`1.0.0/primitive.yaml`)
+- **Isolation namespaces**: Each agent gets a unique `dataNamespace` for session/memory boundaries
+- **Explicit delegation**: Work handoffs are declared in the `delegation` array, not inferred
+- **Security by design**: Approval gates, secret handling, and isolation rules are part of the manifest
 
-## Post-Onboarding
+## Related Docs
 
-```bash
-# View your bot roster
-hermes bots
-
-# Chat with a specific bot
-hermes -p <bot-name> chat "Your task"
-
-# Add a messenger (optional, after onboarding)
-hermes gateway setup telegram
-hermes gateway setup discord
-hermes gateway setup buzz
-```
-
-## Buzz is Optional
-
-Buzz is **not required**. Your bots communicate via Bot Mode group chat by default.
-
-Add Buzz later if you want a human+agent Nostr workspace:
-
-```bash
-hermes gateway setup buzz
-```
-
-Or use any other messenger:
-
-```bash
-hermes gateway setup telegram
-hermes gateway setup slack
-```
-
-## Architecture
-
-```
-onboarding-loop.yaml
-  - Collects use case, role, goals
-  - Calls team-designer skill
-  - Creates profiles + SOUL.md
-  - Installs skills per profile
-  - Sets up group chat (Bot Mode)
-  - Optional Buzz gateway
-
-team-designer.yaml
-  - LLM prompt to generate JSON team spec
-  - Validates 3–7 profiles
-  - Returns structured output
-```
-
-## Next Steps
-
-1. Run onboarding
-2. Test bot-to-bot handoffs in group chat
-3. Add a messenger for human access
-4. Start assigning real tasks to your team
+- [`HERMES.md`](./HERMES.md) — Hermes-specific context and Quick Start
+- [`AGENTS.md`](./AGENTS.md) — Cross-tool agent instructions
+- [`README.md`](./README.md) — Project overview and architecture
+- [`schemas/bootstrap-manifest.v1.schema.json`](./schemas/bootstrap-manifest.v1.schema.json) — JSON Schema definition
+- [`catalog/`](./catalog/) — Versioned primitives (roles, connectors, triggers, policies)
+- [`compiler/`](./compiler/) — Bootstrap discovery, team compilation, rendering
