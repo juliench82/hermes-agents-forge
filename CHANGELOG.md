@@ -15,6 +15,7 @@
 
 - Deprecated `compiler/` as the user-facing entry point; it is now a backend utility for manifest generation.
 - Marked legacy runtime modules (Buzz, Obsidian, duplicate audit, unused installer paths) for quarantine/deletion in a follow-up PR.
+- Removed legacy runtime modules (Buzz, Obsidian, duplicate audit, unused installer paths); `runtime/` now contains only the onboarding engine (`onboarding_wizard.py`, `dynamic_profiles.py`, `live_provisioner.py`, `__init__.py`, `README.md`).
 
 ### Fixed
 
