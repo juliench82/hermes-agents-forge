@@ -1,28 +1,27 @@
-# Runtime Kernel
+# runtime/
 
-`hermes_kernel.py` is a dependency-free coordination kernel for the bootstrapper. It provides SQLite task persistence, audited state transitions, profile and skill discovery, tool permission checks, session budgets, and handoff validation.
+This directory is the **onboarding engine** for HERMES Agents — Forge.
+
+## Entry point
+
+```bash
+python -m runtime.onboarding_wizard
+```
+
+## Modules
+
+- `onboarding_wizard.py` — Interview + team design orchestration.
+- `dynamic_profiles.py` — Profile creation and configuration.
+- `live_provisioner.py` — Wiring profiles into workflows.
+- `__init__.py` — Package marker.
 
 ## Usage
 
-```python
-from pathlib import Path
-from runtime.hermes_kernel import TaskStore, ProfileResolver, ToolRegistry, SessionContext
+1. User runs `python -m runtime.onboarding_wizard`.
+2. Wizard interviews the user, proposes a team, and (on confirmation) provisions isolated bot-mode profiles.
+3. Profiles are created under `profiles/`; a sample workflow is created under `onboarding/workflows/`.
 
-store = TaskStore(Path(".hermes/state.db"))
-store.create_task("TASK-1", "Implement a feature", "orchestrator", acceptance_criteria=["tests pass"])
-store.transition("TASK-1", "claimed", "builder", owner="builder")
-store.transition("TASK-1", "in_progress", "builder")
-```
+## Notes
 
-The kernel is intentionally model- and provider-agnostic. An adapter should own the LLM API call and use `SessionContext.check_budget()` around the agent loop. External and high-impact tools must be registered with a risk class and dispatched with explicit approval.
-
-## Guarantees
-
-- Invalid task transitions fail closed.
-- Task events are append-only and timestamped.
-- SQLite uses WAL mode for concurrent readers.
-- Tool failures are normalized into structured results.
-- Completed handoffs require test evidence.
-- Profiles and skills are loaded progressively instead of injecting every body into every prompt.
-
-Run the repository smoke test with `python -m unittest discover -s tests -v`.
+- Do not manually edit files under `profiles/`; use `--refine` to adjust teams.
+- The `compiler/` directory is a backend utility for manifest generation, not part of the user-facing flow.
