@@ -8,6 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `PRODUCT.md` — product goal, current state, gaps, and next steps (customer journey: webpage → llms.txt → interview → bot-mode profiles → workflows)
+
+### Changed
+- `site/llms.txt` synced with post-PR-69 onboarding flow (added `hermes skills trust` step, updated referenced files)
+- `README.md` rewritten to align with PR-#69 bootstrap/compiler model
+- `BOOTSTRAP.md` rewritten as bootstrap manifest specification
+
+### Planned (see PRODUCT.md)
+- Rewrite `site/llms.txt` to be the product (interview → design → provision flow)
+- Update `HERMES.md` to match (remove compiler-only flow as primary entry)
+- Update `skills/forge/SKILL.md` to implement the interview and profile creation
+- Inventory `runtime/` and delete leftovers (Buzz, Obsidian, duplicate audit, unused installer paths)
+- Prove the funnel once (site button → `/llms.txt` → clone/trust → interview → N isolated profiles in bot mode → one sample workflow)
+
+## [Unreleased] — PR #69 and cleanup
+
+### Added
 - `LICENSE` (MIT), `.gitignore`, `pyproject.toml` for proper Python packaging
 - `AGENTS.md` for cross-tool agent instructions
 - `CONTRIBUTING.md` and `CHANGELOG.md` for contributor guidance
