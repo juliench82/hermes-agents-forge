@@ -1,51 +1,126 @@
-# Hermes Agents Forge — Hermes-Specific Context
+# HERMES Agents — Forge
 
-> This file (`HERMES.md`) is the highest-priority context file for Hermes Agent.
+## Product goal
 
-## Project Overview
+A customer visits the project page, clicks "read agent instructions", and points their HERMES agent to:
 
-Hermes-native bootstrap repository for provisioning isolated multi-profile agent teams.
+https://hermes-agents-forge.vercel.app/llms.txt
 
-## Quick Start
+From there, any HERMES agent (any LLM, any thinking level) should:
+
+1. Interview the user about what they want to automate.
+2. Design a custom team of specialized agent profiles.
+3. Provision isolated bot-mode profiles that collaborate on workflows.
+
+## Entry point
+
+The public entry point is:
+
+- `site/llms.txt` — instructions for the user's HERMES agent.
+- This file (`HERMES.md`) — product spec and flow description.
+- `skills/forge/SKILL.md` — trusted skill that implements interview + provisioning.
+
+## Onboarding flow
+
+### 1. Read + trust
+
+1. The user's agent reads `site/llms.txt`.
+2. The agent reads this `HERMES.md` for context.
+3. The agent trusts the Forge skill at `skills/forge/SKILL.md`.
+
+This skill is authorized to:
+
+- Ask structured questions about the user's workflows, tools, and constraints.
+- Propose a team design (roles, responsibilities, handoffs).
+- Create and configure isolated bot-mode profiles under `profiles/`.
+- Wire those profiles into a sample workflow under `onboarding/workflows/`.
+
+### 2. Interview
+
+The agent runs:
 
 ```bash
-curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
-hermes setup --portal
-hermes skills trust
-python -m compiler --manifest bootstrap.manifest.json
+python -m runtime.onboarding_wizard
 ```
 
-## Key Hermes Features Used
+`onboarding_wizard`:
 
-| Feature | Usage | Docs |
-|---------|-------|------|
-| Profiles | Multi-profile team provisioning | [Profiles](https://hermes-agent.nousresearch.com/docs/user-guide/profiles) |
-| Skills | `skills/forge/SKILL.md` | [Skills](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills) |
-| MCP | Connectors map to MCP servers | [MCP](https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp) |
-| Cron | Triggers use native `cronjob` | [Cron](https://hermes-agent.nousresearch.com/docs/user-guide/features/cron) |
-| Delegation | Orchestrator uses `delegate_task` | [Delegation](https://hermes-agent.nousresearch.com/docs/user-guide/features/delegation) |
-| Context Files | `HERMES.md`, `AGENTS.md`, `SOUL.md` | [Context Files](https://hermes-agent.nousresearch.com/docs/user-guide/features/context-files) |
-| Security | All 8 layers enforced | [Security](https://hermes-agent.nousresearch.com/docs/user-guide/security) |
+- Asks what domains the user wants to automate (e.g., support, content, ops).
+- Asks about tools/APIs in scope (GitHub, Slack, email, DBs, etc.).
+- Captures constraints (budget, latency, human-in-the-loop points).
+- Summarizes a target outcome ("what success looks like").
 
-## Skills Trust (Important!)
+### 3. Team design
 
-This project uses project-local skills. **You must run**:
+Based on the interview, the agent:
+
+- Proposes a minimal team (e.g., intake triage, specialist, QA, orchestrator).
+- Describes each role's:
+  - Responsibilities.
+  - Allowed actions (via the Forge skill).
+  - Handoffs to other roles.
+- Asks the user for confirmation or adjustments.
+
+### 4. Profile provisioning
+
+Once confirmed, the agent:
+
+- Uses `runtime/dynamic_profiles.py` + `runtime/live_provisioner.py` to:
+  - Create N isolated bot-mode profiles under `profiles/`.
+  - Configure each profile's:
+    - Identity (name, role, avatar/metdata).
+    - Allowed actions (via skill policies).
+    - Workflow hooks (triggers, queues, channels).
+- Creates one sample workflow under `onboarding/workflows/` that:
+  - Exercises the team end-to-end.
+  - Demonstrates handoffs and escalation paths.
+
+### 5. Iteration
+
+To refine the team later:
 
 ```bash
-hermes skills trust
+python -m runtime.onboarding_wizard --refine
 ```
 
-Without this, the forge skill won't load.
+This re-runs a shortened interview and allows:
 
-## Security Alignment
+- Adding/removing roles.
+- Adjusting responsibilities.
+- Re-provisioning affected profiles.
 
-All runtime operations reference Hermes's 8-layer security model.
+## Architecture notes
 
-See: `shared/safety-enforcement.md`, `shared/safety-gates.md`
+- **runtime/**  
+  - `onboarding_wizard.py` — interview + design orchestration.  
+  - `dynamic_profiles.py` — profile creation and configuration.  
+  - `live_provisioner.py` — wiring profiles into workflows.
 
-## Related Docs
+- **compiler/**  
+  - Used internally as a backend to generate manifests from a design.  
+  - Not the user-facing entry point.
 
-- `AGENTS.md` — Cross-tool agent instructions
-- `README.md` — User-facing overview
-- `BOOTSTRAP.md` — Bootstrap manifest spec
-- `CONTRIBUTING.md` — How to contribute
+- **skills/forge/**  
+  - `SKILL.md` — defines the trusted capability boundary for interview + provisioning.
+
+- **profiles/**  
+  - Managed by the wizard/provisioner.  
+  - Do not manually edit; use `--refine` to adjust.
+
+## Security & isolation
+
+- Each profile is isolated:
+  - Separate identity and credentials.
+  - Scoped actions via the Forge skill.
+  - Explicit handoffs instead of shared state.
+
+- The Forge skill enforces:
+  - What actions profiles can take.
+  - Where they can write (paths, APIs, channels).
+  - When human confirmation is required.
+
+---
+
+This spec defines the end-to-end funnel:
+
+site button → `/llms.txt` → clone + trust → interview → team design → N isolated bot-mode profiles → one sample workflow.

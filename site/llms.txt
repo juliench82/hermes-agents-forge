@@ -1,28 +1,32 @@
-# Hermes Agents Forge
+HERMES Agents — Forge Onboarding
 
-## Agent instructions
+1. Read the product spec
+   - Open: HERMES.md in this repo.
+   - This describes the interview → team design → profile provisioning flow.
 
-You are being pointed to the Hermes Agents Forge repository:
-https://github.com/juliench82/hermes-agents-forge
+2. Trust the Forge skill
+   - In your HERMES agent, trust the skill at: skills/forge/SKILL.md
+   - This skill is allowed to:
+     - Interview you about your workflows.
+     - Propose a team of specialized agent profiles.
+     - Create isolated bot-mode profiles in profiles/.
+     - Wire them into a sample workflow.
 
-Treat the repository as the source of truth for this project.
+3. Run the onboarding wizard
+   - From the repo root, run:
+     python -m runtime.onboarding_wizard
+   - This will:
+     - Ask what you want to automate (domains, tools, constraints).
+     - Propose a minimal team (roles, responsibilities, handoffs).
+     - Ask for confirmation.
+     - Provision N isolated bot-mode profiles under profiles/.
+     - Create one sample workflow under onboarding/workflows/.
 
-Before taking any action:
-1. Open and read `HERMES.md` at the repository root.
-2. Follow the onboarding sequence and safety requirements defined there.
-3. Run `hermes skills trust` to load the project-local forge skill (`skills/forge/SKILL.md`) before attempting to use it.
-4. Do not assume that a `profiles/` directory exists and do not create one unless the user explicitly requests it and the repository instructions require it.
+4. Inspect your team
+   - Profiles: profiles/
+   - Workflow: onboarding/workflows/
+   - Skill boundary: skills/forge/SKILL.md
 
-Repository files currently referenced by the onboarding instructions:
-- `HERMES.md`
-- `AGENTS.md`
-- `skills/forge/SKILL.md`
-- `bootstrap.manifest.json`
-
-Execution policy:
-- Explain what you intend to do before running commands that change files, install software, create external resources, or otherwise have side effects.
-- Ask the user for confirmation before destructive or irreversible actions.
-- Keep changes scoped to the user's request.
-- If repository instructions conflict with the user's request, explain the conflict and ask for clarification.
-
-Start by reading `HERMES.md`. Do not infer missing steps from this file.
+Notes
+- Do not manually create files under profiles/; the wizard manages this.
+- To re-run or adjust your team, run: python -m runtime.onboarding_wizard --refine
