@@ -1,69 +1,67 @@
-# Hermes Agents Forge
+# HERMES Agents — Forge
 
-**Hermes-native bootstrap repository for provisioning isolated multi-profile agent teams.**
+A customer goes to the webpage, clicks **"read agent instructions"**, and points their HERMES agent to:
 
-Point your Hermes agent at this repo and it can:
+https://hermes-agents-forge.vercel.app/llms.txt
 
-1. **Discover** bootstrap manifests (`bootstrap.manifest.json`) in the wild
-2. **Compile** tenant specs into profile bundles with roles, connectors, triggers, and policies
-3. **Provision** isolated Hermes profiles with dynamic skills, context files, and MCP integrations
-4. **Onboard** users via guided workflows with acceptance criteria and audit trails
+From there, any HERMES agent (any LLM, any thinking level) should:
 
-## Quick Start
+1. **Interview** the user about what they want to automate.
+2. **Design** a custom team of specialized agent profiles.
+3. **Provision** isolated bot-mode profiles that collaborate on workflows.
+
+## Quick start
+
+1. **Clone** this repo.
+2. **Read** the product spec: [`HERMES.md`](./HERMES.md).
+3. **Trust** the Forge skill: [`skills/forge/SKILL.md`](./skills/forge/SKILL.md).
+4. **Run** the onboarding wizard:
+
+   ```bash
+   python -m runtime.onboarding_wizard
+   ```
+
+   This will:
+   - Ask what you want to automate (domains, tools, constraints).
+   - Propose a minimal team (roles, responsibilities, handoffs).
+   - On confirmation, provision isolated bot-mode profiles under `profiles/`.
+   - Create a sample workflow under `onboarding/workflows/`.
+
+5. **Inspect** your team:
+   - Profiles: `profiles/`
+   - Workflow: `onboarding/workflows/`
+   - Skill boundary: `skills/forge/SKILL.md`
+
+To refine your team later:
 
 ```bash
-# 1. Install Hermes (if not already)
-curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
-
-# 2. Fast setup (model + tool gateway in one OAuth)
-hermes setup --portal
-
-# 3. Trust project-local skills (required)
-hermes skills trust
-
-# 4. Install dependencies
-pip install -e ".[dev]"
-
-# 5. Run the bootstrap compiler
-python -m compiler --manifest bootstrap.manifest.json
+python -m runtime.onboarding_wizard --refine
 ```
-
-## Key Docs
-
-| File | Purpose |
-|------|---------|
-| [`HERMES.md`](./HERMES.md) | Hermes-specific context (highest priority) |
-| [`AGENTS.md`](./AGENTS.md) | Cross-tool agent instructions (Claude Code, Codex, Hermes) |
-| [`BOOTSTRAP.md`](./BOOTSTRAP.md) | Bootstrap manifest specification |
-| [`CONTRIBUTING.md`](./CONTRIBUTING.md) | How to contribute |
-| [`onboarding/START.md`](./onboarding/START.md) | Onboarding quick start |
 
 ## Architecture
 
-```
-├── bootstrap.manifest.json    # Declarative team spec
-├── compiler/                  # Bootstrap discovery, team compilation, rendering
-├── runtime/                   # Profile provisioning, skill resolution, policy enforcement
-├── catalog/                   # Versioned primitives (roles, connectors, triggers, memory, policies)
-├── onboarding/                # Templates, workflows, fixtures for user onboarding
-├── shared/                    # Cross-cutting contracts (security, context, skill, workflow policies)
-├── skills/forge/              # Project-local forge skill (SKILL.md)
-└── site/                      # Public website with llms.txt for LLM discoverability
-```
+- **`site/llms.txt`** — Public entry point for HERMES agents.
+- **`HERMES.md`** — Product spec and onboarding flow.
+- **`skills/forge/SKILL.md`** — Trusted skill that implements interview + provisioning.
+- **`runtime/`** — Onboarding engine:
+  - `onboarding_wizard.py` — Interview + team design.
+  - `dynamic_profiles.py` — Profile creation/configuration.
+  - `live_provisioner.py` — Workflow wiring.
+- **`compiler/`** — Backend utility for manifest generation (not the user-facing entry point).
+- **`profiles/`** — Managed by the wizard; do not edit manually.
 
-## Key Conventions
+## Security & isolation
 
-- **Manifests over code**: Team specs are declarative JSON/YAML, compiled by `compiler/`
-- **Versioned primitives**: Catalog entries use semantic versioning (`1.0.0/primitive.yaml`)
-- **Hermes-native alignment**: Connectors map to MCP servers, triggers to `cronjob`, delegation to `delegate_task`
-- **Security by design**: All runtime operations reference Hermes's 8-layer security model (see `shared/safety-enforcement.md`)
+- Each profile is isolated:
+  - Separate identity and credentials.
+  - Scoped actions via the Forge skill.
+  - Explicit handoffs instead of shared state.
 
-## Testing
+- The Forge skill enforces:
+  - What actions profiles can take.
+  - Where they can write (paths, APIs, channels).
+  - When human confirmation is required.
 
-```bash
-pytest tests/ -v --cov
-```
+## Changelog
 
-## License
-
-MIT — see [`LICENSE`](./LICENSE)
+See [`CHANGELOG.md`](./CHANGELOG.md).
