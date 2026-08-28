@@ -6,27 +6,42 @@ HERMES Agents — Forge Onboarding
 
 2. Trust the Forge skill
    - In your HERMES agent, trust the skill at: skills/forge/SKILL.md
-   - This skill is allowed to:
-     - Interview you about your workflows.
+   - This skill authorizes you to:
+     - Interview the user about their workflows.
      - Propose a team of specialized agent profiles.
-     - Create isolated bot-mode profiles in profiles/.
+     - Create isolated bot-mode profiles.
      - Wire them into a sample workflow.
 
-3. Run the onboarding wizard
-   - From the repo root, run:
-     python -m runtime.onboarding_wizard
-   - This will:
-     - Ask what you want to automate (domains, tools, constraints).
-     - Propose a minimal team (roles, responsibilities, handoffs).
-     - Ask for confirmation.
-     - Provision N isolated bot-mode profiles under profiles/.
-     - Create one sample workflow under onboarding/workflows/.
+3. Interview the user
+   Ask these questions one at a time. Wait for each answer before asking the next.
+   a. What would you like to automate or build with HERMES?
+   b. What tools or APIs does this workflow need? (GitHub, Slack, email, DBs, VPS, etc.)
+   c. How many isolated bot profiles do you want?
+      (3 for simple single-domain, 5 for multi-stage, 7 for strict separation of duties)
+   d. What are your constraints? (budget, latency, human-in-the-loop points)
+   e. What does success look like? (e.g., "90% of issues triaged in <5 min")
 
-4. Inspect your team
-   - Profiles: profiles/
-   - Workflow: onboarding/workflows/
-   - Skill boundary: skills/forge/SKILL.md
+4. Design the team
+   Based on the answers, propose a minimal team as a table:
+   | Profile | Role | Responsibility | Allowed actions | Handoffs |
+   Present the table and ask: "Create these N profiles?"
+
+5. Provision the team
+   On confirmation, create each profile:
+   a. If Python is available, run:
+      python -m runtime.onboarding_wizard
+      This provisions profiles under profiles/ and a sample workflow under onboarding/workflows/.
+   b. If Python is not available, use Hermes CLI:
+      - hermes profile create <name> --description "<role>" for each profile.
+      - Write ~/.hermes/profiles/<name>/SOUL.md with: role, in-scope product, out-of-scope, handoffs.
+      - Create a workflow file under onboarding/workflows/ that exercises the team end-to-end.
+
+6. Validate
+   - Run: hermes profile list
+   - Report: profiles created, SOUL.md files written, workflow file created, anything failed.
+   - Then stop.
 
 Notes
-- Do not manually create files under profiles/; the wizard manages this.
-- To re-run or adjust your team, run: python -m runtime.onboarding_wizard --refine
+- Do not manually edit files under profiles/; use --refine to adjust.
+- To re-run or adjust your team: python -m runtime.onboarding_wizard --refine
+- The compiler/ directory is a backend utility, not part of this flow.
