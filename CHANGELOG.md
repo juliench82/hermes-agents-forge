@@ -2,24 +2,29 @@
 
 ### Changed
 
-- **site/llms.txt**: Replaced compiler-only instructions with the full interview → design → provision flow. Users now run `python -m runtime.onboarding_wizard` instead of `python -m compiler --manifest ...`.
-- **HERMES.md**: Rewrote to describe the conversational onboarding funnel (interview, team design, profile provisioning) instead of a static manifest-based flow.
-- **skills/forge/SKILL.md**: Updated to define the Forge skill as the trusted onboarding entry point, with explicit permissions to interview users, propose teams, and provision isolated bot-mode profiles.
+- **site/llms.txt**: Replaced compiler-only instructions with the full interview → design → provision flow. Added explicit 5-question interview script, team design table, and dual provisioning paths (Python runtime + Hermes CLI fallback).
+- **HERMES.md**: Rewrote to describe the conversational onboarding funnel (interview, team design, profile provisioning). Added explicit interview questions and Hermes CLI fallback path for agents without Python.
+- **skills/forge/SKILL.md**: Updated to define the Forge skill as the trusted onboarding entry point. Added explicit interview questions, team design table format, and Hermes CLI provisioning commands.
 
 ### Added
 
-- Clear product contract: any HERMES agent can point to `/llms.txt`, trust the Forge skill, and get a custom team of isolated profiles plus a sample workflow.
+- Clear product contract: any HERMES agent (any LLM, any thinking level) can point to `/llms.txt`, trust the Forge skill, and get a custom team of isolated profiles plus a sample workflow.
+- Dual provisioning paths: Python runtime (`python -m runtime.onboarding_wizard`) for full automation, Hermes CLI (`hermes profile create`) for agents without Python.
 - Support for `python -m runtime.onboarding_wizard --refine` to iteratively adjust teams after initial provisioning.
+- Explicit 5-question interview script in llms.txt, HERMES.md, and SKILL.md.
 
-### Removed / Deprecated
+### Removed
 
+- Deleted legacy runtime modules: `buzz_integration.py`, `buzz_setup.py`, `obsidian_integration.py`, `obsidian_setup.py` (Buzz/Obsidian leftovers).
+- Deleted duplicate audit modules: `audit_log.py`, `audit_logger.py`.
+- Deleted unused installer paths: `installer_entrypoint.py`, `installation_runner.py`, `adaptive_installer.py`, `installation_state.py`, `installation_store.py`.
 - Deprecated `compiler/` as the user-facing entry point; it is now a backend utility for manifest generation.
-- Marked legacy runtime modules (Buzz, Obsidian, duplicate audit, unused installer paths) for quarantine/deletion in a follow-up PR.
-- Removed legacy runtime modules (Buzz, Obsidian, duplicate audit, unused installer paths); `runtime/` now contains only the onboarding engine (`onboarding_wizard.py`, `dynamic_profiles.py`, `live_provisioner.py`, `__init__.py`, `README.md`).
 
 ### Fixed
 
-- Resolved contradiction between "do not create profiles/" and the product goal of creating isolated bot-mode profiles. Profiles under `profiles/` are now explicitly managed by the onboarding wizard.
+- Resolved contradiction between "do not create profiles/" and the product goal of creating isolated bot-mode profiles. Profiles under `profiles/` are now explicitly managed by the onboarding wizard or Hermes CLI.
+- Fixed typo in HERMES.md ("avatar/metdata" → "avatar/metadata").
+- Corrected CHANGELOG entry that claimed runtime cleanup was done; now reflects actual file deletions.
 
 ## 0.2.0 - 2026-08-20
 

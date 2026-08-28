@@ -37,25 +37,28 @@ This skill is authorized to:
 
 ### 2. Interview
 
-The agent runs:
+The agent asks these questions one at a time:
+
+1. **What would you like to automate or build with HERMES?** (e.g., "triage GitHub issues", "generate weekly reports")
+2. **What tools or APIs does this workflow need?** (GitHub, Slack, email, DBs, VPS, etc.)
+3. **How many isolated bot profiles do you want?** (3 for simple single-domain, 5 for multi-stage, 7 for strict separation)
+4. **What are your constraints?** (budget, latency, human-in-the-loop points)
+5. **What does success look like?** (e.g., "90% of issues triaged in <5 min", "daily report by 9am")
+
+If Python is available, the agent can also run:
 
 ```bash
 python -m runtime.onboarding_wizard
 ```
 
-`onboarding_wizard`:
-
-- Asks what domains the user wants to automate (e.g., support, content, ops).
-- Asks about tools/APIs in scope (GitHub, Slack, email, DBs, etc.).
-- Captures constraints (budget, latency, human-in-the-loop points).
-- Summarizes a target outcome ("what success looks like").
+The wizard collects the same information programmatically.
 
 ### 3. Team design
 
 Based on the interview, the agent:
 
 - Proposes a minimal team (e.g., intake triage, specialist, QA, orchestrator).
-- Describes each role's:
+- Presents each role's:
   - Responsibilities.
   - Allowed actions (via the Forge skill).
   - Handoffs to other roles.
@@ -63,17 +66,26 @@ Based on the interview, the agent:
 
 ### 4. Profile provisioning
 
-Once confirmed, the agent:
+Once confirmed, the agent provisions the team. Two paths:
+
+**Path A — Python runtime (preferred):**
 
 - Uses `runtime/dynamic_profiles.py` + `runtime/live_provisioner.py` to:
   - Create N isolated bot-mode profiles under `profiles/`.
   - Configure each profile's:
-    - Identity (name, role, avatar/metdata).
+    - Identity (name, role, avatar/metadata).
     - Allowed actions (via skill policies).
     - Workflow hooks (triggers, queues, channels).
 - Creates one sample workflow under `onboarding/workflows/` that:
   - Exercises the team end-to-end.
   - Demonstrates handoffs and escalation paths.
+
+**Path B — Hermes CLI (fallback, no Python required):**
+
+- For each profile:
+  - `hermes profile create <name> --description "<role>"`
+  - Write `~/.hermes/profiles/<name>/SOUL.md` with: role, in-scope product, out-of-scope, handoffs.
+- Create a workflow file under `onboarding/workflows/` that exercises the team.
 
 ### 5. Iteration
 
@@ -91,20 +103,21 @@ This re-runs a shortened interview and allows:
 
 ## Architecture notes
 
-- **runtime/**  
-  - `onboarding_wizard.py` — interview + design orchestration.  
-  - `dynamic_profiles.py` — profile creation and configuration.  
+- **runtime/**
+  - `onboarding_wizard.py` — interview + design orchestration.
+  - `dynamic_profiles.py` — profile creation and configuration.
   - `live_provisioner.py` — wiring profiles into workflows.
+  - Legacy modules (Buzz, Obsidian, duplicate audit, unused installer paths) have been removed.
 
-- **compiler/**  
-  - Used internally as a backend to generate manifests from a design.  
+- **compiler/**
+  - Used internally as a backend to generate manifests from a design.
   - Not the user-facing entry point.
 
-- **skills/forge/**  
+- **skills/forge/**
   - `SKILL.md` — defines the trusted capability boundary for interview + provisioning.
 
-- **profiles/**  
-  - Managed by the wizard/provisioner.  
+- **profiles/**
+  - Managed by the wizard/provisioner or Hermes CLI.
   - Do not manually edit; use `--refine` to adjust.
 
 ## Security & isolation
