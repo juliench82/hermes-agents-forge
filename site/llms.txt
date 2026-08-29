@@ -1,65 +1,44 @@
-# HERMES-Forge Agent Instructions
+# HERMES-Agents-Forge — AI Agent Instructions
 
-## Phase 1: User Interview
+## Product Goal
+When a HERMES agent reads this file, it should:
+1. **Interview the user** about their workflow needs
+2. **Design a custom team** of specialized bot-mode profiles
+3. **Present the team proposal** for user confirmation
+4. **Provision isolated bot-mode profiles** only after confirmation
+5. **Default to "Use My Real Browser Profile"** unless user opts for isolated bots
 
-Ask the user these questions in order:
+## Workflow
 
-1. **Domain**: What domain or project are you working in? (e.g., "SaaS startup", "XRPL blockchain", "research paper")
-2. **Goals**: What outcomes do you want from this agent team? (e.g., "daily market digest", "PR reviews", "code deployment")
-3. **Roles**: Which specialist roles do you need? Suggest:
-   - Researcher (gathers evidence from web, docs, GitHub)
-   - Coder (implements features, runs tests, deploys)
-   - Reviewer (challenges assumptions, security audits)
-   - Coordinator (synthesizes outputs, manages handoffs)
-4. **Tools**: Which capabilities should each bot have?
-   - Browser (real-profile or sandboxed?)
-   - Terminal (local or Docker?)
-   - MCP servers (GitHub, Graphiti, etc.)
-5. **Models**: Which model per bot? (e.g., Opus for reasoning, Sonnet for speed, GPT-5 for coding)
+### Step 1: User Interview
+Ask the user:
+- What workflows do you want to automate?
+- How many specialized agents would help (1-5)?
+- Do you prefer isolated bot-mode profiles or using your main profile?
 
-## Phase 2: Team Proposal
+### Step 2: Team Design
+Based on interview responses:
+- Propose 1-5 bot roles (e.g., "Researcher", "Coder", "Reviewer")
+- For each role, suggest:
+  - Model (can differ per bot)
+  - Skills needed
+  - Memory isolation level
 
-Present this summary and wait for explicit confirmation:
+### Step 3: User Confirmation
+Present the team proposal and wait for explicit "yes" or "approve" before proceeding.
 
-```
-Proposed team:
-- @researcher: Claude Opus, browser + web tools, GitHub MCP
-- @coder: GPT-5, terminal + file tools, Docker sandbox
-- @reviewer: Claude Sonnet, security-audit skill, GitHub MCP
+### Step 4: Provisioning
+After confirmation:
+- Create isolated profiles under `~/.hermes/profiles/forge-{role}/`
+- OR use the main profile if user selected "Use My Real Browser Profile"
+- Configure each bot with its role, model, and skills
+- Set up shared inbox for bot-to-bot communication
 
-Each bot gets:
-- Isolated profile (~/.hermes/profiles/<name>/)
-- Real browser profile (your logins)
-- Bot Mode protocol (can message each other)
-
-Proceed? [y/N]
-```
-
-## Phase 3: Provisioning
-
-On confirmation, execute:
-
-1. Create profiles:
-   ```bash
-   hermes profile create researcher --description "Gathers evidence from web, docs, GitHub"
-   hermes profile create coder --description "Implements features, runs tests, deploys"
-   hermes profile create reviewer --description "Security audits, challenges assumptions"
-   ```
-
-2. Configure each profile:
-   - Set `agent.bot_mode_protocol: true`
-   - Set `browser.use_real_profile: true`
-   - Install role-specific skills
-   - Pin model per profile
-
-3. Inject teammate roster into each Bot Chat system prompt.
-
-4. Present completion message with next steps.
-
----
+## Default Option
+**Always present "Use My Real Browser Profile" as the default choice.**
+Only create isolated bot-mode profiles if the user explicitly opts in.
 
 ## References
-
-- HERMES.md: Core HERMES setup and capabilities
-- skills/forge/SKILL.md: Executable provisioning skill
-- runtime/: Profile creation and configuration code
+- HERMES.md — Main product documentation
+- skills/forge/SKILL.md — Forge skill for team provisioning
+- runtime/ — Profile provisioning and isolation code

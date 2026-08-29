@@ -1,57 +1,77 @@
-"""Confirmation gates for irreversible actions."""
-from __future__ import annotations
+"""
+Confirmation — Presents team proposal and waits for explicit user approval.
 
-import uuid
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+Follows HERMES security best practices: command approval before side-effecting actions.
+"""
 
 
-@dataclass
-class ApprovalRequest:
-    id: str
-    tenant_id: str
-    agent_id: str
-    tool_name: str
-    reason: str
-    arguments_hash: str
-    created_at: str
-    status: str = "pending"  # pending | approved | denied
-    metadata: Dict[str, Any] = field(default_factory=dict)
+class Request:
+    """Represents an approval request."""
+    
+    def __init__(self, transaction_id: str, user: str, action: str, resource: str, target: str):
+        self.id = transaction_id
+        self.transaction_id = transaction_id
+        self.user = user
+        self.action = action
+        self.resource = resource
+        self.target = target
+        self.status = "pending"
+        self.approved = False
+        self.denied = False
 
 
 class ApprovalGateway:
-    """Gate requiring explicit approval before executing irreversible actions."""
-
-    def __init__(self) -> None:
-        self.requests: Dict[str, ApprovalRequest] = {}
-
-    def request(self, tenant_id: str, agent_id: str, tool_name: str, reason: str, arguments_hash: str) -> ApprovalRequest:
-        req = ApprovalRequest(
-            id=str(uuid.uuid4()),
-            tenant_id=tenant_id,
-            agent_id=agent_id,
-            tool_name=tool_name,
-            reason=reason,
-            arguments_hash=arguments_hash,
-            created_at=datetime.now(timezone.utc).isoformat(),
-        )
-        self.requests[req.id] = req
+    """
+    Gateway for approval-based actions in HERMES runtime.
+    
+    Ensures side-effecting operations require explicit user consent before execution.
+    """
+    
+    def __init__(self):
+        self._pending_approval = None
+        self._requests = {}
+    
+    def request(self, transaction_id: str, user: str, action: str, resource: str, target: str) -> Request:
+        req = Request(transaction_id, user, action, resource, target)
+        self._requests[transaction_id] = req
         return req
+    
+    def approve(self, transaction_id: str) -> Request:
+        if transaction_id in self._requests:
+            self._requests[transaction_id].status = "approved"
+            self._requests[transaction_id].approved = True
+            return self._requests[transaction_id]
+        return None
+    
+    def deny(self, transaction_id: str) -> Request:
+        if transaction_id in self._requests:
+            self._requests[transaction_id].status = "denied"
+            self._requests[transaction_id].denied = True
+            return self._requests[transaction_id]
+        return None
+    
+    def is_approved(self, transaction_id: str) -> bool:
+        req = self._requests.get(transaction_id)
+        return req.approved if req else False
+    
+    def is_denied(self, transaction_id: str) -> bool:
+        req = self._requests.get(transaction_id)
+        return req.denied if req else False
 
-    def approve(self, request_id: str) -> Optional[ApprovalRequest]:
-        req = self.requests.get(request_id)
-        if not req:
-            return None
-        req.status = "approved"
-        return req
 
-    def deny(self, request_id: str) -> Optional[ApprovalRequest]:
-        req = self.requests.get(request_id)
-        if not req:
-            return None
-        req.status = "denied"
-        return req
+def present_team_proposal(proposal: dict) -> bool:
+    print("\n=== Proposed Team ===")
+    for i, bot in enumerate(proposal["bots"], 1):
+        print(f"Bot {i}: {bot['role']} — Model: {bot['model']} — Skills: {bot['skills']}")
 
-    def get(self, request_id: str) -> Optional[ApprovalRequest]:
-        return self.requests.get(request_id)
+    print("\n**Default Option: Use My Real Browser Profile**")
+    print("This will configure your main profile with the team's skills.")
+    print("\n**Alternative: Create Isolated Bot-Mode Profiles**")
+    print("This will create separate profiles for each bot (isolated config, memory, credentials).")
+    print("Note: All bots share the host OS user and filesystem permissions.")
+
+    print("\nDo you approve this team? (yes/no)")
+    print("Type 'yes' to proceed, 'no' to cancel, or 'edit' to modify the proposal.")
+
+    response = input("> ").strip().lower()
+    return response in ["yes", "approve", "y"]
