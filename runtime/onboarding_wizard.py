@@ -1,66 +1,104 @@
 """
-onboarding_wizard.py — Adaptive onboarding wizard for provider/model/config.
+Onboarding Wizard for HERMES-Forge.
+
+Conducts user interview to collect:
+- Domain/project context
+- Goals and outcomes
+- Desired bot roles
+- Tool permissions
+- Model preferences per bot
 """
 
-import subprocess
-import json
+from typing import Dict, List, Optional
+from dataclasses import dataclass, field
 
-def run_onboarding_wizard():
-    """Collect provider/model/config choices from the user."""
-    print("\n=== Hermes Forge Onboarding ===")
-    print("\nThis installer will provision a 5-profile control room.")
-    print("\nFirst, enable YOLO mode in Hermes: run /yolo in your Hermes session.\n")
+
+@dataclass
+class BotSpec:
+    name: str
+    role: str
+    description: str
+    model: str = "anthropic/claude-sonnet-4"
+    tools: List[str] = field(default_factory=list)
+
+
+@dataclass
+class TeamSpec:
+    domain: str = ""
+    goals: str = ""
+    bots: List[BotSpec] = field(default_factory=list)
+    use_real_browser: bool = True
+
+
+class OnboardingWizard:
+    def __init__(self):
+        self.domain = ""
+        self.goals = ""
+        self.roles: List[str] = []
+        self.tools: List[str] = []
+        self.model_preferences: Dict[str, str] = {}
+        self.team_spec: Optional[TeamSpec] = None
     
-    # Provider selection
-    print("Select your model provider:")
-    print("1. Nous Portal (OAuth — recommended)")
-    print("2. API-key provider (Nvidia, OpenAI, etc.)")
-    print("3. Custom OpenAI-compatible endpoint")
-    print("4. Skip provider setup (configure manually later)")
+    def run_interview(self) -> TeamSpec:
+        print("\n=== HERMES-Forge Team Setup ===\n")
+        
+        self.domain = input("1. What domain or project are you working in?\n   (e.g., 'SaaS startup', 'XRPL blockchain', 'research paper'): ").strip()
+        
+        self.goals = input("\n2. What outcomes do you want from this agent team?\n   (e.g., 'daily market digest', 'PR reviews', 'code deployment'): ").strip()
+        
+        print("\n3. Which specialist roles do you need? (comma-separated)\n   Suggested: researcher, coder, reviewer, coordinator")
+        roles_input = input("   Your choices: ").strip()
+        self.roles = [r.strip() for r in roles_input.split(",") if r.strip()]
+        
+        print("\n4. Which capabilities should bots have? (comma-separated)\n   Options: browser, terminal, github_mcp, graphiti_mcp")
+        tools_input = input("   Your choices: ").strip()
+        self.tools = [t.strip() for t in tools_input.split(",") if t.strip()]
+        
+        print("\n5. Model preferences per bot:")
+        for role in self.roles:
+            model = input(f"   Which model for @{role}?\n   (e.g., claude-opus-4, gpt-5, claude-sonnet-4): ").strip()
+            if model:
+                self.model_preferences[role] = model
+        
+        self.team_spec = TeamSpec(
+            domain=self.domain,
+            goals=self.goals,
+            bots=[
+                BotSpec(
+                    name=role,
+                    role=role,
+                    description=self._get_role_description(role),
+                    model=self.model_preferences.get(role, "anthropic/claude-sonnet-4"),
+                    tools=self.tools
+                )
+                for role in self.roles
+            ],
+            use_real_browser="browser" in self.tools
+        )
+        
+        return self.team_spec
     
-    choice = input("\nEnter choice (1-4): ").strip()
-    provider_config = {"choice": choice}
+    def _get_role_description(self, role: str) -> str:
+        descriptions = {
+            "researcher": "Gathers evidence from web, docs, GitHub",
+            "coder": "Implements features, runs tests, deploys",
+            "reviewer": "Security audits, challenges assumptions",
+            "coordinator": "Synthesizes outputs, manages handoffs"
+        }
+        return descriptions.get(role, f"Specialist for {role} tasks")
     
-    if choice == "1":
-        print("\nRunning: hermes setup --portal")
-        result = subprocess.run(["hermes", "setup", "--portal"], capture_output=True, text=True, check=False)
-        if result.returncode != 0:
-            print(f"Warning: Portal setup failed: {result.stderr}")
-        provider_config["provider"] = "nous"
-        provider_config["setup_method"] = "oauth"
-    elif choice == "2":
-        print("\nRunning: hermes model (interactive)")
-        result = subprocess.run(["hermes", "model"], capture_output=True, text=True, check=False)
-        if result.returncode != 0:
-            print(f"Warning: Model setup failed: {result.stderr}")
-        provider_config["provider"] = "api_key"
-        provider_config["setup_method"] = "interactive"
-    elif choice == "3":
-        endpoint = input("Enter custom endpoint URL: ").strip()
-        model = input("Enter model ID: ").strip()
-        key_env = input("Enter environment variable name for API key: ").strip()
-        provider_config["provider"] = "custom"
-        provider_config["endpoint"] = endpoint
-        provider_config["model"] = model
-        provider_config["key_env"] = key_env
-    else:
-        provider_config["provider"] = "skip"
-    
-    # Model policy
-    print("\nModel policy:")
-    print("1. One shared model for all profiles (default)")
-    print("2. Override per role (advanced)")
-    model_choice = input("Enter choice (1-2): ").strip()
-    provider_config["model_policy"] = "shared" if model_choice == "1" else "per_role"
-    
-    # Operational preferences
-    print("\nOperational preferences:")
-    obsidian_choice = input("Obsidian vault: create Forge vault / skip? (create/skip): ").strip()
-    buzz_choice = input("BUZZ: configure now / skip? (configure/skip): ").strip()
-    gateway_choice = input("Gateway: start after smoke tests / provision only? (start/provision): ").strip()
-    
-    provider_config["obsidian"] = obsidian_choice
-    provider_config["buzz"] = buzz_choice
-    provider_config["gateway"] = gateway_choice
-    
-    return provider_config
+    def present_team_proposal(self) -> str:
+        if not self.team_spec:
+            raise ValueError("Must run interview first")
+        
+        proposal = "\n### Proposed Team ###\n\n"
+        for bot in self.team_spec.bots:
+            proposal += f"- @{bot.name}: {bot.model}, tools={bot.tools}\n"
+        
+        proposal += "\nEach bot gets:\n"
+        proposal += "- Isolated profile (~/.hermes/profiles/<name>/)\n"
+        proposal += "- Real browser profile (your logins)\n"
+        proposal += "- Bot Mode protocol (can message each other)\n"
+        proposal += "\nProceed with provisioning? [y/N]: "
+        
+        return proposal
