@@ -5,6 +5,20 @@ Follows HERMES security best practices: command approval before side-effecting a
 """
 
 
+class Request:
+    """Represents an approval request."""
+    
+    def __init__(self, transaction_id: str, user: str, action: str, resource: str, target: str):
+        self.transaction_id = transaction_id
+        self.user = user
+        self.action = action
+        self.resource = resource
+        self.target = target
+        self.status = "pending"
+        self.approved = False
+        self.denied = False
+
+
 class ApprovalGateway:
     """
     Gateway for approval-based actions in HERMES runtime.
@@ -16,36 +30,32 @@ class ApprovalGateway:
         self._pending_approval = None
         self._requests = {}
     
-    def request(self, transaction_id: str, user: str, action: str, resource: str, target: str) -> dict:
-        req = {
-            "transaction_id": transaction_id,
-            "user": user,
-            "action": action,
-            "resource": resource,
-            "target": target,
-            "approved": False,
-            "denied": False
-        }
+    def request(self, transaction_id: str, user: str, action: str, resource: str, target: str) -> Request:
+        req = Request(transaction_id, user, action, resource, target)
         self._requests[transaction_id] = req
         return req
     
     def approve(self, transaction_id: str) -> bool:
         if transaction_id in self._requests:
-            self._requests[transaction_id]["approved"] = True
+            self._requests[transaction_id].status = "approved"
+            self._requests[transaction_id].approved = True
             return True
         return False
     
     def deny(self, transaction_id: str) -> bool:
         if transaction_id in self._requests:
-            self._requests[transaction_id]["denied"] = True
+            self._requests[transaction_id].status = "denied"
+            self._requests[transaction_id].denied = True
             return True
         return False
     
     def is_approved(self, transaction_id: str) -> bool:
-        return self._requests.get(transaction_id, {}).get("approved", False)
+        req = self._requests.get(transaction_id)
+        return req.approved if req else False
     
     def is_denied(self, transaction_id: str) -> bool:
-        return self._requests.get(transaction_id, {}).get("denied", False)
+        req = self._requests.get(transaction_id)
+        return req.denied if req else False
 
 
 def present_team_proposal(proposal: dict) -> bool:
