@@ -1,53 +1,72 @@
-"""
-Profile Provisioner — Creates isolated bot-mode profiles for HERMES agents.
+"""Profile provisioner using official HERMES CLI commands.
 
-Follows HERMES Bot Mode (beta) isolation model:
-- Each profile gets its own: config, memory, credentials, chat history
-- All bots share the host OS user and filesystem permissions
-- Bots communicate through a shared inbox
+This module provisions isolated bot-mode profiles using the official
+HERMES CLI (`hermes profile create`) instead of direct filesystem manipulation.
 """
 
-import os
-import shutil
+import subprocess
 from pathlib import Path
 
 
-def provision_profile(role: str, model: str, skills: list, use_main_profile: bool = False):
-    """
-    Provision a profile for a bot role.
-
+def provision_profile(name: str, role: str, model: str = None, soul_md: str = None, clone: bool = False):
+    """Provision a new HERMES profile using official CLI.
+    
     Args:
-        role: Bot role name (e.g., "Researcher", "Coder")
-        model: Model to use (e.g., "claude-opus-4.6")
-        skills: List of skills to install
-        use_main_profile: If True, use the main profile instead of creating isolated bot
+        name: Profile name (becomes ~/.hermes/profiles/<name>/)
+        role: Agent role description
+        model: Optional model pin (e.g., "anthropic/claude-sonnet-4-20250514")
+        soul_md: Optional SOUL.md content for agent persona
+        clone: If True, clone config from main profile (shares config, fresh memory)
+    
+    Returns:
+        dict with profile info and status
     """
-    if use_main_profile:
-        # Configure the main profile with the team's skills
-        print(f"Configuring main profile with role: {role}")
-        # Add skills to main profile's skill directory
-        return
+    # Step 1: Create profile with description
+    cmd = ["hermes", "profile", "create", name, "--description", role]
+    if clone:
+        cmd.append("--clone")
+    
+    result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+    
+    # Step 2: Set model pin (if requested)
+    if model:
+        subprocess.run(
+            ["hermes", "-p", name, "config", "set", "model.default", model],
+            capture_output=True, text=True, check=True
+        )
+    
+    # Step 3: Write SOUL.md (if provided)
+    if soul_md:
+        soul_path = Path.home() / ".hermes" / "profiles" / name / "SOUL.md"
+        soul_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(soul_path, "w") as f:
+            f.write(soul_md)
+    
+    return {
+        "name": name,
+        "role": role,
+        "model": model,
+        "profile_path": str(Path.home() / ".hermes" / "profiles" / name),
+        "status": "provisioned"
+    }
 
-    # Create isolated bot-mode profile
-    hermes_home = Path.home() / ".hermes"
-    profile_dir = hermes_home / "profiles" / f"forge-{role}"
 
-    # Ensure isolation: each profile gets its own directories
-    profile_dir.mkdir(parents=True, exist_ok=True)
-    (profile_dir / "config").mkdir(exist_ok=True)
-    (profile_dir / "memory").mkdir(exist_ok=True)
-    (profile_dir / "credentials").mkdir(exist_ok=True)
-    (profile_dir / "sessions").mkdir(exist_ok=True)
+def list_profiles():
+    """List all HERMES profiles using official CLI."""
+    result = subprocess.run(
+        ["hermes", "profile", "list"],
+        capture_output=True, text=True, check=True
+    )
+    return result.stdout.strip().split("\n")
 
-    # Write profile configuration
-    config_file = profile_dir / "config.yaml"
-    config_file.write_text(f"""
-model: {model}
-skills: {skills}
-role: {role}
-bot_mode: true
-shared_inbox: true
-""")
 
-    print(f"Provisioned profile: {profile_dir}")
-    return profile_dir
+def verify_profile(name: str) -> bool:
+    """Verify a profile exists and is accessible."""
+    try:
+        result = subprocess.run(
+            ["hermes", "-p", name, "chat", "--dry-run"],
+            capture_output=True, text=True, timeout=10
+        )
+        return result.returncode == 0
+    except (subprocess.TimeoutExpired, subprocess.CalledProcessError):
+        return False

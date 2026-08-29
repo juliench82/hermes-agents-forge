@@ -1,43 +1,48 @@
-# HERMES-Agents-Forge
+# HERMES.md — Hermes-Agents-Forge Integration Guide
 
-## What This Is
-A HERMES-native bootstrap repository that enables **any HERMES agent** to:
-1. Interview users about their workflow needs
-2. Design custom teams of specialized bot-mode profiles
-3. Provision isolated profiles after user confirmation
-4. Default to "Use My Real Browser Profile" unless user opts for isolation
+## What is Hermes-Agents-Forge?
 
-## How It Works
+Hermes-Agents-Forge is a **skill-based onboarding system** for HERMES agents. It teaches any HERMES agent (via the `/forge` skill) how to:
 
-### For Users
-1. Visit [hermes-agents-forge.vercel.app](https://hermes-agents-forge.vercel.app)
-2. Click "Read agent instructions"
-3. Point your HERMES agent to: `https://hermes-agents-forge.vercel.app/llms.txt`
-4. Your agent will interview you, propose a team, and (after confirmation) provision profiles
+1. Interview users about their automation needs
+2. Design custom multi-agent teams
+3. Provision isolated bot-mode profiles using official HERMES CLI
 
-### For HERMES Agents
-When you read `site/llms.txt`, you should:
-1. **Interview the user** using the questions in `llms.txt`
-2. **Design a team** based on their responses
-3. **Present the proposal** and wait for explicit confirmation
-4. **Provision profiles** using the `forge` skill only after approval
+## How It Works (Official HERMES Primitives)
 
-## Bot Mode Integration
-This project uses HERMES Bot Mode (beta), which provides:
-- Isolated profile directories (config, memory, credentials, chat history)
-- Different models per bot
-- Shared inbox for bot-to-bot communication
-- Cron job support for recurring tasks
+| Forge Concept | Official HERMES Primitive | CLI Command |
+|---------------|--------------------------|-------------|
+| "Bot-mode profile" | HERMES Profile | `hermes profile create <name>` |
+| "Isolated agent" | Profile with own config, memory, skills | `hermes -p <name> chat` |
+| "Team roster" | Bot Mode UI over profiles | Desktop Bots tab |
+| "Agent persona" | SOUL.md | `~/.hermes/profiles/<name>/SOUL.md` |
+| "Agent capabilities" | Skills | `hermes -p <name> skills install <skill>` |
 
-**Important:** Bot Mode isolation is at the profile folder level. All bots share the host OS user and filesystem permissions.
+## User Flow
 
-## Default Behavior
-**"Use My Real Browser Profile" is always the default option.**
-Isolated bot-mode profiles are created only if the user explicitly opts in.
+1. User visits site → clicks "Read agent instructions"
+2. User points HERMES agent to `https://hermes-agents-forge.vercel.app/llms.txt`
+3. HERMES agent loads the `/forge` skill
+4. Skill executes: interview → team design → confirmation → profile provisioning
+5. Result: isolated profiles under `~/.hermes/profiles/<name>/`
 
-## Files
-- `site/llms.txt` — AI agent instructions (start here)
-- `skills/forge/SKILL.md` — Forge skill for team provisioning
-- `runtime/` — Profile provisioning, isolation, and orchestration code
-- `PRODUCT.md` — Product requirements and user stories
-- `CHANGELOG.md` — Version history
+## Default: "Use My Real Browser Profile"
+
+Before provisioning, the skill asks:
+> "Do you want to use your real browser profile for web automation, or create isolated browser profiles for each agent?"
+
+**Default**: "Use My Real Browser Profile" — agents share the user's existing browser session for web automation tasks.
+
+This is a **user preference**, not an official HERMES feature. Document it clearly in the skill's interview step.
+
+## Official HERMES Documentation
+
+The official HERMES documentation is available at:
+- Main docs: https://hermes-agent.nousresearch.com/docs/
+- Full documentation bundle: https://hermes-agent.nousresearch.com/docs/assets/files/llms-full-f963828d9e90cf8f351ea9497445e567.txt
+
+Key sections referenced by this project:
+- Bot Mode: https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode
+- Profiles: https://hermes-agent.nousresearch.com/docs/user-guide/profiles
+- Skills: https://hermes-agent.nousresearch.com/docs/user-guide/features/skills
+- SOUL.md: https://hermes-agent.nousresearch.com/docs/guides/use-soul-with-hermes

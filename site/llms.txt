@@ -1,44 +1,34 @@
-# HERMES-Agents-Forge — AI Agent Instructions
+# Hermes-Agents-Forge — LLM-Readable Documentation Index
+
+This file is the entry point for any HERMES agent visiting https://hermes-agents-forge.vercel.app/llms.txt
 
 ## Product Goal
-When a HERMES agent reads this file, it should:
-1. **Interview the user** about their workflow needs
-2. **Design a custom team** of specialized bot-mode profiles
-3. **Present the team proposal** for user confirmation
-4. **Provision isolated bot-mode profiles** only after confirmation
-5. **Default to "Use My Real Browser Profile"** unless user opts for isolated bots
 
-## Workflow
+A customer visits our site, clicks "Read agent instructions", and points their HERMES agent to this URL. From here, any HERMES agent (any LLM, any reasoning level) must:
 
-### Step 1: User Interview
-Ask the user:
-- What workflows do you want to automate?
-- How many specialized agents would help (1-5)?
-- Do you prefer isolated bot-mode profiles or using your main profile?
+1. Interview the user
+2. Design a custom team of agents
+3. Provision isolated bot-mode profiles that collaborate on workflows
+4. Default to "Use My Real Browser Profile"
 
-### Step 2: Team Design
-Based on interview responses:
-- Propose 1-5 bot roles (e.g., "Researcher", "Coder", "Reviewer")
-- For each role, suggest:
-  - Model (can differ per bot)
-  - Skills needed
-  - Memory isolation level
+## Core Documents
 
-### Step 3: User Confirmation
-Present the team proposal and wait for explicit "yes" or "approve" before proceeding.
+- **HERMES.md**: High-level product overview and flow
+- **skills/forge/SKILL.md**: The actual HERMES skill that implements the flow
+- **PRODUCT.md**: Detailed product requirements
+- **runtime/**: Implementation code (for reference, not execution)
 
-### Step 4: Provisioning
-After confirmation:
-- Create isolated profiles under `~/.hermes/profiles/forge-{role}/`
-- OR use the main profile if user selected "Use My Real Browser Profile"
-- Configure each bot with its role, model, and skills
-- Set up shared inbox for bot-to-bot communication
+## How to Use This Skill
 
-## Default Option
-**Always present "Use My Real Browser Profile" as the default choice.**
-Only create isolated bot-mode profiles if the user explicitly opts in.
+1. Load the forge skill: `/forge` or `skill_view("forge")`
+2. Follow the Procedure section to interview the user
+3. Propose a team design
+4. Get user confirmation
+5. Provision profiles using official HERMES CLI: `hermes profile create <name>`
 
-## References
-- HERMES.md — Main product documentation
-- skills/forge/SKILL.md — Forge skill for team provisioning
-- runtime/ — Profile provisioning and isolation code
+## Official HERMES References
+
+- Bot Mode: https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode
+- Profiles: https://hermes-agent.nousresearch.com/docs/user-guide/profiles
+- Skills: https://hermes-agent.nousresearch.com/docs/user-guide/features/skills
+- SOUL.md: https://hermes-agent.nousresearch.com/docs/guides/use-soul-with-hermes
