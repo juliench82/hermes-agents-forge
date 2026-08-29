@@ -1,57 +1,29 @@
-"""Confirmation gates for irreversible actions."""
-from __future__ import annotations
+"""
+Confirmation — Presents team proposal and waits for explicit user approval.
 
-import uuid
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+Follows HERMES security best practices: command approval before side-effecting actions.
+"""
 
 
-@dataclass
-class ApprovalRequest:
-    id: str
-    tenant_id: str
-    agent_id: str
-    tool_name: str
-    reason: str
-    arguments_hash: str
-    created_at: str
-    status: str = "pending"  # pending | approved | denied
-    metadata: Dict[str, Any] = field(default_factory=dict)
+def present_team_proposal(proposal: dict) -> bool:
+    """
+    Present the team proposal to the user and wait for confirmation.
 
+    Returns:
+        True if user approved, False otherwise
+    """
+    print("\n=== Proposed Team ===")
+    for i, bot in enumerate(proposal["bots"], 1):
+        print(f"Bot {i}: {bot['role']} — Model: {bot['model']} — Skills: {bot['skills']}")
 
-class ApprovalGateway:
-    """Gate requiring explicit approval before executing irreversible actions."""
+    print("\n**Default Option: Use My Real Browser Profile**")
+    print("This will configure your main profile with the team's skills.")
+    print("\n**Alternative: Create Isolated Bot-Mode Profiles**")
+    print("This will create separate profiles for each bot (isolated config, memory, credentials).")
+    print("Note: All bots share the host OS user and filesystem permissions.")
 
-    def __init__(self) -> None:
-        self.requests: Dict[str, ApprovalRequest] = {}
+    print("\nDo you approve this team? (yes/no)")
+    print("Type 'yes' to proceed, 'no' to cancel, or 'edit' to modify the proposal.")
 
-    def request(self, tenant_id: str, agent_id: str, tool_name: str, reason: str, arguments_hash: str) -> ApprovalRequest:
-        req = ApprovalRequest(
-            id=str(uuid.uuid4()),
-            tenant_id=tenant_id,
-            agent_id=agent_id,
-            tool_name=tool_name,
-            reason=reason,
-            arguments_hash=arguments_hash,
-            created_at=datetime.now(timezone.utc).isoformat(),
-        )
-        self.requests[req.id] = req
-        return req
-
-    def approve(self, request_id: str) -> Optional[ApprovalRequest]:
-        req = self.requests.get(request_id)
-        if not req:
-            return None
-        req.status = "approved"
-        return req
-
-    def deny(self, request_id: str) -> Optional[ApprovalRequest]:
-        req = self.requests.get(request_id)
-        if not req:
-            return None
-        req.status = "denied"
-        return req
-
-    def get(self, request_id: str) -> Optional[ApprovalRequest]:
-        return self.requests.get(request_id)
+    response = input("> ").strip().lower()
+    return response in ["yes", "approve", "y"]
