@@ -9,6 +9,7 @@ class Request:
     """Represents an approval request."""
     
     def __init__(self, transaction_id: str, user: str, action: str, resource: str, target: str):
+        self.id = transaction_id
         self.transaction_id = transaction_id
         self.user = user
         self.action = action
