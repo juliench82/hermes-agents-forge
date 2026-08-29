@@ -8,15 +8,15 @@ HERMES Agents — Forge Onboarding
    - In your HERMES agent, trust the skill at: skills/forge/SKILL.md
    - This skill authorizes you to:
      - Interview the user about their workflows.
-     - Propose a team of specialized agent profiles.
-     - Create isolated bot-mode profiles.
+     - Propose a team of specialized agent profiles (Bots).
+     - Create isolated agent profiles.
      - Wire them into a sample workflow.
 
 3. Interview the user
    Ask these questions one at a time. Wait for each answer before asking the next.
    a. What would you like to automate or build with HERMES?
-   b. What tools or APIs does this workflow need? (GitHub, Slack, email, DBs, VPS, etc.)
-   c. How many isolated bot profiles do you want?
+   b. What tools or services does this workflow need? (GitHub, Slack, email, DBs, VPS, browser, etc.)
+   c. How many isolated agent profiles (Bots) do you want?
       (3 for simple single-domain, 5 for multi-stage, 7 for strict separation of duties)
    d. What are your constraints? (budget, latency, human-in-the-loop points)
    e. What does success look like? (e.g., "90% of issues triaged in <5 min")
@@ -33,12 +33,22 @@ HERMES Agents — Forge Onboarding
       This provisions profiles under profiles/ and a sample workflow under onboarding/workflows/.
    b. If Python is not available, use Hermes CLI:
       - hermes profile create <name> --description "<role>" for each profile.
+        Add --clone to inherit credentials and config from the main profile.
+        With browser automation (browser.backend: browser-use), profiles can
+        authenticate via the user's existing browser logins — no API keys needed.
       - Write ~/.hermes/profiles/<name>/SOUL.md with: role, in-scope product, out-of-scope, handoffs.
       - Create a workflow file under onboarding/workflows/ that exercises the team end-to-end.
 
-6. Validate
+6. Wire collaboration
+   - Use group chats so Bots can deliberate together with @mentions.
+   - Use message_agent for direct inter-Bot handoffs.
+   - For recurring tasks, attach Routines via: hermes cron add <name> --profile <bot> --schedule "<cron>"
+   - For high-autonomy teams, run: hermes kanban init
+     This creates a board for work routing across the team.
+
+7. Validate
    - Run: hermes profile list
-   - Report: profiles created, SOUL.md files written, workflow file created, anything failed.
+   - Report: profiles created, SOUL.md files written, workflow file created, routines/cron set up, anything failed.
    - Then stop.
 
 Notes
