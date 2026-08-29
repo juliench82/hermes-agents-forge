@@ -1,57 +1,65 @@
-HERMES Agents — Forge Onboarding
+# HERMES-Forge Agent Instructions
 
-1. Read the product spec
-   - Open: HERMES.md in this repo.
-   - This describes the interview → team design → profile provisioning flow.
+## Phase 1: User Interview
 
-2. Trust the Forge skill
-   - In your HERMES agent, trust the skill at: skills/forge/SKILL.md
-   - This skill authorizes you to:
-     - Interview the user about their workflows.
-     - Propose a team of specialized agent profiles (Bots).
-     - Create isolated agent profiles.
-     - Wire them into a sample workflow.
+Ask the user these questions in order:
 
-3. Interview the user
-   Ask these questions one at a time. Wait for each answer before asking the next.
-   a. What would you like to automate or build with HERMES?
-   b. What tools or services does this workflow need? (GitHub, Slack, email, DBs, VPS, browser, etc.)
-   c. How many isolated agent profiles (Bots) do you want?
-      (3 for simple single-domain, 5 for multi-stage, 7 for strict separation of duties)
-   d. What are your constraints? (budget, latency, human-in-the-loop points)
-   e. What does success look like? (e.g., "90% of issues triaged in <5 min")
+1. **Domain**: What domain or project are you working in? (e.g., "SaaS startup", "XRPL blockchain", "research paper")
+2. **Goals**: What outcomes do you want from this agent team? (e.g., "daily market digest", "PR reviews", "code deployment")
+3. **Roles**: Which specialist roles do you need? Suggest:
+   - Researcher (gathers evidence from web, docs, GitHub)
+   - Coder (implements features, runs tests, deploys)
+   - Reviewer (challenges assumptions, security audits)
+   - Coordinator (synthesizes outputs, manages handoffs)
+4. **Tools**: Which capabilities should each bot have?
+   - Browser (real-profile or sandboxed?)
+   - Terminal (local or Docker?)
+   - MCP servers (GitHub, Graphiti, etc.)
+5. **Models**: Which model per bot? (e.g., Opus for reasoning, Sonnet for speed, GPT-5 for coding)
 
-4. Design the team
-   Based on the answers, propose a minimal team as a table:
-   | Profile | Role | Responsibility | Allowed actions | Handoffs |
-   Present the table and ask: "Create these N profiles?"
+## Phase 2: Team Proposal
 
-5. Provision the team
-   On confirmation, create each profile:
-   a. If Python is available, run:
-      python -m runtime.onboarding_wizard
-      This provisions profiles under profiles/ and a sample workflow under onboarding/workflows/.
-   b. If Python is not available, use Hermes CLI:
-      - hermes profile create <name> --description "<role>" for each profile.
-        Add --clone to inherit credentials and config from the main profile.
-        With browser automation (browser.backend: browser-use), profiles can
-        authenticate via the user's existing browser logins — no API keys needed.
-      - Write ~/.hermes/profiles/<name>/SOUL.md with: role, in-scope product, out-of-scope, handoffs.
-      - Create a workflow file under onboarding/workflows/ that exercises the team end-to-end.
+Present this summary and wait for explicit confirmation:
 
-6. Wire collaboration
-   - Use group chats so Bots can deliberate together with @mentions.
-   - Use message_agent for direct inter-Bot handoffs.
-   - For recurring tasks, attach Routines via: hermes cron add <name> --profile <bot> --schedule "<cron>"
-   - For high-autonomy teams, run: hermes kanban init
-     This creates a board for work routing across the team.
+```
+Proposed team:
+- @researcher: Claude Opus, browser + web tools, GitHub MCP
+- @coder: GPT-5, terminal + file tools, Docker sandbox
+- @reviewer: Claude Sonnet, security-audit skill, GitHub MCP
 
-7. Validate
-   - Run: hermes profile list
-   - Report: profiles created, SOUL.md files written, workflow file created, routines/cron set up, anything failed.
-   - Then stop.
+Each bot gets:
+- Isolated profile (~/.hermes/profiles/<name>/)
+- Real browser profile (your logins)
+- Bot Mode protocol (can message each other)
 
-Notes
-- Do not manually edit files under profiles/; use --refine to adjust.
-- To re-run or adjust your team: python -m runtime.onboarding_wizard --refine
-- The compiler/ directory is a backend utility, not part of this flow.
+Proceed? [y/N]
+```
+
+## Phase 3: Provisioning
+
+On confirmation, execute:
+
+1. Create profiles:
+   ```bash
+   hermes profile create researcher --description "Gathers evidence from web, docs, GitHub"
+   hermes profile create coder --description "Implements features, runs tests, deploys"
+   hermes profile create reviewer --description "Security audits, challenges assumptions"
+   ```
+
+2. Configure each profile:
+   - Set `agent.bot_mode_protocol: true`
+   - Set `browser.use_real_profile: true`
+   - Install role-specific skills
+   - Pin model per profile
+
+3. Inject teammate roster into each Bot Chat system prompt.
+
+4. Present completion message with next steps.
+
+---
+
+## References
+
+- HERMES.md: Core HERMES setup and capabilities
+- skills/forge/SKILL.md: Executable provisioning skill
+- runtime/: Profile creation and configuration code
