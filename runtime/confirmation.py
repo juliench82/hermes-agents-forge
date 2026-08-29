@@ -36,19 +36,19 @@ class ApprovalGateway:
         self._requests[transaction_id] = req
         return req
     
-    def approve(self, transaction_id: str) -> bool:
+    def approve(self, transaction_id: str) -> Request:
         if transaction_id in self._requests:
             self._requests[transaction_id].status = "approved"
             self._requests[transaction_id].approved = True
-            return True
-        return False
+            return self._requests[transaction_id]
+        return None
     
-    def deny(self, transaction_id: str) -> bool:
+    def deny(self, transaction_id: str) -> Request:
         if transaction_id in self._requests:
             self._requests[transaction_id].status = "denied"
             self._requests[transaction_id].denied = True
-            return True
-        return False
+            return self._requests[transaction_id]
+        return None
     
     def is_approved(self, transaction_id: str) -> bool:
         req = self._requests.get(transaction_id)
