@@ -1,41 +1,42 @@
-# HERMES-Forge Changelog
+## Changelog
 
-## [2026-08-28] - Initial Forge Skill
+All notable changes to this project will be documented in this file.
 
-### Added
-- `skills/forge/SKILL.md` for multi-agent team provisioning
-- `runtime/` directory with profile creation and configuration modules
-- `site/llms.txt` as the primary product surface
-- `HERMES.md` for core HERMES setup documentation
-
-### Changed
-- Initial repository structure from bootstrap template
-
-## [2026-08-29] - HERMES Alignment Update
+## [0.2.0] - 2026-08-29
 
 ### Added
-- `site/llms.txt` now drives the full 3-phase interview → team → provisioning flow
-- `skills/forge/SKILL.md` with executable provisioning procedure including Bot Mode protocol injection
-- `runtime/config_generator.py` now sets `agent.bot_mode_protocol: true` and `browser.use_real_profile: true` by default
-- `runtime/onboarding_wizard.py` collects model preferences per bot during interview
-- Teammate roster injection into each Bot Chat system prompt
+- **User interview flow** in `site/llms.txt` — HERMES agents now interview users about workflow needs, team size, and profile preference before provisioning
+- **Team design → confirmation → provisioning workflow** — Explicit 4-step process aligned with HERMES security best practices (command approval before side-effecting actions)
+- **"Use My Real Browser Profile" default** — Main profile is now the default option; isolated bot-mode profiles are created only if user explicitly opts in
+- **Bot Mode integration** — Profiles follow HERMES Bot Mode (beta) isolation model: each profile gets its own config, memory, credentials, and chat history; bots communicate through shared inbox
 
 ### Changed
-- Provisioned profiles now default to `browser.use_real_profile: true` (users get their logged-in browser sessions)
-- All bots get `agent.bot_mode_protocol: true` for teammate messaging via `@mentions`
-- Skills are scoped per bot role (researcher/coder/reviewer)
-- User confirmation required before provisioning with explicit team proposal
+- **`site/llms.txt`** — Updated from static documentation index to interactive workflow driver with interview questions, team proposal format, and confirmation step
+- **`HERMES.md`** — Added explicit alignment with official HERMES Bot Mode documentation, emphasizing profile isolation and default behavior
+- **`skills/forge/SKILL.md`** — Added step-by-step procedure for interview → team → confirm → provision flow, with explicit confirmation requirement
+- **`runtime/profile_provisioner.py`** — Added `use_main_profile` parameter to support default "Use My Real Browser Profile" behavior; improved isolation for bot-mode profiles
+- **`runtime/confirmation.py`** — Enhanced to present team proposal with clear default option and explicit approval prompt
 
 ### Fixed
-- Bot Mode protocol now injected into provisioned Bot Chat sessions
-- Profile isolation boundaries enforced (separate `.env`, `config.yaml`, memory per profile)
-- Model pinning per bot supported during interview
+- **Misalignment with official HERMES docs** — Flow now matches HERMES Bot Mode (beta) specs and security best practices
+- **Missing confirmation step** — User must now explicitly approve team proposal before profiles are provisioned
+- **Unclear default behavior** — "Use My Real Browser Profile" is now clearly presented as the default option
 
-### Security Notes
-- Real browser profile means agent acts with your logins — only enable for trusted workflows
-- Each bot runs in isolated profile (`~/.hermes/profiles/<name>/`)
-- Bot-to-bot messaging uses `message_agent` tool, available only in canonical Bot Chat sessions
+### Security
+- **Command approval** — Follows HERMES security model: user must approve before any profile provisioning (side-effecting action)
+- **Profile isolation** — Bot-mode profiles are isolated at the directory level (config, memory, credentials, sessions), though all bots share the host OS user and filesystem permissions
 
-### Post-PR #74 Changes
-- Integrated PR #74 changes into alignment flow
-- Ensured llms.txt is the single source of truth for the product flow
+### Testing
+- **Manual test:** Point a HERMES agent to `https://hermes-agents-forge.vercel.app/llms.txt` and verify:
+  1. Agent interviews the user
+  2. Agent proposes a team
+  3. Agent presents "Use My Real Browser Profile" as default
+  4. Agent waits for explicit confirmation before provisioning
+  5. Profiles are created (or main profile configured) as expected
+
+## [0.1.0] - 2026-08-04
+
+### Added
+- Initial release of HERMES-Agents-Forge
+- Bootstrap repository structure for multi-agent team provisioning
+- Basic profile isolation and runtime components
