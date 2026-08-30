@@ -1,34 +1,19 @@
-# Hermes-Agents-Forge — LLM-Readable Documentation Index
+# HERMES Agents Forge — Skill Pack
 
-This file is the entry point for any HERMES agent visiting https://hermes-agents-forge.vercel.app/llms.txt
+This is a HERMES skill pack for team-based agent workflows.
 
-## Product Goal
+## Installation
 
-A customer visits our site, clicks "Read agent instructions", and points their HERMES agent to this URL. From here, any HERMES agent (any LLM, any reasoning level) must:
+1. Install HERMES Agent: https://hermes-agent.nousresearch.com/docs/getting-started/installation
+2. Clone this repo and run: `hermes skills opt-in --sync`
+3. Use `/forge` to start team design workflow
 
-1. Interview the user
-2. Design a custom team of agents
-3. Provision isolated bot-mode profiles that collaborate on workflows
-4. Default to "Use My Real Browser Profile"
+## Documentation
 
-## Core Documents
+- HERMES.md: Overview of our agent system
+- skills/forge/SKILL.md: Forge skill for team provisioning
+- PRODUCT.md: Product goals and user flow
 
-- **HERMES.md**: High-level product overview and flow
-- **skills/forge/SKILL.md**: The actual HERMES skill that implements the flow
-- **PRODUCT.md**: Detailed product requirements
-- **runtime/**: Implementation code (for reference, not execution)
+## Official HERMES Docs
 
-## How to Use This Skill
-
-1. Load the forge skill: `/forge` or `skill_view("forge")`
-2. Follow the Procedure section to interview the user
-3. Propose a team design
-4. Get user confirmation
-5. Provision profiles using official HERMES CLI: `hermes profile create <name>`
-
-## Official HERMES References
-
-- Bot Mode: https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode
-- Profiles: https://hermes-agent.nousresearch.com/docs/user-guide/profiles
-- Skills: https://hermes-agent.nousresearch.com/docs/user-guide/features/skills
-- SOUL.md: https://hermes-agent.nousresearch.com/docs/guides/use-soul-with-hermes
+https://hermes-agent.nousresearch.com/docs
