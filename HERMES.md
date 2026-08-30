@@ -1,48 +1,66 @@
-# HERMES.md — Hermes-Agents-Forge Integration Guide
+# HERMES Agents Forge
 
-## What is Hermes-Agents-Forge?
+## ⚠️ Important: Forge Extensions
 
-Hermes-Agents-Forge is a **skill-based onboarding system** for HERMES agents. It teaches any HERMES agent (via the `/forge` skill) how to:
+The interview → team design → profile provisioning flow described in this project is **not** part of core HERMES Agent.
+It is implemented as a **skill pack** that extends HERMES with:
+- Pre-interview wizard (external to HERMES)
+- Dynamic profile provisioning (via runtime/ Python modules)
+- Isolated bot-mode profiles (using HERMES Bot Mode as foundation)
 
-1. Interview users about their automation needs
-2. Design custom multi-agent teams
-3. Provision isolated bot-mode profiles using official HERMES CLI
+For official HERMES documentation, see: https://hermes-agent.nousresearch.com/docs
 
-## How It Works (Official HERMES Primitives)
+---
 
-| Forge Concept | Official HERMES Primitive | CLI Command |
-|---------------|--------------------------|-------------|
-| "Bot-mode profile" | HERMES Profile | `hermes profile create <name>` |
-| "Isolated agent" | Profile with own config, memory, skills | `hermes -p <name> chat` |
-| "Team roster" | Bot Mode UI over profiles | Desktop Bots tab |
-| "Agent persona" | SOUL.md | `~/.hermes/profiles/<name>/SOUL.md` |
-| "Agent capabilities" | Skills | `hermes -p <name> skills install <skill>` |
+## Our Product Goal
 
-## User Flow
+A customer visits our site, clicks "Read agent instructions", and points their HERMES agent to:
+https://hermes-agents-forge.vercel.app/llms.txt
 
-1. User visits site → clicks "Read agent instructions"
-2. User points HERMES agent to `https://hermes-agents-forge.vercel.app/llms.txt`
-3. HERMES agent loads the `/forge` skill
-4. Skill executes: interview → team design → confirmation → profile provisioning
-5. Result: isolated profiles under `~/.hermes/profiles/<name>/`
+From there, any HERMES agent (any LLM, any reasoning level) must:
+1. Interview the user
+2. Design a custom team of agents
+3. Provision isolated bot-mode profiles that collaborate on workflows
 
-## Default: "Use My Real Browser Profile"
+## How It Works
 
-Before provisioning, the skill asks:
-> "Do you want to use your real browser profile for web automation, or create isolated browser profiles for each agent?"
+### Step 1: Read HERMES.md / Trust Forge Skill
 
-**Default**: "Use My Real Browser Profile" — agents share the user's existing browser session for web automation tasks.
+The user's HERMES agent reads this file and the forge skill at:
+https://hermes-agents-forge.vercel.app/skills/forge/SKILL.md
 
-This is a **user preference**, not an official HERMES feature. Document it clearly in the skill's interview step.
+### Step 2: Interview User
 
-## Official HERMES Documentation
+The forge skill conducts an interview to understand:
+- User's goals and workflows
+- Required specialist roles
+- Collaboration patterns
+- Tool and API needs
 
-The official HERMES documentation is available at:
-- Main docs: https://hermes-agent.nousresearch.com/docs/
-- Full documentation bundle: https://hermes-agent.nousresearch.com/docs/assets/files/llms-full-f963828d9e90cf8f351ea9497445e567.txt
+### Step 3: Propose Team
 
-Key sections referenced by this project:
-- Bot Mode: https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode
-- Profiles: https://hermes-agent.nousresearch.com/docs/user-guide/profiles
-- Skills: https://hermes-agent.nousresearch.com/docs/user-guide/features/skills
-- SOUL.md: https://hermes-agent.nousresearch.com/docs/guides/use-soul-with-hermes
+Based on interview responses, the forge skill proposes:
+- Team composition (specialist bot-mode profiles)
+- Role definitions and responsibilities
+- Collaboration workflows
+- Integration points
+
+### Step 4: User Confirmation
+
+User reviews and confirms the proposed team design.
+
+### Step 5: Provision Isolated Bot-Mode Profiles
+
+The runtime provisions:
+- Isolated bot-mode profiles per specialist role
+- Shared context and memory across team
+- Tool integrations and API access
+- Collaboration channels and routines
+
+## Default: Use My Real Browser Profile
+
+All provisioning defaults to "Use My Real Browser Profile" — the user's existing browser session and credentials are used unless they explicitly opt for isolated profiles.
+
+## Architecture
+
+See PRODUCT.md for detailed architecture and runtime/ for implementation.
