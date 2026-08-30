@@ -2,6 +2,13 @@
 
 Python modules for HERMES-Agents-Forge profile provisioning, isolation, and onboarding.
 
+## Context
+
+This runtime is designed for use with **HERMES Agent's browser automation** capabilities.
+When a HERMES agent browses `site/llms.txt`, it executes the forge workflow which calls these runtime modules to provision profiles.
+
+HERMES browser automation docs: https://hermes-agent.nousresearch.com/docs/user-guide/features/browser
+
 ## Modules
 
 - `onboarding_wizard.py`: Interview flow and user input collection
@@ -36,6 +43,15 @@ python runtime/onboarding_wizard.py
 ```
 
 This generates HERMES config files for manual import.
+
+## Browser Automation Integration
+
+When HERMES agent browses `site/llms.txt`:
+1. Agent reads agent-directed instructions
+2. Agent loads forge skill
+3. Agent runs `/forge` workflow
+4. Runtime modules provision profiles using HERMES browser tools
+5. Default: "Use My Real Browser Profile" for user's existing session
 
 ## Setup
 
