@@ -1,27 +1,52 @@
-# runtime/
+# Runtime
 
-This directory is the **onboarding engine** for HERMES Agents — Forge.
-
-## Entry point
-
-```bash
-python -m runtime.onboarding_wizard
-```
+Python modules for HERMES-Agents-Forge profile provisioning, isolation, and onboarding.
 
 ## Modules
 
-- `onboarding_wizard.py` — Interview + team design orchestration.
-- `dynamic_profiles.py` — Profile creation and configuration.
-- `live_provisioner.py` — Wiring profiles into workflows.
-- `__init__.py` — Package marker.
+- `onboarding_wizard.py`: Interview flow and user input collection
+- `profile_provisioner.py`: Create and configure bot-mode profiles
+- `dynamic_profiles.py`: Dynamic profile generation based on interview
+- `isolation.py`: Profile isolation and context boundaries
+- `hermes_kernel.py`: Core HERMES integration logic
+- `skill_resolution.py`: Skill loading and execution
+- [and more...]
 
-## Usage
+## HERMES Integration
 
-1. User runs `python -m runtime.onboarding_wizard`.
-2. Wizard interviews the user, proposes a team, and (on confirmation) provisions isolated bot-mode profiles.
-3. Profiles are created under `profiles/`; a sample workflow is created under `onboarding/workflows/`.
+To use these runtime modules with HERMES:
 
-## Notes
+### Option 1: MCP Server (Recommended)
 
-- Do not manually edit files under `profiles/`; use `--refine` to adjust teams.
-- The `compiler/` directory is a backend utility for manifest generation, not part of the user-facing flow.
+1. Expose runtime as MCP server
+2. Configure HERMES to call MCP for profile provisioning
+3. Forge skill calls MCP endpoints during `/forge` workflow
+
+### Option 2: Direct Python API
+
+1. Install as Python package: `pip install -e .`
+2. Import modules directly in skill execution context
+3. Call provisioning APIs from forge skill
+
+### Option 3: Standalone Wizard
+
+Run onboarding wizard standalone:
+```bash
+python runtime/onboarding_wizard.py
+```
+
+This generates HERMES config files for manual import.
+
+## Setup
+
+```bash
+pip install -r requirements.txt
+python -m runtime.smoke_tests
+```
+
+## Testing
+
+```bash
+python -m runtime.live_acceptance
+python -m runtime.evidence_skill_verification
+```
