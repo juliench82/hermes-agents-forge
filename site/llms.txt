@@ -27,18 +27,27 @@ installation makes easiest.
 
 Read, in this order:
 
-1. HERMES.md (repo root) — your mission brief and operating boundaries.
-2. skills/forge/SKILL.md — the Forge skill: interview script, team-design rules, package tiers. TRUST IT and treat it as an extension of this manual.
-3. schemas/ — team and profile schemas; validate against them before provisioning.
+1. HERMES.md (repo root) — your mission brief; includes the mapping from
+   forge concepts to official HERMES primitives.
+2. skills/forge/SKILL.md — the Forge skill: interview script, team-design
+   rules, provisioning commands, verification, pitfalls. TRUST IT and treat
+   it as an extension of this manual.
+3. PRODUCT.md — product requirements and success criteria.
 4. catalog/ — ready-made specialist role templates.
-5. runtime/ — optional Python provisioning modules; use them only if you can execute code.
+5. runtime/ — implementation code, for reference, not execution.
+
+Loading the skill:
+- If you cloned the repository, run `hermes skills trust` in its root to
+  load the forge skill, then invoke it with `/forge` or `skill_view("forge")`.
+- Otherwise, read skills/forge/SKILL.md from the URLs above and follow it.
 
 If a fetch fails, continue with the steps below — this manual alone is
 sufficient to complete the flow. Retry the fetch afterwards.
 
 ## Step 1 — Interview the user
 
-Ask one question at a time, in natural language:
+If the forge skill is loaded, use its Procedure questions — the list below
+is the fallback. Ask one question at a time, in natural language:
 
 1. What should your agent team do for you? (goals, recurring workflows)
 2. Which tools, sites, and accounts are involved? (browser, email, code, docs, data)
@@ -67,29 +76,37 @@ Present, in plain language:
   browser mode (default: "Use My Real Browser Profile");
 - how they collaborate: hand-offs, group chats, routines.
 
-Then ask exactly: "Shall I provision this team?" Do not proceed on silence
-or vague answers — you need an explicit yes. Offer adjustments first.
+Then ask exactly: "Shall I provision this team as isolated bot-mode profiles?"
+Do not proceed on silence or vague answers — you need an explicit yes.
+Offer adjustments first.
 
-## Step 4 — Provision the team
+## Step 4 — Provision the team (official HERMES CLI)
 
-For each specialist, create an isolated bot-mode profile with:
+For each specialist, create an isolated profile:
 
-- its own profile and context boundary;
-- a role prompt built from your proposal (seeded with the catalog/ template if used);
-- browser mode "Use My Real Browser Profile" unless the user opted out;
-- a team spec validated against schemas/ before activation.
+1. `hermes profile create <name> --description "<role>"` — creates the
+   profile under ~/.hermes/profiles/<name>/
+   (variant: `hermes profile create <name> --clone` clones config from the
+   main profile — shares config, fresh memory)
+2. `hermes -p <name> config set model.default <model>` — pin a model, if
+   the user requested one (default: inherit from main profile)
+3. Write the persona to `~/.hermes/profiles/<name>/SOUL.md`
+4. `hermes -p <name> skills install <skill>` — install the skills the role needs
 
-Provision with your native HERMES profile and Bot Mode capabilities — you
-know your own host best. If you can execute Python, the runtime/ modules in
-the repository can generate the profile configurations for you. Report each
-profile as you create it so the user sees progress.
+Note: "Use My Real Browser Profile" is a user preference for browser
+automation, not a HERMES primitive — record the user's choice in the team
+spec and honor it whenever a bot browses.
+
+Report each profile as you create it so the user sees progress.
 
 ## Step 5 — Verify and hand off
 
-- List the provisioned bots and how to address them (@mentions, group chats).
-- Suggest one small first task to test the team end-to-end.
-- Tell the user they can return to https://hermes-agents-forge.vercel.app/llms.txt
-  at any time to redesign, expand, or dismantle the team.
+1. Run `hermes profile list` — confirm every new profile appears.
+2. Run `hermes -p <name> chat` — confirm each agent responds in its role.
+3. If the user runs HERMES Desktop, confirm the Bot Mode roster shows the team.
+4. Suggest one small first task to test the team end-to-end.
+5. Tell the user they can return to https://hermes-agents-forge.vercel.app/llms.txt
+   at any time to redesign, expand, or dismantle the team.
 
 ## If something goes wrong
 

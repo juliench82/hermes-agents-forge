@@ -1,66 +1,48 @@
-# HERMES Agents Forge
+# HERMES.md — Hermes-Agents-Forge Integration Guide
 
-## ⚠️ Important: Forge Extensions
+## What is Hermes-Agents-Forge?
 
-The interview → team design → profile provisioning flow described in this project is **not** part of core HERMES Agent.
-It is implemented as a **skill pack** that extends HERMES with:
-- Pre-interview wizard (external to HERMES)
-- Dynamic profile provisioning (via runtime/ Python modules)
-- Isolated bot-mode profiles (using HERMES Bot Mode as foundation)
+Hermes-Agents-Forge is a **skill-based onboarding system** for HERMES agents. It teaches any HERMES agent (via the `/forge` skill) how to:
 
-For official HERMES documentation, see: https://hermes-agent.nousresearch.com/docs
+1. Interview users about their automation needs
+2. Design custom multi-agent teams
+3. Provision isolated bot-mode profiles using official HERMES CLI
 
----
+## How It Works (Official HERMES Primitives)
 
-## Our Product Goal
+| Forge Concept | Official HERMES Primitive | CLI Command |
+|---------------|--------------------------|-------------|
+| "Bot-mode profile" | HERMES Profile | `hermes profile create <name>` |
+| "Isolated agent" | Profile with own config, memory, skills | `hermes -p <name> chat` |
+| "Team roster" | Bot Mode UI over profiles | Desktop Bots tab |
+| "Agent persona" | SOUL.md | `~/.hermes/profiles/<name>/SOUL.md` |
+| "Agent capabilities" | Skills | `hermes -p <name> skills install <skill>` |
 
-A customer visits our site, clicks "Read agent instructions", and points their HERMES agent to:
-https://hermes-agents-forge.vercel.app/llms.txt
+## User Flow
 
-From there, any HERMES agent (any LLM, any reasoning level) must:
-1. Interview the user
-2. Design a custom team of agents
-3. Provision isolated bot-mode profiles that collaborate on workflows
+1. User visits site → clicks "Read agent instructions"
+2. User points HERMES agent to `https://hermes-agents-forge.vercel.app/llms.txt`
+3. HERMES agent loads the `/forge` skill
+4. Skill executes: interview → team design → confirmation → profile provisioning
+5. Result: isolated profiles under `~/.hermes/profiles/<name>/`
 
-## How It Works
+## Default: "Use My Real Browser Profile"
 
-### Step 1: Read HERMES.md / Trust Forge Skill
+Before provisioning, the skill asks:
+> "Do you want to use your real browser profile for web automation, or create isolated browser profiles for each agent?"
 
-The user's HERMES agent reads this file and the forge skill at:
-https://hermes-agents-forge.vercel.app/skills/forge/SKILL.md
+**Default**: "Use My Real Browser Profile" — agents share the user's existing browser session for web automation tasks.
 
-### Step 2: Interview User
+This is a **user preference**, not an official HERMES feature. Document it clearly in the skill's interview step.
 
-The forge skill conducts an interview to understand:
-- User's goals and workflows
-- Required specialist roles
-- Collaboration patterns
-- Tool and API needs
+## Official HERMES Documentation
 
-### Step 3: Propose Team
+The official HERMES documentation is available at:
+- Main docs: https://hermes-agent.nousresearch.com/docs/
+- Full documentation bundle: https://hermes-agent.nousresearch.com/docs/assets/files/llms-full-f963828d9e90cf8f351ea9497445e567.txt
 
-Based on interview responses, the forge skill proposes:
-- Team composition (specialist bot-mode profiles)
-- Role definitions and responsibilities
-- Collaboration workflows
-- Integration points
-
-### Step 4: User Confirmation
-
-User reviews and confirms the proposed team design.
-
-### Step 5: Provision Isolated Bot-Mode Profiles
-
-The runtime provisions:
-- Isolated bot-mode profiles per specialist role
-- Shared context and memory across team
-- Tool integrations and API access
-- Collaboration channels and routines
-
-## Default: Use My Real Browser Profile
-
-All provisioning defaults to "Use My Real Browser Profile" — the user's existing browser session and credentials are used unless they explicitly opt for isolated profiles.
-
-## Architecture
-
-See PRODUCT.md for detailed architecture and runtime/ for implementation.
+Key sections referenced by this project:
+- Bot Mode: https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode
+- Profiles: https://hermes-agent.nousresearch.com/docs/user-guide/profiles
+- Skills: https://hermes-agent.nousresearch.com/docs/user-guide/features/skills
+- SOUL.md: https://hermes-agent.nousresearch.com/docs/guides/use-soul-with-hermes
