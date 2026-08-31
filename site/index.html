@@ -33,8 +33,8 @@
         <h1>Forge agent teams that <em>ship.</em></h1>
         <p class="lede">A native bootstrap repository for Hermes agents to provision isolated, multi-profile teams built for real-world workflows.</p>
         <div class="hero-actions">
-          <a class="button button-primary forge-sound" href="https://github.com/juliench82/hermes-agents-forge" target="_blank" rel="noreferrer">Explore the forge <span>↗</span></a>
-          <a class="button button-ghost forge-sound" href="llms.txt">Read agent instructions <span>→</span></a>
+          <a class="button button-ghost forge-sound" href="https://github.com/juliench82/hermes-agents-forge" target="_blank" rel="noreferrer">Explore the forge <span>↗</span></a>
+          <a class="button button-primary forge-sound" href="llms.txt">Read agent instructions <span>→</span></a>
         </div>
         <div class="hero-meta"><span>Open source</span><i></i><span>Multi-profile by design</span><i></i><span>Workflow ready</span></div>
       </div>
@@ -51,16 +51,21 @@
     <section class="capabilities shell">
       <div class="section-heading reveal"><p class="eyebrow">01 / What gets forged</p><h2>One repository.<br><em>Many operators.</em></h2></div>
       <div class="cards">
-        <article class="card reveal"><span class="card-number">01</span><div class="card-icon">◎</div><h3>Native bootstrap</h3><p>Point Hermes at the repo and trigger a consistent, discoverable provisioning flow.</p></article>
+        <article class="card reveal"><span class="card-number">01</span><div class="card-icon">◎</div><h3>Native bootstrap</h3><p>Point your Hermes agent at llms.txt — one URL starts the entire provisioning flow.</p></article>
         <article class="card reveal"><span class="card-number">02</span><div class="card-icon">◈</div><h3>Isolated profiles</h3><p>Give each role its own context, capabilities, and boundaries without losing the team view.</p></article>
         <article class="card reveal"><span class="card-number">03</span><div class="card-icon">⌁</div><h3>Real workflows</h3><p>Turn coordinated agents into practical systems for research, operations, and delivery.</p></article>
       </div>
     </section>
 
-    <section class="protocol shell"><div class="protocol-copy reveal"><p class="eyebrow">02 / The protocol</p><h2>From prompt<br>to <em>production.</em></h2><p>Hermes Agents for Forge is the launchpad: a clear contract between your agent, its profiles, and the work they execute.</p><a class="text-link forge-sound" href="llms.txt">Inspect the bootstrap contract <span>↗</span></a></div><div class="terminal reveal"><div class="terminal-bar"><span></span><span></span><span></span><label>hermes / forge-init</label></div><pre><code><span class="muted">$</span> curl -fsSL <span class="accent">https://hermes-agent.nousresearch.com/install.sh</span> | bash
-<span class="muted">$</span> hermes setup --portal
-<span class="muted">$</span> hermes skills trust
-<span class="muted">$</span> python -m compiler --manifest bootstrap.manifest.json</code></pre></div></section>
+    <section class="protocol shell"><div class="protocol-copy reveal"><p class="eyebrow">02 / The protocol</p><h2>From prompt<br>to <em>production.</em></h2><p>Hermes Agents for Forge is the launchpad: a clear contract between your agent, its profiles, and the work they execute.</p><a class="text-link forge-sound" href="llms.txt">Inspect the bootstrap contract <span>↗</span></a></div><div class="terminal reveal"><div class="terminal-bar"><span></span><span></span><span></span><label>hermes / session</label></div><pre><code><span class="muted">$</span> hermes
+you: Read and follow the agent instructions at
+        <span class="accent">https://hermes-agents-forge.vercel.app/llms.txt</span>
+
+<span class="green">✓</span> operating manual loaded
+<span class="green">✓</span> interview complete — package 5 proposed
+<span class="green">✓</span> team confirmed · profiles provisioned
+
+<span class="muted">→</span> <span class="accent">5</span> agents online <span class="pulse">●</span></code></pre></div></section>
   </main>
 
   <footer class="footer shell"><img src="public/logo.png" alt="Hermes Agents for Forge" /><span>Built for agents that do more.</span><a href="https://github.com/juliench82/hermes-agents-forge" target="_blank" rel="noreferrer">View source ↗</a></footer>
