@@ -23,21 +23,23 @@ Use this skill when:
 
 Ask the user:
 1. What workflows do you want to automate? (e.g., research, coding, content creation, customer support)
-2. How many specialized agents do you need? (1–5 recommended for starters)
+2. How complex is your work? (single project or several? how many moving parts?)
 3. What models should each agent use? (default: inherit from your main profile)
 4. Should agents share credentials or have isolated API keys? (default: shared)
 
 ### Step 2: Design the Team
 
-Based on the interview, propose a team structure:
-- **Agent 1**: `<name>` — `<role>` (e.g., "Researcher — reads docs, writes summaries")
-- **Agent 2**: `<name>` — `<role>` (e.g., "Coder — implements features, writes tests")
-- Include model pins, skills, and SOUL.md for each
+Select the package tier:
+- **Package 3** — basic: 3 specialists; single-domain, simple workflows.
+- **Package 5** — intermediate: 5 specialists; multi-domain, needs analysis and review.
+- **Package 7** — complex: 7 specialists; multi-project, coordination-heavy.
+
+Pick the smallest package that covers the user's needs. Use catalog/ templates where they fit and customize names and duties to the user's answers.
 
 ### Step 3: Get User Confirmation
 
 Present the team proposal and ask for explicit confirmation:
-> "Shall I provision these agents as isolated bot-mode profiles? This will create separate Hermes profiles under `~/.hermes/profiles/<name>/`."
+> "Shall I provision these agents as isolated bot-mode profiles? This will create separate Hermes profiles under `~/.hermes/profiles/<name>/."
 
 Wait for user approval before proceeding.
 
