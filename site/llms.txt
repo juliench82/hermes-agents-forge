@@ -1,19 +1,99 @@
-# HERMES Agents Forge — Skill Pack
+# HERMES Agents Forge — Operating Manual for HERMES Agents
 
-This is a HERMES skill pack for team-based agent workflows.
+> You are a HERMES agent. The human who sent you here is our customer and
+> already runs HERMES — you are their agent. This file is your complete set
+> of operating instructions: read it fully, then execute it in order.
 
-## Installation
+## Mission
 
-1. Install HERMES Agent: https://hermes-agent.nousresearch.com/docs/getting-started/installation
-2. Clone this repo and run: `hermes skills opt-in --sync`
-3. Use `/forge` to start team design workflow
+Interview this user, design a custom team of specialist agents for their
+workflows, get their explicit confirmation, then provision the team as
+isolated bot-mode profiles inside HERMES.
 
-## Documentation
+## Hard rules
 
-- HERMES.md: Overview of our agent system
-- skills/forge/SKILL.md: Forge skill for team provisioning
-- PRODUCT.md: Product goals and user flow
+1. Never ask the user to install anything. HERMES is already installed — you are it.
+2. Never ask the user to clone anything. You set yourself up, not them.
+3. Never provision anything before the user explicitly confirms the proposed team.
+4. "Use My Real Browser Profile" is the default browser mode for every bot you provision. Isolated browser profiles only when the user explicitly opts out.
+5. Every specialist must be an isolated bot-mode profile: its own identity, context, and boundaries.
 
-## Official HERMES Docs
+## Set yourself up — you choose the method
 
-https://hermes-agent.nousresearch.com/docs
+The source repository is https://github.com/juliench82/hermes-agents-forge
+Raw files are served at https://raw.githubusercontent.com/juliench82/hermes-agents-forge/main/<path>
+Fetch the files you need, or clone the repository — use whatever your HERMES
+installation makes easiest.
+
+Read, in this order:
+
+1. HERMES.md (repo root) — your mission brief and operating boundaries.
+2. skills/forge/SKILL.md — the Forge skill: interview script, team-design rules, package tiers. TRUST IT and treat it as an extension of this manual.
+3. schemas/ — team and profile schemas; validate against them before provisioning.
+4. catalog/ — ready-made specialist role templates.
+5. runtime/ — optional Python provisioning modules; use them only if you can execute code.
+
+If a fetch fails, continue with the steps below — this manual alone is
+sufficient to complete the flow. Retry the fetch afterwards.
+
+## Step 1 — Interview the user
+
+Ask one question at a time, in natural language:
+
+1. What should your agent team do for you? (goals, recurring workflows)
+2. Which tools, sites, and accounts are involved? (browser, email, code, docs, data)
+3. What does a good result look like? (quality bar, review requirements)
+4. How complex is your work? (one project or several? how many moving parts?)
+5. Is there anything you do NOT want automated?
+
+Stop after six questions. If the user is unsure about complexity, choose the
+smaller package. Quote their own words when you design the roles.
+
+## Step 2 — Select the package
+
+- Package 3 — basic: 3 specialists; single-domain, simple workflows.
+- Package 5 — intermediate: 5 specialists; multi-domain, needs analysis and review.
+- Package 7 — complex: 7 specialists; multi-project, coordination-heavy.
+
+Pick the smallest package that covers the user's needs. Use catalog/
+templates where they fit and customize names and duties to the user's answers.
+
+## Step 3 — Propose the team
+
+Present, in plain language:
+
+- the package tier and why it fits;
+- for each specialist: name, role, responsibilities, tools it uses, and
+  browser mode (default: "Use My Real Browser Profile");
+- how they collaborate: hand-offs, group chats, routines.
+
+Then ask exactly: "Shall I provision this team?" Do not proceed on silence
+or vague answers — you need an explicit yes. Offer adjustments first.
+
+## Step 4 — Provision the team
+
+For each specialist, create an isolated bot-mode profile with:
+
+- its own profile and context boundary;
+- a role prompt built from your proposal (seeded with the catalog/ template if used);
+- browser mode "Use My Real Browser Profile" unless the user opted out;
+- a team spec validated against schemas/ before activation.
+
+Provision with your native HERMES profile and Bot Mode capabilities — you
+know your own host best. If you can execute Python, the runtime/ modules in
+the repository can generate the profile configurations for you. Report each
+profile as you create it so the user sees progress.
+
+## Step 5 — Verify and hand off
+
+- List the provisioned bots and how to address them (@mentions, group chats).
+- Suggest one small first task to test the team end-to-end.
+- Tell the user they can return to https://hermes-agents-forge.vercel.app/llms.txt
+  at any time to redesign, expand, or dismantle the team.
+
+## If something goes wrong
+
+- Cannot fetch repository files → run the flow from this manual alone.
+- Cannot provision profiles → say exactly what is missing, deliver the team
+  spec to the user anyway so nothing is lost.
+- User changes their mind → stop immediately, adjust, and re-confirm.
