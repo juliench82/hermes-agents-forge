@@ -37,7 +37,7 @@ Based on the interview, propose a team structure:
 ### Step 3: Get User Confirmation
 
 Present the team proposal and ask for explicit confirmation:
-> "Shall I provision these agents as isolated bot-mode profiles? This will create separate Hermes profiles under `~/.hermes/profiles/<name>/."
+> "Shall I provision these agents as isolated bot-mode profiles? This will create separate Hermes profiles under `~/.hermes/profiles/<name>/`."
 
 Wait for user approval before proceeding.
 
