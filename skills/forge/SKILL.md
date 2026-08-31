@@ -45,12 +45,22 @@ Wait for user approval before proceeding.
 
 ### Step 4: Provision Isolated Bot-Mode Profiles
 
+Print a checklist of all confirmed agents first, and mark each one done as
+you finish it — it is your recovery point if you are interrupted.
+
 For each confirmed agent:
 1. Run: `hermes profile create <name> --description "<role>"`
 2. Optionally clone skills: `hermes profile create <name> --clone` (shares config, fresh memory)
 3. Configure model pin (if requested): `hermes -p <name> config set model.default <model>`
-4. Write SOUL.md: `echo "<persona>" > ~/.hermes/profiles/<name>/SOUL.md`
-5. Install relevant skills: `hermes -p <name> skills install <skill>`
+4. Write a short SOUL.md (role, mission, style, boundaries — five lines is enough): `echo "<persona>" > ~/.hermes/profiles/<name>/SOUL.md`
+5. Install skills only if you know they exist — list available skills first
+   (for example `hermes skills list`) and never invent skill names. If
+   unsure, skip and tell the user skills can be added later.
+
+Batch the work: run all `hermes profile create` calls in one terminal round,
+then write all SOUL.md files, then install skills. If you lose track, run
+`hermes profile list` and provision only what is missing — never re-create
+an existing profile.
 
 ### Step 5: Default to "Use My Real Browser Profile"
 
@@ -63,13 +73,15 @@ For each confirmed agent:
 ## Verification
 
 After provisioning:
-1. Run `hermes profile list` — confirm all new profiles appear
+1. Run `hermes profile list` and count the new profiles against the
+   approved plan — a partial team is not success; provision any missing ones
 2. Run `hermes -p <name> chat` — confirm each agent responds with its role
 3. Confirm Bot Mode roster shows all new agents (if using Hermes Desktop)
 
 ## Pitfalls
 
 - **Never point two agents at the same profile** — each must have its own `~/.hermes/profiles/<name>/`
+- **Never invent skill names** — list available skills first; a rejected name is a signal to stop, not to retry with new guesses
 - **Bot Mode is a desktop UI feature** — programmatic provisioning uses `hermes profile create`, not a Bot Mode API
 - **"Use My Real Browser Profile" is not an official HERMES feature** — document it as a user preference for browser automation, not a HERMES primitive
 
