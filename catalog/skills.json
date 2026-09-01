@@ -1,0 +1,55 @@
+{
+  "schema": "forge/skills-manifest@1",
+  "updated": "2026-09-01",
+  "policy": {
+    "discovery": "hermes skills search <query> — confirm a skill exists before installing it",
+    "inspect": "hermes skills inspect <skill> — read what it does before installing",
+    "install": "hermes -p <profile> skills install <skill>",
+    "verify": "hermes -p <profile> skills list — record the inventory after install",
+    "security_gate": {
+      "tool": "NVIDIA SkillSpector",
+      "source": "https://github.com/nvidia/skillspector",
+      "rule": "Scan any skill from OUTSIDE the official HERMES Skills Hub (third-party repos, direct URLs) before install. On any risk finding: skip, report, never install from that source. Official Hub skills are exempt."
+    },
+    "never": "Never invent skill names. A rejected name means stop — not retry with new guesses."
+  },
+  "domains": {
+    "software-development": {
+      "search_terms": ["test-driven development", "systematic debugging", "code review", "software planning", "git"],
+      "trusted_packs": [
+        {
+          "name": "superpowers",
+          "source": "https://github.com/obra/superpowers",
+          "license": "MIT",
+          "note": "Agentic dev methodology pack (TDD, debugging, planning, collaboration patterns). Scan with SkillSpector and adapt to HERMES skill format before install.",
+          "verification": "unverified-in-hub — run hermes skills search superpowers first; if not on the Hub, treat as third-party and gate it"
+        }
+      ]
+    },
+    "qa-testing": {
+      "search_terms": ["testing", "qa", "regression testing", "code review"],
+      "trusted_packs": []
+    },
+    "devops": {
+      "search_terms": ["ci/cd", "github actions", "deployment", "docker", "kubernetes"],
+      "trusted_packs": []
+    },
+    "research": {
+      "search_terms": ["web research", "search", "competitive analysis", "citation"],
+      "trusted_packs": []
+    },
+    "social-media": {
+      "search_terms": ["social media", "content creation", "brand voice", "marketing"],
+      "trusted_packs": []
+    },
+    "writing": {
+      "search_terms": ["technical writing", "documentation", "editing", "copywriting"],
+      "trusted_packs": []
+    },
+    "project-coordination": {
+      "search_terms": ["project management", "kanban", "planning", "todo"],
+      "trusted_packs": []
+    }
+  },
+  "rule": "This manifest provides search terms and vetted third-party packs — never final skill names. The provisioning agent confirms existence at runtime with hermes skills search, installs, and reports found vs. not found per profile."
+}

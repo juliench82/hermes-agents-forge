@@ -1,7 +1,7 @@
 ---
 name: forge
-description: Interview users, design custom agent teams, and provision isolated bot-mode profiles
-version: 1.0.0
+description: Interview users, design custom agent teams, and provision isolated bot-mode profiles with rich personas and real skills
+version: 1.1.0
 metadata:
   hermes:
     tags: [onboarding, team-design, bot-mode]
@@ -21,11 +21,14 @@ Use this skill when:
 
 ### Step 1: Interview the User
 
-Ask the user:
-1. What workflows do you want to automate? (e.g., research, coding, content creation, customer support)
-2. How complex is your work? (single project or several? how many moving parts?)
-3. What models should each agent use? (default: inherit from your main profile)
-4. Should agents share credentials or have isolated API keys? (default: shared)
+Ask one at a time:
+1. What workflows do you want to automate?
+2. Which tools, sites, and accounts are involved?
+3. What does a good result look like? (quality bar, review requirements)
+4. How complex is your work? (one project or several? how many moving parts?)
+5. Is there anything you do NOT want automated?
+
+Keep the user's exact words — the personas will quote them.
 
 ### Step 2: Design the Team
 
@@ -34,60 +37,76 @@ Select the package tier:
 - **Package 5** — intermediate: 5 specialists; multi-domain, needs analysis and review.
 - **Package 7** — complex: 7 specialists; multi-project, coordination-heavy.
 
-Pick the smallest package that covers the user's needs. Use catalog/ templates where they fit and customize names and duties to the user's answers.
+Pick the smallest package that covers the user's needs. Specialists are
+generated from the user's answers — never from a fixed list. Any role the
+user needs (social media manager, grant writer, QA engineer) is designed
+the same way.
 
-### Step 3: Get User Confirmation
+### Step 3: Single Approval Gate
 
-Present the team proposal and ask for explicit confirmation:
-> "Shall I provision these agents as isolated bot-mode profiles? This will create separate Hermes profiles under `~/.hermes/profiles/<name>/."
+Present the complete plan: tier, specialists (name, role, tools, browser
+mode — default "Use My Real Browser Profile"), collaboration, and what
+provisioning will do (profiles + rich personas + real skills + verification).
 
-Wait for user approval before proceeding.
+Ask exactly: "Shall I provision this team as isolated bot-mode profiles?"
 
-### Step 4: Provision Isolated Bot-Mode Profiles
+One yes authorizes everything. After it, run autonomously to completion —
+no mid-flow confirmations. Deliver a final report.
 
-Print a checklist of all confirmed agents first, and mark each one done as
-you finish it — it is your recovery point if you are interrupted.
+### Step 4: Provision
 
-For each confirmed agent:
-1. Run: `hermes profile create <name> --description "<role>"`
-2. Optionally clone skills: `hermes profile create <name> --clone` (shares config, fresh memory)
-3. Configure model pin (if requested): `hermes -p <name> config set model.default <model>`
-4. Write a short SOUL.md (role, mission, style, boundaries — five lines is enough): `echo "<persona>" > ~/.hermes/profiles/<name>/SOUL.md`
-5. Install skills only if you know they exist — list available skills first
-   (for example `hermes skills list`) and never invent skill names. If
-   unsure, skip and tell the user skills can be added later.
+Print a checklist of all confirmed agents first; mark each done as you go.
 
-Batch the work: run all `hermes profile create` calls in one terminal round,
-then write all SOUL.md files, then install skills. If you lose track, run
-`hermes profile list` and provision only what is missing — never re-create
-an existing profile.
+**4a — Profiles (batched, one terminal round):**
+- `hermes profile create <name> --description "<role>"` (variant: `--clone`)
+- Model pin only if requested: `hermes -p <name> config set model.default <model>`
 
-### Step 5: Default to "Use My Real Browser Profile"
+**4b — Rich personas (every profile):**
+Fetch catalog/roles/soul-schema.md from the repo (fallback skeleton:
+Identity, Mission, Operating Principles, Working Style, Capabilities &
+Tools, Collaboration Protocol, Boundaries, Escalation, Success Metrics).
+Ground each persona in the user's quoted answers plus the knowledge of the
+role's installed skills. Every section filled — minimum 2 sentences or 3
+bullets. Self-review: rewrite anything that could apply to any role
+unchanged. Write via write_file: `~/.hermes/profiles/<name>/SOUL.md`.
 
-**Important**: Before provisioning, ask:
-> "Do you want to use your real browser profile for web automation, or create isolated browser profiles for each agent?"
+**4c — Real skills (every profile):**
+Follow catalog/skills.json: `hermes skills search <term>` → `hermes skills
+inspect <skill>` → `hermes -p <name> skills install <skill>`. Never invent
+names. Skills from outside the official Hub must pass NVIDIA SkillSpector
+(https://github.com/nvidia/skillspector) first — on any risk finding, skip
+and report. Record found vs. not found per profile.
 
-- **Default**: "Use My Real Browser Profile" (user's existing browser session)
-- If user wants isolation: create separate browser profiles per agent (advanced setup)
+If interrupted: `hermes profile list`, compare with the checklist, provision
+only what is missing. Never re-create an existing profile.
 
-## Verification
+## Verification (with receipts)
 
-After provisioning:
-1. Run `hermes profile list` and count the new profiles against the
-   approved plan — a partial team is not success; provision any missing ones
-2. Run `hermes -p <name> chat` — confirm each agent responds with its role
-3. Confirm Bot Mode roster shows all new agents (if using Hermes Desktop)
+1. `hermes profile list` — count against the approved plan; partial is not
+   success, provision what is missing.
+2. `hermes -p <name> skills list` — record the inventory per profile.
+3. `hermes -p <name> chat` — one smoke test per profile, answering in role.
+4. Write TEAM.md: plan, profiles, skills (found/not found), browser mode,
+   verification results, everything skipped or failed.
+5. Propose team rituals (group chat, shared inbox, kickoff routine) if
+   Bot Mode is available; otherwise suggest one small first task.
 
 ## Pitfalls
 
-- **Never point two agents at the same profile** — each must have its own `~/.hermes/profiles/<name>/`
-- **Never invent skill names** — list available skills first; a rejected name is a signal to stop, not to retry with new guesses
-- **Bot Mode is a desktop UI feature** — programmatic provisioning uses `hermes profile create`, not a Bot Mode API
-- **"Use My Real Browser Profile" is not an official HERMES feature** — document it as a user preference for browser automation, not a HERMES primitive
+- **Never point two agents at the same profile** — each gets its own `~/.hermes/profiles/<name>/`
+- **Never invent skill names** — search first; a rejected name means stop, not retry
+- **Never install third-party skills without the SkillSpector scan**
+- **Never write thin personas** — the schema's depth rules are the floor, not the ceiling
+- **Never break the single approval gate** — no mid-flow confirmations after the yes
+- **Bot Mode is a desktop UI feature** — programmatic provisioning uses `hermes profile create`
+- **"Use My Real Browser Profile" is not an official HERMES feature** — it is a user preference, honored whenever a bot browses
 
 ## References
 
-- Official HERMES Bot Mode docs: https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode
-- Official HERMES Profiles docs: https://hermes-agent.nousresearch.com/docs/user-guide/profiles
-- Official HERMES Skills docs: https://hermes-agent.nousresearch.com/docs/user-guide/features/skills
-- Official HERMES SOUL.md docs: https://hermes-agent.nousresearch.com/docs/guides/use-soul-with-hermes
+- Persona schema: catalog/roles/soul-schema.md — examples: catalog/roles/examples/
+- Skills manifest: catalog/skills.json
+- Official HERMES Bot Mode: https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode
+- Official HERMES Profiles: https://hermes-agent.nousresearch.com/docs/user-guide/profiles
+- Official HERMES Skills: https://hermes-agent.nousresearch.com/docs/user-guide/features/skills
+- SOUL.md guide: https://hermes-agent.nousresearch.com/docs/guides/use-soul-with-hermes
+- SkillSpector: https://github.com/nvidia/skillspector

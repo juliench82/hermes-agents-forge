@@ -7,54 +7,82 @@ A customer visits our site, clicks "Read agent instructions", and points their H
 
 From there, any HERMES agent (any LLM, any reasoning level) must:
 1. Interview the user
-2. Design a custom team of agents
-3. Provision isolated bot-mode profiles that collaborate on workflows
-4. Default to "Use My Real Browser Profile"
+2. Design a custom team of agents (3/5/7 by complexity)
+3. Get one explicit approval for the full plan
+4. Provision isolated bot-mode profiles — each with a rich persona and real skills
+5. Verify with receipts and hand off with team rituals
 
 ## Core Flow
 
 ```
-read HERMES.md / trust forge skill
+read llms.txt / trust forge skill
   ↓
 interview user
   ↓
-propose team
+propose team + personas + skills plan
   ↓
-get confirmation
+ONE approval for everything
   ↓
-provision isolated bot-mode profiles
+provision: profiles + rich SOUL.md + real skills (SkillSpector-gated)
+  ↓
+verify with receipts → TEAM.md → rituals handoff
 ```
 
-## Implementation Mapping (Official HERMES)
+## The Persona Engine
 
-| Product Goal | HERMES Primitive | Implementation |
-|--------------|------------------|----------------|
-| Interview user | `/forge` skill Procedure | `runtime/onboarding_wizard.py` |
-| Design team | Skill output (markdown proposal) | `runtime/dynamic_profiles.py` |
-| Get confirmation | HERMES `skills.write_approval` pattern | `runtime/confirmation.py` |
-| Provision profiles | `hermes profile create <name>` | `runtime/profile_provisioner.py` |
-| Isolated bot-mode | Separate profiles under `~/.hermes/profiles/` | `runtime/isolation.py` |
-| "Use My Real Browser Profile" | User preference (not HERMES primitive) | Interview question in skill |
+Personas are generated, never enumerated:
+- Universal schema (catalog/roles/soul-schema.md): 10 sections, same for
+  every role — depth comes from structure.
+- Grounded content: the user's quoted interview answers + the knowledge of
+  the role's installed skills.
+- Depth rules enforced by self-review — anything that could apply to any
+  role unchanged gets rewritten.
+- Golden examples in catalog/roles/examples/ calibrate the quality bar —
+  they do not limit coverage.
 
-## User Experience Requirements
+## The Skills Engine
 
-1. **Zero-config onboarding**: User only needs to point their HERMES agent to the llms.txt URL
-2. **Any HERMES agent works**: The skill must be compatible with any LLM, any reasoning level
-3. **Explicit confirmation**: User must approve the team design before provisioning
-4. **Isolated profiles**: Each agent gets its own `~/.hermes/profiles/<name>/` directory
-5. **Default shared browser**: "Use My Real Browser Profile" is the default option
+- catalog/skills.json: per-domain search terms + vetted third-party packs.
+- Runtime: `hermes skills search` → `inspect` → `install` — real names only.
+- Security gate: skills from outside the official Hub must pass NVIDIA
+  SkillSpector before install.
+- Every profile gets skills or an explicit not-found report — never silence.
 
-## Technical Requirements
+## Experience Requirements
 
-1. **Valid HERMES skill**: `skills/forge/SKILL.md` must have YAML frontmatter and standard sections
-2. **Official CLI usage**: All profile operations via `hermes profile` commands
-3. **Progressive disclosure**: Skill loads on-demand, not in initial context
-4. **Verification steps**: Agent confirms profiles exist and respond correctly
+1. Zero-config onboarding — one URL is the whole entry point
+2. Single approval gate — one yes, then autonomous execution to completion
+3. Any HERMES agent works — any LLM, any reasoning level
+4. Any role works — no fixed catalog of personas
+5. "Use My Real Browser Profile" is the default browser mode
 
 ## Success Criteria
 
-- [ ] Any HERMES agent can load `/forge` skill from llms.txt
-- [ ] Skill executes full interview → design → confirm → provision flow
-- [ ] Profiles created via official `hermes profile create` CLI
-- [ ] "Use My Real Browser Profile" asked as default before provisioning
-- [ ] User can see new agents in `hermes profile list` and Bot Mode roster
+- [x] Any HERMES agent can load the flow from llms.txt (verified on a 12B
+      local model: full interview → Package 7 → confirmation → provisioning,
+      zero nudges, after hardening commit 5d3dd01)
+- [ ] Personas meet schema depth rules for ANY role — including roles with
+      no template (test: social media manager)
+- [ ] Every profile has ≥1 installed skill or an explicit not-found report
+- [ ] Zero mid-flow confirmations after the single approval
+- [ ] Third-party skills blocked unless SkillSpector-clean
+- [ ] Receipts: profile list + skill inventory + per-profile smoke test + TEAM.md
+- [ ] Rituals: group chat / shared inbox / kickoff proposed in handoff
+
+## Test Log
+
+- Run 1 (12B, no thinking): interview ✓, proposal ✓, stalled 4/7, language
+  drift, false "done" — led to checklist/batching/resume rules.
+- Run 2 (12B, thinking, pre-hardening): full proposal ✓, 7/7 profiles after
+  2 nudges, hallucinated skill names, no verification — led to skills rules.
+- Run 3 (12B, thinking, post-hardening 5d3dd01): 5/5 profiles, zero nudges,
+  graceful skill skip, error recovery, handoff ✓.
+- Run 4 (next): this build — success bar: rich personas + real skills +
+  single gate + receipts.
+
+## References
+
+- SkillSpector (NVIDIA): https://github.com/nvidia/skillspector
+- Superpowers (obra, MIT): https://github.com/obra/superpowers
+- HERMES Skills Hub: `hermes skills search` / `install` — https://hermes-agent.nousresearch.com/docs/user-guide/features/skills
+- Official docs: https://hermes-agent.nousresearch.com/docs/
