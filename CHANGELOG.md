@@ -1,5 +1,17 @@
 # Changelog
 
+## [2026-09-02] — v0.3.3: HERMES.md aligned with the v0.3 flow
+
+### Changed
+- `HERMES.md` rewritten for the current product: single approval gate,
+  persona engine (10-section SOUL.md schema), skills engine (search →
+  inspect → install, SkillSpector-gated), receipts verification, and Bot
+  Mode rituals (group rooms, message_agent, routines).
+- Browser-mode contradiction fixed: real-browser is the unasked default,
+  isolated only on explicit opt-out. The old text had the skill asking the
+  user first — contradicting llms.txt hard rule 5.
+- Primitive mapping table kept and extended with a team-collaboration row.
+
 ## [2026-09-01] — v0.3.2: v0.1 architecture purge
 
 ### Removed
