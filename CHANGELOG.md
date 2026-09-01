@@ -1,5 +1,37 @@
 # Changelog
 
+## [2026-09-01] — v0.3.2: v0.1 architecture purge
+
+### Removed
+- `compiler/` (14 files), `runtime/` (32), `onboarding/` (18), `shared/` (13),
+  `schemas/` (7), `scripts/` (6), `examples/` (1) — the complete v0.1
+  TenantSpec system: team compiler, provisioning engine, policy contracts,
+  artifact schemas, and the installer (which violated the current hard rule
+  "never ask the user to install anything").
+- `catalog/` v0.1 primitives: `connectors/`, `memory/`, `policies/`,
+  `triggers/`, `roles/executor/`, `roles/supervisor/`, `README.md`, `index.json`
+  (the versioned-primitive index the dead compiler resolved against).
+- `pyproject.toml` — packaged only the purged folders; the product is no
+  longer Python software.
+- `bootstrap.manifest.json` — the v0.1 machine-readable entrypoint.
+
+### Added
+- `LICENSE` (MIT) — restored from history (c46f1e4).
+
+### Why
+The v0.2 rewrite moved all logic into agent-followed markdown
+(llms.txt + SKILL.md). The Python system was referenced by nothing in the
+live flow, and dead architecture sitting next to the live manual risked
+weak models following the wrong path. The repo now contains exactly the
+load-bearing files: HERMES.md, PRODUCT.md, README.md, site/,
+skills/forge/SKILL.md, catalog/roles/soul-schema.md + examples,
+catalog/skills.json.
+
+### Recovery points (git history)
+- v0.1 catalog primitives + TenantSpec validator: fb0bb09
+- compiler (planner, catalog, CLI): a7c643d
+- hygiene files (LICENSE, Dockerfile, tests, pyproject): c46f1e4
+
 ## [2026-09-01] — v0.3.1: Bot Mode alignment + new README
 
 ### Added
