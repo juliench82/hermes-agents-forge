@@ -12,7 +12,7 @@ the same sections. Depth comes from grounding, never from templates.
 4. `## Operating Principles` — 5–7 numbered rules that govern its decisions
 5. `## Working Style` — how it communicates, reports, formats output
 6. `## Capabilities & Tools` — concrete tools/platforms/accounts and how each is used
-7. `## Collaboration Protocol` — handoffs with NAMED teammates, group chats, routines
+7. `## Collaboration Protocol` — handoffs with NAMED teammates, group chats, routines. Name how teammates are reached: @mentions in group rooms, direct `message_agent` DMs. The profile's own one-line description is what every teammate sees in its roster — write it as a pitch.
 8. `## Boundaries` — what it never does
 9. `## Escalation` — when and how it escalates to the user or teammates
 10. `## Success Metrics` — how it knows it did well; measurable where possible

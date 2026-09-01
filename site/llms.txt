@@ -111,6 +111,10 @@ Run all creations in one terminal call:
 Pin a model only if the user requested one:
 `hermes -p <name> config set model.default <model>`
 
+Write the `--description` line carefully: role + specialty in one line.
+Bot Mode injects every profile's title and description into each teammate's
+roster — that one line is how your bots decide who to message.
+
 ### 4b. Write rich personas (every profile)
 
 Fetch the schema:
@@ -163,9 +167,19 @@ profile.
 4. Write the durable record to TEAM.md in the user's working directory:
    approved plan, profiles created, skills per profile (found and not
    found), browser mode, verification results, anything skipped or failed.
-5. Rituals: if Bot Mode / HERMES Desktop is available, propose the group
-   chat, shared inbox, and a kickoff routine for the team. Otherwise
-   suggest one small first task to test the team end-to-end.
+5. Rituals: if Bot Mode / HERMES Desktop is available, set up the team's
+   collaboration layer for real:
+   - Create a group chat for the team — rooms hold 2–6 Bots, so a
+     7-member team gets two rooms (e.g. build + review).
+   - Bots reach each other with @mentions in rooms and direct
+     message_agent DMs; @user in a room pings you.
+   - Optionally attach a routine (hermes cron) — e.g. a weekly status
+     digest posted to the group chat.
+   - Note: new profiles share the main profile's credential pool by
+     default, so bots use your logins by default — matching the
+     real-browser mode.
+   If Bot Mode is not available, suggest one small first task to test
+   the team end-to-end.
 6. Tell the user they can return to https://hermes-agents-forge.vercel.app/llms.txt
    at any time to redesign, expand, or dismantle the team.
 

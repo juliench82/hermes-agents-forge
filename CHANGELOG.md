@@ -1,5 +1,33 @@
 # Changelog
 
+## [2026-09-01] — v0.3.1: Bot Mode alignment + new README
+
+### Added
+- `README.md` — customer-facing introduction: what the Forge does, what
+  you get, team sizes, trust & safety. No jargon.
+- Bot Mode mechanics across the flow: group chats (2–6 Bots per room; a
+  7-member team gets two rooms), @mentions, `message_agent` DMs, routines
+  via `hermes cron`, shared credential pool by default.
+
+### Changed
+- `site/llms.txt` — Step 4a now instructs careful `--description` writing
+  (Bot Mode injects title + description into every teammate's roster);
+  Step 5 rituals now set up the real collaboration layer instead of just
+  proposing it.
+- `catalog/roles/soul-schema.md` — Collaboration Protocol section now
+  names the reach mechanics (@mentions, `message_agent` DMs) and the
+  roster-visible description.
+- `skills/forge/SKILL.md` — v1.2.0, mirrors the same; new pitfall on the
+  `--description` line.
+
+### Why
+
+Hermes v2026.8.31 turned Bot Mode into the platform's native multi-agent
+layer: profiles are Bots with built-in bot-to-bot messaging, group rooms,
+and routines, sharing the main profile's credential pool by default. The
+Forge's funnel maps 1:1 onto those primitives — this patch makes the
+handoff create the real collaboration layer, not just suggest one.
+
 ## [2026-09-01] — v0.3.0: The Supercharged Forge (persona engine + skills engine)
 
 ### Added
@@ -36,8 +64,8 @@ Post-test review (runs 1–3) showed the product provisioned thin personas
 ### Impact on user flow
 
 Customers now get: one approval → a team of isolated profiles, each with a
-  rich, grounded persona and real installed skills, verified with receipts
-  and handed off with collaboration rituals — on any LLM, any reasoning
-  level, for any role they ask for.
+rich, grounded persona and real installed skills, verified with receipts
+and handed off with collaboration rituals — on any LLM, any reasoning
+level, for any role they ask for.
 
 ---

@@ -1,7 +1,7 @@
 ---
 name: forge
 description: Interview users, design custom agent teams, and provision isolated bot-mode profiles with rich personas and real skills
-version: 1.1.0
+version: 1.2.0
 metadata:
   hermes:
     tags: [onboarding, team-design, bot-mode]
@@ -11,7 +11,6 @@ metadata:
 # Forge Skill — Custom Agent Team Provisioning
 
 ## When to Use
-
 Use this skill when:
 - A user visits the Hermes-Agents-Forge site and clicks "Read agent instructions"
 - The user points their HERMES agent to `https://hermes-agents-forge.vercel.app/llms.txt`
@@ -20,7 +19,6 @@ Use this skill when:
 ## Procedure
 
 ### Step 1: Interview the User
-
 Ask one at a time:
 1. What workflows do you want to automate?
 2. Which tools, sites, and accounts are involved?
@@ -31,7 +29,6 @@ Ask one at a time:
 Keep the user's exact words — the personas will quote them.
 
 ### Step 2: Design the Team
-
 Select the package tier:
 - **Package 3** — basic: 3 specialists; single-domain, simple workflows.
 - **Package 5** — intermediate: 5 specialists; multi-domain, needs analysis and review.
@@ -43,7 +40,6 @@ user needs (social media manager, grant writer, QA engineer) is designed
 the same way.
 
 ### Step 3: Single Approval Gate
-
 Present the complete plan: tier, specialists (name, role, tools, browser
 mode — default "Use My Real Browser Profile"), collaboration, and what
 provisioning will do (profiles + rich personas + real skills + verification).
@@ -54,12 +50,14 @@ One yes authorizes everything. After it, run autonomously to completion —
 no mid-flow confirmations. Deliver a final report.
 
 ### Step 4: Provision
-
 Print a checklist of all confirmed agents first; mark each done as you go.
 
 **4a — Profiles (batched, one terminal round):**
 - `hermes profile create <name> --description "<role>"` (variant: `--clone`)
 - Model pin only if requested: `hermes -p <name> config set model.default <model>`
+- Write the `--description` line carefully: role + specialty in one line.
+  Bot Mode injects every profile's title and description into each
+  teammate's roster — that one line is how bots decide who to message.
 
 **4b — Rich personas (every profile):**
 Fetch catalog/roles/soul-schema.md from the repo (fallback skeleton:
@@ -88,8 +86,14 @@ only what is missing. Never re-create an existing profile.
 3. `hermes -p <name> chat` — one smoke test per profile, answering in role.
 4. Write TEAM.md: plan, profiles, skills (found/not found), browser mode,
    verification results, everything skipped or failed.
-5. Propose team rituals (group chat, shared inbox, kickoff routine) if
-   Bot Mode is available; otherwise suggest one small first task.
+5. Rituals (Bot Mode): create a group chat for the team — rooms hold 2–6
+   Bots, so a 7-member team gets two rooms (e.g. build + review). Bots
+   reach each other with @mentions in rooms and `message_agent` DMs;
+   @user in a room pings the user. Optionally attach a routine
+   (`hermes cron`) — e.g. a weekly status digest to the group chat. New
+   profiles share the main profile's credential pool by default, matching
+   the real-browser mode. If Bot Mode is unavailable, suggest one small
+   first task instead.
 
 ## Pitfalls
 
@@ -97,6 +101,7 @@ only what is missing. Never re-create an existing profile.
 - **Never invent skill names** — search first; a rejected name means stop, not retry
 - **Never install third-party skills without the SkillSpector scan**
 - **Never write thin personas** — the schema's depth rules are the floor, not the ceiling
+- **Never write a throwaway `--description`** — every teammate's roster reads it to decide who to message
 - **Never break the single approval gate** — no mid-flow confirmations after the yes
 - **Bot Mode is a desktop UI feature** — programmatic provisioning uses `hermes profile create`
 - **"Use My Real Browser Profile" is not an official HERMES feature** — it is a user preference, honored whenever a bot browses
