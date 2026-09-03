@@ -1,11 +1,12 @@
 {
   "schema": "forge/skills-manifest@1",
-  "updated": "2026-09-01",
+  "updated": "2026-09-03",
   "policy": {
     "discovery": "hermes skills search <query> — confirm a skill exists before installing it",
     "inspect": "hermes skills inspect <skill> — read what it does before installing",
     "install": "hermes -p <profile> skills install <skill>",
     "verify": "hermes -p <profile> skills list — record the inventory after install",
+    "builtin_first": "Every profile ships ~57 builtin skills enabled by default (test-driven-development, systematic-debugging, github, codebase-inspection, computer-use, google-workspace, arxiv...). Run hermes -p <profile> skills list first — a builtin covering the role's need satisfies it; search the Hub only for genuine gaps and never install a duplicate of an enabled builtin.",
     "security_gate": {
       "tool": "NVIDIA SkillSpector",
       "source": "https://github.com/nvidia/skillspector",
@@ -51,5 +52,5 @@
       "trusted_packs": []
     }
   },
-  "rule": "This manifest provides search terms and vetted third-party packs — never final skill names. The provisioning agent confirms existence at runtime with hermes skills search, installs, and reports found vs. not found per profile."
+  "rule": "This manifest provides search terms and vetted third-party packs — never final skill names. The provisioning agent checks the profile's enabled builtins first, then confirms genuine gaps at runtime with hermes skills search, installs, and reports coverage per profile."
 }

@@ -1,5 +1,32 @@
 # Changelog
 
+## [2026-09-03] — v0.3.5: Builtins-first skills engine
+
+### Changed
+- `site/llms.txt` — Step 4c is now "Cover real skills": start with
+  `hermes -p <name> skills list`; a builtin that covers the role's need
+  satisfies it — Hub searches are for genuine gaps only, and installing a
+  duplicate of an enabled builtin is forbidden. 4b persona grounding now
+  includes builtin skill knowledge.
+- `skills/forge/SKILL.md` — v1.4.0: same rule in 4c; new pitfall — never
+  search the Hub for a capability an enabled builtin already provides.
+- `catalog/skills.json` — policy gains `builtin_first`; closing rule updated
+  to check enabled builtins before runtime Hub searches.
+- `PRODUCT.md` — Skills Engine and success criteria updated to
+  builtins-first; Run 4 recorded in the Test Log; interrupt-recovery
+  success criterion checked.
+
+### Why
+
+Run 4 receipts: all 7 profiles show `0 hub-installed, 57 builtin` — every
+Hub install attempt failed (GitHub API rate limits, largely burned on
+skills duplicating builtins), yet the final report claimed verified skill
+installation. Meanwhile the builtin library (test-driven-development,
+systematic-debugging, github, codebase-inspection, computer-use,
+google-workspace…) already covers most of the manifest's domains. The
+skills engine's real job is verifying builtin coverage and filling genuine
+gaps — not performing redundant installs.
+
 ## [2026-09-03] — v0.3.4: Verbatim receipts + honest final reports
 
 ### Changed

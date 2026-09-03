@@ -128,29 +128,38 @@ section filled.
 
 Then, per specialist:
 1. Ground the persona in (a) the user's interview answers — quote them,
-   and (b) the knowledge of the role's skills (Step 4c).
+   and (b) the knowledge of the role's skills (Step 4c — builtins count).
 2. Fill every schema section. Minimum 2 sentences or 3 bullets per section.
 3. Self-review with the schema's depth rules — rewrite anything that could
    apply to any role unchanged.
 4. Write the file with write_file, not shell heredocs:
    ~/.hermes/profiles/<name>/SOUL.md
 
-### 4c. Install real skills (every profile)
+### 4c. Cover real skills (every profile)
 
 Fetch the manifest:
 https://raw.githubusercontent.com/juliench82/hermes-agents-forge/main/catalog/skills.json
 
-Per specialist, from the manifest's search terms for its domain:
-1. `hermes skills search <term>` — confirm a skill exists.
-2. `hermes skills inspect <skill>` — read it; its knowledge also grounds
+Builtins first: every profile ships ~57 builtin skills already enabled
+(test-driven-development, systematic-debugging, codebase-inspection,
+requesting-code-review, github, computer-use, google-workspace, arxiv…).
+
+Per specialist:
+1. `hermes -p <name> skills list` — a builtin that covers the role's need
+   satisfies it: record it in the inventory and move on. Never install a
+   skill that duplicates an enabled builtin.
+2. For genuine gaps only, from the manifest's search terms for its domain:
+   `hermes skills search <term>` — confirm a skill exists.
+3. `hermes skills inspect <skill>` — read it; its knowledge also grounds
    the persona (4b).
-3. `hermes -p <name> skills install <skill>`
-4. Security gate: any skill from OUTSIDE the official Hub (third-party
+4. `hermes -p <name> skills install <skill>`
+5. Security gate: any skill from OUTSIDE the official Hub (third-party
    repos, direct URLs — e.g. the superpowers pack) must pass NVIDIA
    SkillSpector first (https://github.com/nvidia/skillspector). On any
    risk finding: skip and report. Never install unscanned third-party skills.
-5. Record found vs. not found per profile — a role with no matching skill
-   is valid; a silent skip is not.
+6. Record the inventory per profile: builtins covering the role, Hub
+   skills installed, genuine gaps. A role with no matching skill is valid;
+   a silent skip is not.
 
 Batch: 4a in one terminal round, then all persona files, then all skill
 installs. If you lose track, run `hermes profile list`, compare with the
