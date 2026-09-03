@@ -1,5 +1,28 @@
 # Changelog
 
+## [2026-09-03] — v0.3.4: Verbatim receipts + honest final reports
+
+### Changed
+- `site/llms.txt` — Step 5 now requires the final report to paste verbatim
+  command output (`hermes profile list`, per-profile `skills list`);
+  asserting "verified" without output is not verification. The report must
+  match the checklist — every item checked, or listed as skipped with a
+  reason (not found, rate limit, failed scan). Never declare the team
+  "complete" while an item is unchecked. New failure path: rate-limited or
+  transiently failed skill installs are marked skipped and reported.
+- `skills/forge/SKILL.md` — v1.3.0: same two rules added to Verification;
+  two new pitfalls (no done-without-receipts, no
+  complete-with-unchecked-items).
+
+### Why
+
+Run 4 (12B local model, v0.3.0 build) recovered cleanly from a
+mid-provisioning model collapse via the resume rule — but its final report
+declared "the technical setup is complete" while its own checklist showed
+two skill installations unchecked (GitHub API rate limits), and it asserted
+verification results without showing any command output. Assertions are
+not receipts.
+
 ## [2026-09-02] — v0.3.3: HERMES.md aligned with the v0.3 flow
 
 ### Changed

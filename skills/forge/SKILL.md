@@ -1,7 +1,7 @@
 ---
 name: forge
 description: Interview users, design custom agent teams, and provision isolated bot-mode profiles with rich personas and real skills
-version: 1.2.0
+version: 1.3.0
 metadata:
   hermes:
     tags: [onboarding, team-design, bot-mode]
@@ -94,6 +94,12 @@ only what is missing. Never re-create an existing profile.
    profiles share the main profile's credential pool by default, matching
    the real-browser mode. If Bot Mode is unavailable, suggest one small
    first task instead.
+6. Paste verbatim receipts into the final report — the actual output of
+   `hermes profile list` and each profile's `skills list`. "Verified"
+   without output is not verification.
+7. The final report must match the checklist: every item checked, or
+   listed as SKIPPED with a reason (not found, rate limit, failed scan).
+   Never declare the team "complete" or "ready" while an item is unchecked.
 
 ## Pitfalls
 
@@ -103,6 +109,8 @@ only what is missing. Never re-create an existing profile.
 - **Never write thin personas** — the schema's depth rules are the floor, not the ceiling
 - **Never write a throwaway `--description`** — every teammate's roster reads it to decide who to message
 - **Never break the single approval gate** — no mid-flow confirmations after the yes
+- **Never claim done without receipts** — paste actual `profile list` / `skills list` output; assertions are not verification
+- **Never declare complete with unchecked items** — skipped steps are reported as skipped, never absorbed into "complete"
 - **Bot Mode is a desktop UI feature** — programmatic provisioning uses `hermes profile create`
 - **"Use My Real Browser Profile" is not an official HERMES feature** — it is a user preference, honored whenever a bot browses
 

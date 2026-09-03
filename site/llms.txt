@@ -183,12 +183,20 @@ profile.
 6. Tell the user they can return to https://hermes-agents-forge.vercel.app/llms.txt
    at any time to redesign, expand, or dismantle the team.
 
+The final report shows receipts, not assertions: paste the verbatim output
+of `hermes profile list` and each profile's `skills list` into it. The
+report must match your checklist — every item checked, or listed as
+skipped with a reason (not found, rate limit, failed scan). Never declare
+the team "complete" or "ready" while a checklist item is unchecked.
+
 ## If something goes wrong
 
 - Interrupted mid-provisioning → run `hermes profile list`, compare with
   the checklist, and provision only what is missing.
 - A skill name is rejected → never retry invented names; note it in TEAM.md.
 - Third-party skill fails the SkillSpector scan → skip it, say why in TEAM.md.
+- A skill install fails on a rate limit or transient error → mark it
+  skipped with the reason and continue; report it in the final report.
 - Persona feels thin → rerun the depth-rule self-review and rewrite it.
 - Cannot fetch repository files → use the fallback skeleton and the
   search-then-install skill protocol.
