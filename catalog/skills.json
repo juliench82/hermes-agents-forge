@@ -3,15 +3,15 @@
   "updated": "2026-09-05",
   "policy": {
     "builtin_first": "Every profile ships ~57 builtin skills enabled by default (test-driven-development, systematic-debugging, github, codebase-inspection, computer-use, google-workspace, arxiv...). Run hermes -p <profile> skills list first — a builtin covering the role's need satisfies it; never install a duplicate of an enabled builtin.",
-    "forge_library": "Custom skills authored in this repo, under skills/library/. Install per profile via direct URL: hermes -p <profile> skills install https://raw.githubusercontent.com/juliench82/hermes-agents-forge/main/skills/library/<skill>/SKILL.md --category <category>. Frontmatter name and category resolve automatically; Hermes's built-in security scanner runs on every install — never --force past a verdict.",
+    "forge_library": "Custom skills authored in this repo, under skills/library/. Install per profile via direct URL: hermes -p <profile> skills install https://raw.githubusercontent.com/juliench82/hermes-agents-forge/main/skills/library/<skill>/SKILL.md --category <category> --yes. Frontmatter name and category resolve automatically; --yes skips only the confirmation prompt — Hermes's built-in security scanner still runs on every install. Never --force past a verdict.",
     "generative": "For a role no builtin or library skill covers, author a bespoke skill with the skill_manage tool (create action): house format (When to Use / Procedure / Pitfalls / Verification), description under 60 characters, no invented commands, grounded in the user's interview answers.",
     "discovery": "hermes skills search <query> — confirm a skill exists before installing it",
     "inspect": "hermes skills inspect <skill> — read what it does before installing",
-    "install": "hermes -p <profile> skills install <skill>",
+    "install": "hermes -p <profile> skills install <skill> --yes",
     "verify": "hermes -p <profile> skills list — record the inventory after install",
     "security_gate": {
       "tool": "Hermes built-in security scanner",
-      "rule": "Every hub and direct-URL install is quarantined, scanned, and given a verdict automatically. On a dangerous verdict: skip, report, never --force. (An optional NVIDIA SkillEvaluator/SkillSpector advisory scan exists if installed; advisory only.)"
+      "rule": "Every hub and direct-URL install is quarantined, scanned, and given a verdict automatically. --yes skips only the confirmation prompt, never the scan. On a dangerous verdict: skip, report, never --force. (An optional NVIDIA SkillEvaluator/SkillSpector advisory scan exists if installed; advisory only.)"
     },
     "never": "Never invent skill names. A rejected name means stop — not retry with new guesses."
   },

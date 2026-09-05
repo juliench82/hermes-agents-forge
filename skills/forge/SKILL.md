@@ -1,7 +1,7 @@
 ---
 name: forge
 description: Interview users, design custom agent teams, and provision isolated bot-mode profiles with rich personas and real skills
-version: 1.5.0
+version: 1.5.1
 metadata:
   hermes:
     tags: [onboarding, team-design, bot-mode]
@@ -71,14 +71,15 @@ any role unchanged. Write via write_file: `~/.hermes/profiles/<name>/SOUL.md`.
 **4c — Real skills, four tiers in order:**
 - Tier 1, builtins: `hermes -p <name> skills list` — a covering builtin
   satisfies the need; never duplicate an enabled builtin.
-- Tier 2, Forge library: `hermes -p <name> skills install https://raw.githubusercontent.com/juliench82/hermes-agents-forge/main/skills/library/<skill>/SKILL.md --category <category>`
-  (map in catalog/skills.json). Answer the final install confirm with y —
-  the single approval covered the library. Never --force past a verdict.
+- Tier 2, Forge library: `hermes -p <name> skills install https://raw.githubusercontent.com/juliench82/hermes-agents-forge/main/skills/library/<skill>/SKILL.md --category <category> --yes`
+  (map in catalog/skills.json). `--yes` skips only the confirmation prompt —
+  the security scan still runs. The single approval covered the library.
+  Never --force past a verdict.
 - Tier 3, generative: for uncovered roles, author a bespoke skill with
   `skill_manage` create — house format, description under 60 characters,
   grounded in the interview answers.
 - Tier 4, Hub gaps only: `hermes skills search <term>` → `inspect` →
-  `hermes -p <name> skills install <skill>`. Never invent names.
+  `hermes -p <name> skills install <skill> --yes`. Never invent names.
 
 If interrupted: `hermes profile list`, compare with the checklist, provision
 only what is missing. Never re-create an existing profile.

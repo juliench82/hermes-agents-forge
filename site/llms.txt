@@ -148,12 +148,12 @@ an enabled builtin.
 Tier 2 — The Forge library (custom skills authored in this repo).
 Per role, from catalog/skills.json's forge_skills map:
 
-`hermes -p <name> skills install https://raw.githubusercontent.com/juliench82/hermes-agents-forge/main/skills/library/<skill>/SKILL.md --category <category>`
+`hermes -p <name> skills install https://raw.githubusercontent.com/juliench82/hermes-agents-forge/main/skills/library/<skill>/SKILL.md --category <category> --yes`
 
 Library skills carry proper frontmatter (name and category resolve
 automatically) and every install is security-scanned by Hermes's built-in
-scanner. The install may prompt for a final confirmation — answer y: the
-single approval already covered installing the Forge library. On a
+scanner — `--yes` skips only the confirmation prompt, never the scan.
+The single approval already covered installing the Forge library. On a
 dangerous scan verdict: skip and report — never --force.
 
 Tier 3 — Generative. For a role no builtin or library skill covers,
@@ -163,7 +163,7 @@ Procedure / Pitfalls / Verification, description under 60 characters, no
 invented commands), ground it in the user's interview answers.
 
 Tier 4 — Hub, for genuine remaining gaps: `hermes skills search <term>` →
-`hermes skills inspect <skill>` → `hermes -p <name> skills install <skill>`.
+`hermes skills inspect <skill>` → `hermes -p <name> skills install <skill> --yes`.
 Never invent names. All hub installs are security-scanned automatically —
 on a dangerous verdict, skip and report.
 
