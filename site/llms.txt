@@ -176,6 +176,10 @@ installs. If you lose track, run `hermes profile list`, compare with the
 checklist, and provision only what is missing. Never re-create an existing
 profile.
 
+Note: "Use My Real Browser Profile" is a user preference for browser
+automation, not a HERMES primitive — record the user's choice in the team
+spec and honor it whenever a bot browses.
+
 ## Step 5 — Verify with receipts, then hand off
 
 1. `hermes profile list` — count against the approved plan. A partial team
