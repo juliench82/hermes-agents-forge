@@ -1,7 +1,7 @@
 ---
 name: forge
 description: Interview users, design custom agent teams, and provision isolated bot-mode profiles with rich personas and real skills
-version: 1.5.1
+version: 1.6.0
 metadata:
   hermes:
     tags: [onboarding, team-design, bot-mode]
@@ -52,6 +52,13 @@ no mid-flow confirmations. Deliver a final report.
 ### Step 4: Provision
 Print a checklist of all confirmed agents first; mark each done as you go.
 
+**4-0 — Externalize the checklist:** before the first `profile create`,
+call the `todo` tool with one item per specialist plus one verification
+item, using the approved names exactly. Mark items complete as you finish
+them; call `todo` with no parameters between specialists and before
+claiming done. The list — not memory — is the source of truth for what
+remains.
+
 **4a — Profiles (batched, one terminal round):**
 - `hermes profile create <name> --description "<role>"` (variant: `--clone`)
 - Model pin only if requested: `hermes -p <name> config set model.default <model>`
@@ -86,8 +93,9 @@ only what is missing. Never re-create an existing profile.
 
 ## Verification (with receipts)
 
-1. `hermes profile list` — count against the approved plan; partial is not
-   success, provision what is missing.
+1. `hermes profile list` AND `todo` (no parameters) — count against the
+   approved plan; zero open items; the roster must match the approved
+   names exactly; partial is not success, provision what is missing.
 2. `hermes -p <name> skills list` — record the inventory per profile:
    builtins covering the role, Forge skills, generated skills, gaps.
 3. `hermes -p <name> chat` — one smoke test per profile, answering in role.
@@ -118,6 +126,7 @@ only what is missing. Never re-create an existing profile.
 - **Never write a throwaway `--description`** — every teammate's roster reads it to decide who to message
 - **Never break the single approval gate** — no mid-flow confirmations after the yes
 - **Never claim done without receipts** — paste actual `profile list` / `skills list` output; assertions are not verification
+- **Never claim done from memory** — show the `todo` list (zero open items) and `hermes profile list` (roster matches approved names) first
 - **Never declare complete with unchecked items** — skipped steps are reported as skipped, never absorbed into "complete"
 - **Bot Mode is a desktop UI feature** — programmatic provisioning uses `hermes profile create`
 - **"Use My Real Browser Profile" is not an official HERMES feature** — it is a user preference, honored whenever a bot browses
