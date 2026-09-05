@@ -1,56 +1,74 @@
 {
   "schema": "forge/skills-manifest@1",
-  "updated": "2026-09-03",
+  "updated": "2026-09-05",
   "policy": {
+    "builtin_first": "Every profile ships ~57 builtin skills enabled by default (test-driven-development, systematic-debugging, github, codebase-inspection, computer-use, google-workspace, arxiv...). Run hermes -p <profile> skills list first — a builtin covering the role's need satisfies it; never install a duplicate of an enabled builtin.",
+    "forge_library": "Custom skills authored in this repo, under skills/library/. Install per profile via direct URL: hermes -p <profile> skills install https://raw.githubusercontent.com/juliench82/hermes-agents-forge/main/skills/library/<skill>/SKILL.md --category <category>. Frontmatter name and category resolve automatically; Hermes's built-in security scanner runs on every install — never --force past a verdict.",
+    "generative": "For a role no builtin or library skill covers, author a bespoke skill with the skill_manage tool (create action): house format (When to Use / Procedure / Pitfalls / Verification), description under 60 characters, no invented commands, grounded in the user's interview answers.",
     "discovery": "hermes skills search <query> — confirm a skill exists before installing it",
     "inspect": "hermes skills inspect <skill> — read what it does before installing",
     "install": "hermes -p <profile> skills install <skill>",
     "verify": "hermes -p <profile> skills list — record the inventory after install",
-    "builtin_first": "Every profile ships ~57 builtin skills enabled by default (test-driven-development, systematic-debugging, github, codebase-inspection, computer-use, google-workspace, arxiv...). Run hermes -p <profile> skills list first — a builtin covering the role's need satisfies it; search the Hub only for genuine gaps and never install a duplicate of an enabled builtin.",
     "security_gate": {
-      "tool": "NVIDIA SkillSpector",
-      "source": "https://github.com/nvidia/skillspector",
-      "rule": "Scan any skill from OUTSIDE the official HERMES Skills Hub (third-party repos, direct URLs) before install. On any risk finding: skip, report, never install from that source. Official Hub skills are exempt."
+      "tool": "Hermes built-in security scanner",
+      "rule": "Every hub and direct-URL install is quarantined, scanned, and given a verdict automatically. On a dangerous verdict: skip, report, never --force. (An optional NVIDIA SkillEvaluator/SkillSpector advisory scan exists if installed; advisory only.)"
     },
     "never": "Never invent skill names. A rejected name means stop — not retry with new guesses."
+  },
+  "forge_skills": {
+    "prd-author": {"category": "productivity", "for": "analyst / product roles — idea to requirements"},
+    "blueprint": {"category": "software-development", "for": "architect roles — requirements to technical plan"},
+    "mvp-builder": {"category": "software-development", "for": "developer roles — demoable increments"},
+    "qa-gate": {"category": "software-development", "for": "QA roles — test plans, definition of done"},
+    "ship-it": {"category": "devops", "for": "devops roles — CI/CD and deployment"},
+    "source-dig": {"category": "research", "for": "research roles — cited multi-source research"},
+    "feed-craft": {"category": "social-media", "for": "social/content roles — brand voice, cadence, approval"},
+    "team-ops": {"category": "productivity", "for": "coordinator roles — digests, blockers, handoffs"}
   },
   "domains": {
     "software-development": {
       "search_terms": ["test-driven development", "systematic debugging", "code review", "software planning", "git"],
+      "forge_skills": ["blueprint", "mvp-builder"],
       "trusted_packs": [
         {
           "name": "superpowers",
           "source": "https://github.com/obra/superpowers",
           "license": "MIT",
-          "note": "Agentic dev methodology pack (TDD, debugging, planning, collaboration patterns). Scan with SkillSpector and adapt to HERMES skill format before install.",
-          "verification": "unverified-in-hub — run hermes skills search superpowers first; if not on the Hub, treat as third-party and gate it"
+          "note": "Agentic dev methodology pack (TDD, debugging, planning, collaboration patterns). Install via direct-URL skill install; the built-in scanner runs automatically.",
+          "verification": "unverified-in-hub — run hermes skills search superpowers first; if not on the Hub, install by URL only after the scan verdict is clean"
         }
       ]
     },
     "qa-testing": {
       "search_terms": ["testing", "qa", "regression testing", "code review"],
+      "forge_skills": ["qa-gate"],
       "trusted_packs": []
     },
     "devops": {
       "search_terms": ["ci/cd", "github actions", "deployment", "docker", "kubernetes"],
+      "forge_skills": ["ship-it"],
       "trusted_packs": []
     },
     "research": {
       "search_terms": ["web research", "search", "competitive analysis", "citation"],
+      "forge_skills": ["source-dig"],
       "trusted_packs": []
     },
     "social-media": {
       "search_terms": ["social media", "content creation", "brand voice", "marketing"],
+      "forge_skills": ["feed-craft"],
       "trusted_packs": []
     },
     "writing": {
       "search_terms": ["technical writing", "documentation", "editing", "copywriting"],
+      "forge_skills": ["prd-author"],
       "trusted_packs": []
     },
     "project-coordination": {
       "search_terms": ["project management", "kanban", "planning", "todo"],
+      "forge_skills": ["team-ops"],
       "trusted_packs": []
     }
   },
-  "rule": "This manifest provides search terms and vetted third-party packs — never final skill names. The provisioning agent checks the profile's enabled builtins first, then confirms genuine gaps at runtime with hermes skills search, installs, and reports coverage per profile."
+  "rule": "Four tiers, in order: check the profile's enabled builtins, install Forge library skills per role by direct URL, generate a bespoke skill via skill_manage for uncovered roles, and fill genuine gaps from the Hub. Report coverage per profile — never silence."
 }

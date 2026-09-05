@@ -1,7 +1,7 @@
 ---
 name: forge
 description: Interview users, design custom agent teams, and provision isolated bot-mode profiles with rich personas and real skills
-version: 1.4.0
+version: 1.5.0
 metadata:
   hermes:
     tags: [onboarding, team-design, bot-mode]
@@ -64,22 +64,21 @@ Fetch catalog/roles/soul-schema.md from the repo (fallback skeleton:
 Identity, Mission, Operating Principles, Working Style, Capabilities &
 Tools, Collaboration Protocol, Boundaries, Escalation, Success Metrics).
 Ground each persona in the user's quoted answers plus the knowledge of the
-role's skills — builtins count. Every section filled — minimum 2 sentences
-or 3 bullets. Self-review: rewrite anything that could apply to any role
-unchanged. Write via write_file: `~/.hermes/profiles/<name>/SOUL.md`.
+role's skills — all skill tiers count. Every section filled — minimum 2
+sentences or 3 bullets. Self-review: rewrite anything that could apply to
+any role unchanged. Write via write_file: `~/.hermes/profiles/<name>/SOUL.md`.
 
-**4c — Real skills (every profile):**
-Builtins first: every profile ships ~57 builtin skills already enabled
-(test-driven-development, systematic-debugging, github,
-codebase-inspection, computer-use, google-workspace…). Start with
-`hermes -p <name> skills list` — a builtin that covers the role's need
-satisfies it; never install a duplicate of an enabled builtin. Then, for
-genuine gaps only, follow catalog/skills.json: `hermes skills search
-<term>` → `hermes skills inspect <skill>` → `hermes -p <name> skills
-install <skill>`. Never invent names. Skills from outside the official
-Hub must pass NVIDIA SkillSpector (https://github.com/nvidia/skillspector)
-first — on any risk finding, skip and report. Record builtins covering
-the role, Hub skills installed, and genuine gaps per profile.
+**4c — Real skills, four tiers in order:**
+- Tier 1, builtins: `hermes -p <name> skills list` — a covering builtin
+  satisfies the need; never duplicate an enabled builtin.
+- Tier 2, Forge library: `hermes -p <name> skills install https://raw.githubusercontent.com/juliench82/hermes-agents-forge/main/skills/library/<skill>/SKILL.md --category <category>`
+  (map in catalog/skills.json). Answer the final install confirm with y —
+  the single approval covered the library. Never --force past a verdict.
+- Tier 3, generative: for uncovered roles, author a bespoke skill with
+  `skill_manage` create — house format, description under 60 characters,
+  grounded in the interview answers.
+- Tier 4, Hub gaps only: `hermes skills search <term>` → `inspect` →
+  `hermes -p <name> skills install <skill>`. Never invent names.
 
 If interrupted: `hermes profile list`, compare with the checklist, provision
 only what is missing. Never re-create an existing profile.
@@ -89,7 +88,7 @@ only what is missing. Never re-create an existing profile.
 1. `hermes profile list` — count against the approved plan; partial is not
    success, provision what is missing.
 2. `hermes -p <name> skills list` — record the inventory per profile:
-   builtins covering the role, Hub skills installed, genuine gaps.
+   builtins covering the role, Forge skills, generated skills, gaps.
 3. `hermes -p <name> chat` — one smoke test per profile, answering in role.
 4. Write TEAM.md: plan, profiles, skills (found/not found), browser mode,
    verification results, everything skipped or failed.
@@ -113,7 +112,7 @@ only what is missing. Never re-create an existing profile.
 - **Never point two agents at the same profile** — each gets its own `~/.hermes/profiles/<name>/`
 - **Never search the Hub for a capability an enabled builtin already provides** — check the profile's skills list first
 - **Never invent skill names** — search first; a rejected name means stop, not retry
-- **Never install third-party skills without the SkillSpector scan**
+- **Never --force past a security verdict** — dangerous means skip and report
 - **Never write thin personas** — the schema's depth rules are the floor, not the ceiling
 - **Never write a throwaway `--description`** — every teammate's roster reads it to decide who to message
 - **Never break the single approval gate** — no mid-flow confirmations after the yes
@@ -124,10 +123,10 @@ only what is missing. Never re-create an existing profile.
 
 ## References
 
+- Forge skills library: skills/library/ (8 role skills, installable by direct URL)
 - Persona schema: catalog/roles/soul-schema.md — examples: catalog/roles/examples/
 - Skills manifest: catalog/skills.json
 - Official HERMES Bot Mode: https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode
 - Official HERMES Profiles: https://hermes-agent.nousresearch.com/docs/user-guide/profiles
 - Official HERMES Skills: https://hermes-agent.nousresearch.com/docs/user-guide/features/skills
 - SOUL.md guide: https://hermes-agent.nousresearch.com/docs/guides/use-soul-with-hermes
-- SkillSpector: https://github.com/nvidia/skillspector

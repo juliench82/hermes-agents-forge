@@ -40,8 +40,8 @@ Read, in this order:
    extension of this manual.
 3. catalog/roles/soul-schema.md — the universal persona schema you will
    write every SOUL.md against.
-4. catalog/skills.json — the skills manifest: search terms per domain,
-   trusted third-party packs, and the security gate policy.
+4. catalog/skills.json — the skills manifest: the Forge library map,
+   search terms per domain, and the security policy.
 5. PRODUCT.md — product requirements and success criteria.
 
 Loading the skill:
@@ -86,8 +86,9 @@ Present, in plain language:
   browser mode (default: "Use My Real Browser Profile");
 - how they collaborate: hand-offs, group chats, routines;
 - what you will do after approval: create profiles, write a rich SOUL.md
-  persona for each (from the schema), search the Skills Hub and install
-  real skills per role, then verify everything and deliver a full report.
+  persona for each (from the schema), install real skills per role — from
+  the builtins, the Forge library, generation, and the Hub — then verify
+  everything and deliver a full report.
 
 Then ask exactly: "Shall I provision this team as isolated bot-mode
 profiles?" This single approval authorizes the complete plan — team,
@@ -128,38 +129,47 @@ section filled.
 
 Then, per specialist:
 1. Ground the persona in (a) the user's interview answers — quote them,
-   and (b) the knowledge of the role's skills (Step 4c — builtins count).
+   and (b) the knowledge of the role's skills (Step 4c — all tiers count).
 2. Fill every schema section. Minimum 2 sentences or 3 bullets per section.
 3. Self-review with the schema's depth rules — rewrite anything that could
    apply to any role unchanged.
 4. Write the file with write_file, not shell heredocs:
    ~/.hermes/profiles/<name>/SOUL.md
 
-### 4c. Cover real skills (every profile)
+### 4c. Cover real skills (every profile) — four tiers, in order
 
-Fetch the manifest:
-https://raw.githubusercontent.com/juliench82/hermes-agents-forge/main/catalog/skills.json
+Tier 1 — Builtins. Every profile ships ~57 builtin skills already
+enabled (test-driven-development, systematic-debugging, github,
+codebase-inspection, computer-use, google-workspace, arxiv…).
+`hermes -p <name> skills list` — a builtin that covers the need satisfies
+it: record it in the inventory and move on. Never install a duplicate of
+an enabled builtin.
 
-Builtins first: every profile ships ~57 builtin skills already enabled
-(test-driven-development, systematic-debugging, codebase-inspection,
-requesting-code-review, github, computer-use, google-workspace, arxiv…).
+Tier 2 — The Forge library (custom skills authored in this repo).
+Per role, from catalog/skills.json's forge_skills map:
 
-Per specialist:
-1. `hermes -p <name> skills list` — a builtin that covers the role's need
-   satisfies it: record it in the inventory and move on. Never install a
-   skill that duplicates an enabled builtin.
-2. For genuine gaps only, from the manifest's search terms for its domain:
-   `hermes skills search <term>` — confirm a skill exists.
-3. `hermes skills inspect <skill>` — read it; its knowledge also grounds
-   the persona (4b).
-4. `hermes -p <name> skills install <skill>`
-5. Security gate: any skill from OUTSIDE the official Hub (third-party
-   repos, direct URLs — e.g. the superpowers pack) must pass NVIDIA
-   SkillSpector first (https://github.com/nvidia/skillspector). On any
-   risk finding: skip and report. Never install unscanned third-party skills.
-6. Record the inventory per profile: builtins covering the role, Hub
-   skills installed, genuine gaps. A role with no matching skill is valid;
-   a silent skip is not.
+`hermes -p <name> skills install https://raw.githubusercontent.com/juliench82/hermes-agents-forge/main/skills/library/<skill>/SKILL.md --category <category>`
+
+Library skills carry proper frontmatter (name and category resolve
+automatically) and every install is security-scanned by Hermes's built-in
+scanner. The install may prompt for a final confirmation — answer y: the
+single approval already covered installing the Forge library. On a
+dangerous scan verdict: skip and report — never --force.
+
+Tier 3 — Generative. For a role no builtin or library skill covers,
+author a bespoke skill with the skill_manage tool (create action): name
+it after the role's core workflow, follow the house format (When to Use /
+Procedure / Pitfalls / Verification, description under 60 characters, no
+invented commands), ground it in the user's interview answers.
+
+Tier 4 — Hub, for genuine remaining gaps: `hermes skills search <term>` →
+`hermes skills inspect <skill>` → `hermes -p <name> skills install <skill>`.
+Never invent names. All hub installs are security-scanned automatically —
+on a dangerous verdict, skip and report.
+
+Record the inventory per profile: builtins covering the role, Forge
+library skills installed, generated skills, hub skills, genuine gaps.
+A role with no matching skill is valid; a silent skip is not.
 
 Batch: 4a in one terminal round, then all persona files, then all skill
 installs. If you lose track, run `hermes profile list`, compare with the
@@ -170,7 +180,8 @@ profile.
 
 1. `hermes profile list` — count against the approved plan. A partial team
    is not success: provision what is missing, re-check.
-2. Per profile: `hermes -p <name> skills list` — record the inventory.
+2. Per profile: `hermes -p <name> skills list` — record the inventory:
+   builtins covering the role, Forge skills, generated skills, gaps.
 3. `hermes -p <name> chat` — one smoke test per profile: confirm it answers
    in its role.
 4. Write the durable record to TEAM.md in the user's working directory:
@@ -203,12 +214,13 @@ the team "complete" or "ready" while a checklist item is unchecked.
 - Interrupted mid-provisioning → run `hermes profile list`, compare with
   the checklist, and provision only what is missing.
 - A skill name is rejected → never retry invented names; note it in TEAM.md.
-- Third-party skill fails the SkillSpector scan → skip it, say why in TEAM.md.
+- A security scan returns a dangerous verdict → skip the skill, say why
+  in TEAM.md. Never --force past a verdict.
 - A skill install fails on a rate limit or transient error → mark it
   skipped with the reason and continue; report it in the final report.
 - Persona feels thin → rerun the depth-rule self-review and rewrite it.
 - Cannot fetch repository files → use the fallback skeleton and the
-  search-then-install skill protocol.
+  tiered skill protocol.
 - Cannot provision profiles → say exactly what is missing, deliver the
   team spec anyway so nothing is lost.
 - User changes their mind → stop immediately, adjust, and re-confirm once.
