@@ -23,7 +23,7 @@ propose team + personas + skills plan
   ↓
 ONE approval for everything
   ↓
-provision: profiles + rich SOUL.md + real skills (SkillSpector-gated)
+provision: profiles + rich SOUL.md + real skills (four-tier engine)
   ↓
 verify with receipts → TEAM.md → rituals handoff
 ```
@@ -34,7 +34,7 @@ Personas are generated, never enumerated:
 - Universal schema (catalog/roles/soul-schema.md): 10 sections, same for
   every role — depth comes from structure.
 - Grounded content: the user's quoted interview answers + the knowledge of
-  the role's skills (builtins count).
+  the role's skills (all tiers count).
 - Depth rules enforced by self-review — anything that could apply to any
   role unchanged gets rewritten.
 - Golden examples in catalog/roles/examples/ calibrate the quality bar —
@@ -42,15 +42,18 @@ Personas are generated, never enumerated:
 
 ## The Skills Engine
 
-- Builtins first: every profile ships ~57 builtin skills enabled by default —
-  verify coverage with `hermes -p <name> skills list` before any Hub search.
-- catalog/skills.json: per-domain search terms + vetted third-party packs.
-- Runtime: `hermes skills search` → `inspect` → `install` — real names,
-  genuine gaps only — never a duplicate of an enabled builtin.
-- Security gate: skills from outside the official Hub must pass NVIDIA
-  SkillSpector before install.
-- Every role's skill needs are covered by builtins, Hub installs, or an
-  explicit gap report — never silence.
+Four tiers, in order — stop when the role's needs are covered:
+- Tier 1 — Builtins (~57 per profile): verify coverage, never duplicate.
+- Tier 2 — Forge library (skills/library/): 8 role-specific custom skills
+  authored and versioned in this repo, installed per profile via direct
+  URL — auto security-scanned by Hermes's built-in scanner on every
+  install.
+- Tier 3 — Generative: the agent authors a bespoke skill for roles nothing
+  covers, via skill_manage create, grounded in the interview answers —
+  the persona engine's logic applied to capabilities.
+- Tier 4 — Hub: genuine gaps only — search → inspect → install.
+- Every role's skill needs are covered or explicitly reported as gaps —
+  never silence.
 
 ## Experience Requirements
 
@@ -67,14 +70,17 @@ Personas are generated, never enumerated:
       zero nudges, after hardening commit 5d3dd01)
 - [ ] Personas meet schema depth rules for ANY role — including roles with
       no template (test: social media manager)
-- [ ] Every role's skill needs are covered by enabled builtins or an
-      explicit gap report
+- [ ] Every role's skill needs are covered by enabled builtins, a Forge
+      library skill, a generated skill, or an explicit gap report
 - [ ] Zero mid-flow confirmations after the single approval
-- [ ] Third-party skills blocked unless SkillSpector-clean
+- [ ] Skill installs pass the built-in security scan — never --force past
+      a verdict
 - [ ] Receipts: profile list + skill inventory + per-profile smoke test + TEAM.md
 - [ ] Rituals: group chat / shared inbox / kickoff proposed in handoff
 - [x] Interrupt recovery — a mid-provisioning model collapse is recoverable
       via the resume rule without redoing work (Run 4)
+- [ ] Forge library skills install via direct URL onto profiles (mechanism
+      verified manually; agent-driven install untested — Run 5)
 
 ## Test Log
 
@@ -90,12 +96,13 @@ Personas are generated, never enumerated:
   duplicates) while 57 builtins cover most needs; final report falsely
   declared "complete" — led to v0.3.4 receipts rules and v0.3.5
   builtins-first.
-- Run 5 (next): v0.3.4/5 build — success bar: verbatim receipts, builtins-
-  first inventory, honest gaps, no false completion.
+- Run 5 (next): v0.4.0 build — success bar: verbatim receipts, four-tier
+  skill coverage (builtins + Forge library + generative + Hub gaps),
+  honest gaps, no false completion.
 
 ## References
 
-- SkillSpector (NVIDIA): https://github.com/nvidia/skillspector
-- Superpowers (obra, MIT): https://github.com/obra/superpowers
-- HERMES Skills Hub: `hermes skills search` / `install` — https://hermes-agent.nousresearch.com/docs/user-guide/features/skills
+- Forge skills library: skills/library/ (8 role skills)
+- Official Skills docs (URL installs, skill_manage, security scanning):
+  https://hermes-agent.nousresearch.com/docs/user-guide/features/skills
 - Official docs: https://hermes-agent.nousresearch.com/docs/

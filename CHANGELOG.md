@@ -1,5 +1,43 @@
 # Changelog
 
+## [2026-09-05] — v0.4.0: The Forge skills library + four-tier skills engine
+
+### Added
+- `skills/library/` — 8 custom skills authored for Forge team roles:
+  prd-author, blueprint, mvp-builder, qa-gate, ship-it, source-dig,
+  feed-craft, team-ops. Official SKILL.md format (When to Use / Procedure /
+  Pitfalls / Verification), MIT, installable onto any profile via direct
+  URL with automatic security scanning.
+- `skills.sh.json` — repo-root groupings file: the repo can be added as a
+  skills tap (`hermes skills tap add juliench82/hermes-agents-forge`).
+
+### Changed
+- `site/llms.txt` — Step 4c is now a four-tier engine: builtins verify →
+  Forge library install (direct URL + `--category`) → generative skills
+  via skill_manage create for uncovered roles → Hub for genuine gaps.
+  Security gate now rides Hermes's built-in install scanner (quarantine →
+  scan → verdict → confirm); never --force past a verdict.
+- `skills/forge/SKILL.md` — v1.5.0: mirrors the four tiers; new pitfall
+  (never --force past a security verdict); SkillSpector-specific gate
+  retired in favor of the built-in scanner (SkillEvaluator remains an
+  optional advisory layer).
+- `catalog/skills.json` — new forge_skills map (role → skill → category),
+  forge_library + generative policies, security_gate updated.
+- `PRODUCT.md` — Skills Engine rebuilt as four tiers; success criteria
+  updated; Run 5 success bar defined.
+
+### Why
+
+Run 4 showed 0 hub installs landed; and relying on builtins alone would
+make every Forge team identical to what any user gets from plain
+`hermes profile create`. The Forge library gives every profile
+role-specific methodology we author, version, and security-scan — the
+product's differentiation. The generative tier covers roles we never
+imagined: the persona engine's logic applied to capabilities. Mechanism
+verified end-to-end on a real profile (direct-URL install → quarantine →
+scan → SAFE verdict → confirm → per-profile install path, including
+`--category` flag discovery).
+
 ## [2026-09-03] — v0.3.5: Builtins-first skills engine
 
 ### Changed
