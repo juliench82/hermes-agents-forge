@@ -102,6 +102,28 @@ if something fails in a way you cannot fix.
 Start by printing a provisioning checklist — one line per specialist —
 and update it as you go. It is your recovery point if you are interrupted.
 
+### 4-0. Externalize the checklist — the todo tool (required)
+
+Immediately after the yes, before any command, build the session checklist
+with the `todo` tool using the EXACT profile names from the approved
+proposal: one item per specialist — "Provision <approved-name>: profile,
+SOUL.md, skills, chat smoke test" — plus one final item: "Verification:
+profile list matches approved names, skills inventory recorded, TEAM.md
+written."
+
+Between specialists: mark the item complete, then call `todo` with no
+parameters and read the list. The list — not your memory — is the source
+of truth for what remains.
+
+Before claiming the team is ready, all three must hold:
+1. `todo` shows zero open items;
+2. `hermes profile list` matches the approved names exactly — a team with
+   different names than approved is a failed run, not a success;
+3. every profile answered one `hermes -p <name> chat` smoke test in role.
+
+If any fails, do that work next — never summarize past an open item, and
+never say "ready," "established," or "provisioned" while anything is open.
+
 ### 4a. Create the profiles (batched)
 
 Run all creations in one terminal call:
@@ -172,8 +194,9 @@ library skills installed, generated skills, hub skills, genuine gaps.
 A role with no matching skill is valid; a silent skip is not.
 
 Batch: 4a in one terminal round, then all persona files, then all skill
-installs. If you lose track, run `hermes profile list`, compare with the
-checklist, and provision only what is missing. Never re-create an existing
+installs. If you lose track, run `todo` with no parameters and
+`hermes profile list`, compare both with the checklist, and provision
+only what is missing. Never re-create an existing
 profile.
 
 ## Step 5 — Verify with receipts, then hand off
@@ -207,7 +230,9 @@ The final report shows receipts, not assertions: paste the verbatim output
 of `hermes profile list` and each profile's `skills list` into it. The
 report must match your checklist — every item checked, or listed as
 skipped with a reason (not found, rate limit, failed scan). Never declare
-the team "complete" or "ready" while a checklist item is unchecked.
+the team "complete" or "ready" while a checklist item is unchecked — and
+never claim it from memory: paste the `todo` list output showing zero
+open items.
 
 ## If something goes wrong
 
@@ -219,6 +244,9 @@ the team "complete" or "ready" while a checklist item is unchecked.
 - A skill install fails on a rate limit or transient error → mark it
   skipped with the reason and continue; report it in the final report.
 - Persona feels thin → rerun the depth-rule self-review and rewrite it.
+- Never claim browser mode is configured — record the approved browser
+  mode in TEAM.md as policy, and tell the user to enable Settings →
+  Browser → Use My Real Browser Profile in HERMES if they haven't.
 - Cannot fetch repository files → use the fallback skeleton and the
   tiered skill protocol.
 - Cannot provision profiles → say exactly what is missing, deliver the
