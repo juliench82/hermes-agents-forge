@@ -88,7 +88,8 @@ Present, in plain language:
 - what you will do after approval: create profiles, write a rich SOUL.md
   persona for each (from the schema), install real skills per role — from
   the builtins, the Forge library, generation, and the Hub — then verify
-  everything and deliver a full report.
+  everything, wire the team onto a Kanban work board, and deliver a full
+  report.
 
 Then ask exactly: "Shall I provision this team as isolated bot-mode
 profiles?" This single approval authorizes the complete plan — team,
@@ -234,6 +235,60 @@ the team "complete" or "ready" while a checklist item is unchecked — and
 never claim it from memory: paste the `todo` list output showing zero
 open items.
 
+## Step 6 — Wire the team onto a board (Kanban, the work engine)
+
+Group chats are the messaging layer; the board is the work layer. After
+verification passes, give the team a durable work queue: every card is a
+task, every handoff is a row, the dispatcher spawns each assignee as its
+own worker process. Workers get their kanban tools injected automatically
+— nothing to install or configure.
+
+### 6a. Bring up the board
+
+1. `hermes gateway status` — the dispatcher runs inside the gateway. If it
+   is not running, start it: `hermes gateway start`.
+2. `hermes kanban init` — creates the board database if not already
+   present. Idempotent.
+3. Optional: one board per project — `hermes kanban boards create
+   <team-slug> --name "<Team Name>" --switch`. Workers only ever see
+   their own board.
+
+### 6b. Seed the first cards
+
+`hermes kanban create "<task title>" --assignee <approved-name> --body
+"<goal, context, decisions, acceptance criteria>"`
+
+- Use the approved profile names exactly. Never create a card for an
+  assignee that is not on the roster — the dispatcher silently fails on
+  unknown names and auto-blocks the card after two spawn failures.
+- Decide before you fan out: workers cannot see sibling cards. Every card
+  body must carry every decision it depends on — if two cards would pick
+  the same schema, naming, or format, you decide once and stamp it into
+  both bodies.
+- "Keep going until X is true" cards get goal mode: `--goal
+  --goal-max-turns 20`, with explicit acceptance criteria in the body.
+  The judge loops the worker until the criteria are met, or blocks the
+  card for human review if the budget runs out or the goal is
+  unachievable. Never write a vague goal body — the judge reads it as
+  the acceptance criteria.
+- Per-card extras: `--skill <name>` (must already be installed on the
+  assignee's profile) and `--model <model>` for quality-sensitive cards.
+- Cost strategy: run the coordinator on a strong model, point worker
+  profiles at inexpensive models — the workers are where the tokens are
+  spent.
+
+### 6c. Review loop and receipts
+
+- The QA/reviewer specialist works through the board's review states:
+  implementers call `kanban_request_review`, reviewers call
+  `kanban_request_changes` — cards route back to the implementer without
+  a human in the loop.
+- Receipts like everything else: paste the verbatim output of
+  `hermes kanban list` and `hermes kanban stats` into the final report;
+  record the board name and card IDs in TEAM.md.
+- Hand off: tell the user about `hermes kanban watch` (live CLI) and
+  `hermes dashboard` → Kanban tab (drag-and-drop board, comment threads).
+
 ## If something goes wrong
 
 - Interrupted mid-provisioning → run `hermes profile list`, compare with
@@ -251,4 +306,7 @@ open items.
   tiered skill protocol.
 - Cannot provision profiles → say exactly what is missing, deliver the
   team spec anyway so nothing is lost.
+- Gateway cannot start → create the cards anyway (`hermes kanban create`
+  warns when no dispatcher is running; cards dispatch on the next gateway
+  tick). Do not block the handoff on the board.
 - User changes their mind → stop immediately, adjust, and re-confirm once.
