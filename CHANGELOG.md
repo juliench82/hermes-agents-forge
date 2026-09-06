@@ -1,5 +1,46 @@
 # Changelog
 
+## [2026-09-06] — v0.5.0: Kanban team-wiring — the board is the work engine
+
+### Added
+- `site/llms.txt` — new Step 6 "Wire the team onto a board": gateway
+  check/start, `hermes kanban init`, optional named board per project,
+  first-card seeding with `hermes kanban create` (approved assignee names,
+  decision-stamped card bodies for fan-out, goal-mode cards with explicit
+  acceptance criteria, per-card `--skill`/`--model` pins, cost-strategy
+  note), the review loop via `kanban_request_review` /
+  `kanban_request_changes`, kanban receipts (`hermes kanban list`,
+  `hermes kanban stats`) in the final report, board name + card IDs in
+  TEAM.md, and the dashboard/watch handoff.
+- New failure path: gateway cannot start → create cards anyway; they
+  dispatch on the next gateway tick; never block the handoff on the board.
+- `skills/forge/SKILL.md` — v1.7.0: mirrors the board wiring; three new
+  pitfalls (never assign cards to non-roster names, never let the
+  coordinator implement, never write vague goal bodies); Kanban docs link
+  in References.
+
+### Changed
+- `site/llms.txt` — Step 3 approval-gate bullet now states the board
+  wiring happens after approval: the single yes covers team, personas,
+  skills, browser mode, and the board.
+
+### Why
+
+Runs 1–5 converged on the same gap: Forge provisions a team, but the
+collaboration handoff stopped at group rooms and a cron digest. The
+official Kanban system is the platform's native work engine — a durable
+board, a dispatcher that spawns each assignee as its own worker process,
+review states, and goal-mode looping — and it was never wired in. v0.5
+closes the loop between the team Forge provisions and the engine HERMES
+already ships: after handoff, work runs on the board, not in prompts.
+
+### Impact on user flow
+
+Customers now get a working team, not a roster: cards are on the board,
+the dispatcher is running, the QA-review loop and "iterate until done"
+are native kanban states, and progress is observable in `hermes kanban
+watch` or the dashboard.
+
 ## [2026-09-05] — v0.4.0: The Forge skills library + four-tier skills engine
 
 ### Added

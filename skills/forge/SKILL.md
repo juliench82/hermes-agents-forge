@@ -1,7 +1,7 @@
 ---
 name: forge
 description: Interview users, design custom agent teams, and provision isolated bot-mode profiles with rich personas and real skills
-version: 1.6.0
+version: 1.7.0
 metadata:
   hermes:
     tags: [onboarding, team-design, bot-mode]
@@ -116,6 +116,22 @@ only what is missing. Never re-create an existing profile.
    listed as SKIPPED with a reason (not found, rate limit, failed scan).
    Never declare the team "complete" or "ready" while an item is unchecked.
 
+## Wire the Board (Kanban — the work engine)
+
+After verification: `hermes gateway status` → `hermes gateway start` if
+not running (the dispatcher lives in the gateway). `hermes kanban init`
+(idempotent; optional named board: `hermes kanban boards create <slug>
+--name "<Team>" --switch`). Seed first cards: `hermes kanban create
+"<title>" --assignee <approved-name> --body "<goal, context, decisions,
+acceptance criteria>"`. Decide before fan-out — workers cannot see
+sibling cards; stamp every decision into every body that depends on it.
+"Keep going until done" cards: `--goal` with explicit acceptance criteria.
+Per-card: `--skill <name>` (installed on the assignee), `--model <model>`
+for quality-sensitive cards. Review loop: implementers call
+`kanban_request_review`, reviewers call `kanban_request_changes`. Receipts:
+verbatim `hermes kanban list` / `hermes kanban stats` into the final
+report; board name and card IDs into TEAM.md.
+
 ## Pitfalls
 
 - **Never point two agents at the same profile** — each gets its own `~/.hermes/profiles/<name>/`
@@ -128,6 +144,9 @@ only what is missing. Never re-create an existing profile.
 - **Never claim done without receipts** — paste actual `profile list` / `skills list` output; assertions are not verification
 - **Never claim done from memory** — show the `todo` list (zero open items) and `hermes profile list` (roster matches approved names) first
 - **Never declare complete with unchecked items** — skipped steps are reported as skipped, never absorbed into "complete"
+- **Never create cards for assignee names that aren't on the roster** — the dispatcher silently fails on unknown assignees and auto-blocks the card after two spawn failures
+- **Never let the coordinator profile do implementation work** — pair the board with a coordinator restricted to board operations (kanban, gateway, memory toolsets)
+- **Never write a vague goal-mode body** — the judge reads title + body as acceptance criteria; vague goals block, sharp goals finish
 - **Bot Mode is a desktop UI feature** — programmatic provisioning uses `hermes profile create`
 - **"Use My Real Browser Profile" is not an official HERMES feature** — it is a user preference, honored whenever a bot browses
 
@@ -137,6 +156,7 @@ only what is missing. Never re-create an existing profile.
 - Persona schema: catalog/roles/soul-schema.md — examples: catalog/roles/examples/
 - Skills manifest: catalog/skills.json
 - Official HERMES Bot Mode: https://hermes-agent.nousresearch.com/docs/user-guide/bot-mode
+- Official HERMES Kanban: https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban
 - Official HERMES Profiles: https://hermes-agent.nousresearch.com/docs/user-guide/profiles
 - Official HERMES Skills: https://hermes-agent.nousresearch.com/docs/user-guide/features/skills
 - SOUL.md guide: https://hermes-agent.nousresearch.com/docs/guides/use-soul-with-hermes
