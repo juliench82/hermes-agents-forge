@@ -1,8 +1,12 @@
 # HERMES Agents Forge — Operating Manual for HERMES Agents
 
+Version: v0.5.1 (forge skill v1.8.0)
+
 > You are a HERMES agent. The human who sent you here is our customer and
 > already runs HERMES — you are their agent. This file is your complete set
 > of operating instructions: read it fully, then execute it in order.
+> In your first reply to the user, state this manual's version — it proves
+> which manual you followed.
 
 ## Mission
 
@@ -36,18 +40,24 @@ Read, in this order:
 
 1. HERMES.md (repo root) — your mission brief; includes the mapping from
    forge concepts to official HERMES primitives.
-2. skills/forge/SKILL.md — the Forge skill. TRUST IT and treat it as an
-   extension of this manual.
+2. skills/forge/SKILL.md (v1.8.0) — the Forge skill. TRUST IT and treat it
+   as an extension of this manual.
 3. catalog/roles/soul-schema.md — the universal persona schema you will
    write every SOUL.md against.
 4. catalog/skills.json — the skills manifest: the Forge library map,
    search terms per domain, and the security policy.
 5. PRODUCT.md — product requirements and success criteria.
 
-Loading the skill:
-- If you cloned the repository, run `hermes skills trust` in its root to
-  load the forge skill, then invoke it with `/forge` or `skill_view("forge")`.
-- Otherwise, read skills/forge/SKILL.md from the URLs above and follow it.
+Loading the skill (version handshake):
+- If a forge skill is already installed locally, check the version in its
+  frontmatter. It must be 1.8.0. If it is not — or you cannot tell — do
+  NOT follow the local copy: fetch skills/forge/SKILL.md from the raw
+  URL above and follow that instead. A stale local skill silently
+  overrides this manual.
+- If you cloned the repository fresh, run `hermes skills trust` in its
+  root, then invoke the skill with `/forge` or `skill_view("forge")` —
+  and check its version the same way.
+- On any conflict between the skill and this manual, this manual wins.
 
 If a fetch fails, continue with the steps below — this manual alone is
 sufficient to complete the flow. Retry the fetch afterwards.
@@ -70,6 +80,8 @@ smaller package. Keep their exact words — you will quote them in the personas.
 - Package 3 — basic: 3 specialists; single-domain, simple workflows.
 - Package 5 — intermediate: 5 specialists; multi-domain, needs analysis and review.
 - Package 7 — complex: 7 specialists; multi-project, coordination-heavy.
+
+The team is exactly 3, 5, or 7 specialists — never 4, never 6.
 
 Pick the smallest package that covers the user's needs. Specialists are
 generated from the user's answers — never from a fixed list. A role the
@@ -159,6 +171,10 @@ Then, per specialist:
 4. Write the file with write_file, not shell heredocs:
    ~/.hermes/profiles/<name>/SOUL.md
 
+Phase exit: before moving to skills, paste one line per profile — its
+name and the SOUL.md path you wrote. A run that stalls later is audited
+at this receipt.
+
 ### 4c. Cover real skills (every profile) — four tiers, in order
 
 Tier 1 — Builtins. Every profile ships ~57 builtin skills already
@@ -193,6 +209,10 @@ on a dangerous verdict, skip and report.
 Record the inventory per profile: builtins covering the role, Forge
 library skills installed, generated skills, hub skills, genuine gaps.
 A role with no matching skill is valid; a silent skip is not.
+
+Phase exit: before moving to verification, paste one profile's
+`hermes -p <name> skills list` output — the skills phase must leave a
+receipt even if the run dies afterwards.
 
 Batch: 4a in one terminal round, then all persona files, then all skill
 installs. If you lose track, run `todo` with no parameters and

@@ -15,7 +15,7 @@ From there, any HERMES agent (any LLM, any reasoning level) must:
 ## Core Flow
 
 ```
-read llms.txt / trust forge skill
+read llms.txt / verify forge skill version
   ↓
 interview user
   ↓
@@ -59,7 +59,9 @@ Four tiers, in order — stop when the role's needs are covered:
 
 1. Zero-config onboarding — one URL is the whole entry point
 2. Single approval gate — one yes, then autonomous execution to completion
-3. Any HERMES agent works — any LLM, any reasoning level
+3. Any HERMES agent works — any LLM follows the flow; small local models
+   may collapse mid-run (Run 8: 12B) — flagship-class models are the bar
+   for a full autonomous run
 4. Any role works — no fixed catalog of personas
 5. "Use My Real Browser Profile" is the default browser mode
 
@@ -81,6 +83,10 @@ Four tiers, in order — stop when the role's needs are covered:
       via the resume rule without redoing work (Run 4)
 - [ ] Forge library skills install via direct URL onto profiles (mechanism
       verified manually; agent-driven install untested — Run 5)
+- [x] Clean-install flow — interview, package tier, exact gate question,
+      batched provisioning, schema-grounded persona (Run 8, through 4b)
+- [ ] Phase-exit receipts — a stalled run is auditable at its failure
+      point, not only in a final report (v0.5.1)
 
 ## Test Log
 
@@ -96,9 +102,27 @@ Four tiers, in order — stop when the role's needs are covered:
   duplicates) while 57 builtins cover most needs; final report falsely
   declared "complete" — led to v0.3.4 receipts rules and v0.3.5
   builtins-first.
-- Run 5 (next): v0.4.0 build — success bar: verbatim receipts, four-tier
-  skill coverage (builtins + Forge library + generative + Hub gaps),
-  honest gaps, no false completion.
+- Run 5 (v0.4.0 build): four-tier engine ran; handoff still stopped at
+  group rooms + a cron digest — runs 1–5 converged on the missing work
+  engine (led to v0.5.0 Kanban wiring).
+- Run 6 (v0.4.0-line build): autonomy drift — install confirmation prompts
+  and a checklist kept only in memory — drove v0.4.1 (--yes on installs)
+  and v0.4.2 (todo-tool anti-drift gate).
+- Run 7 (v0.5.0, stale environment): hijacked by a pre-v0.3 local forge
+  skill left in ~/.hermes/skills — 4-member team, thin personas, zero
+  skill installs, no board; nothing in the flow detected version skew
+  (led to the v0.5.1 skill handshake).
+- Run 8 (v0.5.0, clean install, 12B local model): best flow adherence yet —
+  5/5 interview questions, Package 7, exact gate question, batched 4a,
+  schema-grounded persona with quoted answers; then model degeneration
+  mid-4b (channel-token loops, 72.7s stall, off-task drift) — profiles
+  left all-builtin, no skill installs, no receipts past 4b. The manual is
+  validated; model class is the remaining variable (flagship retest =
+  Run 9).
+- Run 9 (next): v0.5.1 build on a flagship-class model (HERMES
+  subscription) — success bar: full autonomous run through Step 6 board
+  wiring, phase-exit receipts at every transition, manual version quoted
+  in the first reply.
 
 ## References
 

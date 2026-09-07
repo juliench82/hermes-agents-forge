@@ -1,5 +1,38 @@
 # Changelog
 
+## [2026-09-07] — v0.5.1: Self-verifying runs — version stamp, skill handshake, phase-exit receipts
+
+### Added
+- `site/llms.txt` — Version line at the top; the agent states the version
+  in its first reply, proving which manual a run followed. Version
+  handshake for the forge skill: a locally installed skill must match the
+  version this manual names, or it is re-fetched from the repo; on any
+  conflict the manual wins. Package rule hardened: exactly 3, 5, or 7
+  specialists — never 4 or 6. Phase-exit receipts: after 4b paste the
+  SOUL.md files written, after 4c paste one profile's skills list — a
+  stalled run is auditable at its failure point, not only in a final
+  report that never arrives.
+- `skills/forge/SKILL.md` — v1.8.0: mirrors the handshake and phase-exit
+  receipts; two new pitfalls (never trust a local skill of unknown
+  version; never propose 4 or 6 specialists).
+- `PRODUCT.md` — Runs 5–8 recorded in the Test Log; model-class note
+  (small local models follow the flow but risk mid-run collapse — Run 8);
+  Run 9 success bar defined (flagship model, full autonomous run to board
+  wiring).
+
+### Why
+
+Run 7 was hijacked by a pre-v0.3 local forge skill left in ~/.hermes/skills
+from an earlier session — nothing in the flow detected version skew, and
+the run executed a dead flow while the manual said "TRUST IT". Run 8
+(clean install) validated the flow itself — interview, Package 7, the
+exact gate question, batched provisioning, a schema-grounded persona with
+quoted answers — but the model degenerated mid-4b (channel-token loops,
+72.7s stall, off-task drift), and nothing after the first persona had a
+receipt. v0.5.1 makes runs self-verifying: the version is quotable, the
+skill's age is checkable, and every phase transition leaves evidence
+even if the run dies.
+
 ## [2026-09-06] — v0.5.0: Kanban team-wiring — the board is the work engine
 
 ### Added

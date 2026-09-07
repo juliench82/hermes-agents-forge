@@ -1,7 +1,7 @@
 ---
 name: forge
 description: Interview users, design custom agent teams, and provision isolated bot-mode profiles with rich personas and real skills
-version: 1.7.0
+version: 1.8.0
 metadata:
   hermes:
     tags: [onboarding, team-design, bot-mode]
@@ -33,6 +33,8 @@ Select the package tier:
 - **Package 3** — basic: 3 specialists; single-domain, simple workflows.
 - **Package 5** — intermediate: 5 specialists; multi-domain, needs analysis and review.
 - **Package 7** — complex: 7 specialists; multi-project, coordination-heavy.
+
+The team is exactly 3, 5, or 7 specialists — never 4 or 6.
 
 Pick the smallest package that covers the user's needs. Specialists are
 generated from the user's answers — never from a fixed list. Any role the
@@ -75,6 +77,8 @@ role's skills — all skill tiers count. Every section filled — minimum 2
 sentences or 3 bullets. Self-review: rewrite anything that could apply to
 any role unchanged. Write via write_file: `~/.hermes/profiles/<name>/SOUL.md`.
 
+Phase exit: paste one line per profile — name and SOUL.md path written.
+
 **4c — Real skills, four tiers in order:**
 - Tier 1, builtins: `hermes -p <name> skills list` — a covering builtin
   satisfies the need; never duplicate an enabled builtin.
@@ -87,6 +91,8 @@ any role unchanged. Write via write_file: `~/.hermes/profiles/<name>/SOUL.md`.
   grounded in the interview answers.
 - Tier 4, Hub gaps only: `hermes skills search <term>` → `inspect` →
   `hermes -p <name> skills install <skill> --yes`. Never invent names.
+
+Phase exit: paste one profile's `skills list` output before verification.
 
 If interrupted: `hermes profile list`, compare with the checklist, provision
 only what is missing. Never re-create an existing profile.
@@ -115,6 +121,10 @@ only what is missing. Never re-create an existing profile.
 7. The final report must match the checklist: every item checked, or
    listed as SKIPPED with a reason (not found, rate limit, failed scan).
    Never declare the team "complete" or "ready" while an item is unchecked.
+8. Phase-exit receipts: after personas, paste the SOUL.md files written;
+   after skills, paste one profile's skills list — a stalled run must be
+   auditable at its failure point, not only in a final report that never
+   arrives.
 
 ## Wire the Board (Kanban — the work engine)
 
@@ -135,6 +145,8 @@ report; board name and card IDs into TEAM.md.
 ## Pitfalls
 
 - **Never point two agents at the same profile** — each gets its own `~/.hermes/profiles/<name>/`
+- **Never trust a local forge skill of unknown version** — if its frontmatter is not 1.8.0, re-fetch skills/forge/SKILL.md from the repo and follow that copy
+- **Never propose 4 or 6 specialists** — the package is exactly 3, 5, or 7
 - **Never search the Hub for a capability an enabled builtin already provides** — check the profile's skills list first
 - **Never invent skill names** — search first; a rejected name means stop, not retry
 - **Never --force past a security verdict** — dangerous means skip and report
