@@ -1,6 +1,6 @@
 # HERMES Agents Forge — Operating Manual for HERMES Agents
 
-Version: v0.5.3 (forge skill v1.10.0)
+Version: v0.5.4 (forge skill v1.11.0)
 
 > You are a HERMES agent. The human who sent you here is our customer and
 > already runs HERMES — you are their agent. This file is your complete set
@@ -13,7 +13,7 @@ Version: v0.5.3 (forge skill v1.10.0)
 Interview this user, design a custom team of specialist agents for their
 workflows, get their explicit confirmation, then provision the team as
 isolated bot-mode profiles inside HERMES — each with a rich persona and
-real skills.
+real skills — with a tuned, operational main profile coordinating them.
 
 ## Hard rules
 
@@ -40,7 +40,7 @@ Read, in this order:
 
 1. HERMES.md (repo root) — your mission brief; includes the mapping from
    forge concepts to official HERMES primitives.
-2. skills/forge/SKILL.md (v1.10.0) — the Forge skill. TRUST IT and treat it
+2. skills/forge/SKILL.md (v1.11.0) — the Forge skill. TRUST IT and treat it
    as an extension of this manual.
 3. catalog/roles/soul-schema.md — the universal persona schema you will
    write every SOUL.md against.
@@ -50,7 +50,7 @@ Read, in this order:
 
 Loading the skill (version handshake):
 - If a forge skill is already installed locally, check the version in its
-  frontmatter. It must be 1.10.0. If it is not — or you cannot tell — do
+  frontmatter. It must be 1.11.0. If it is not — or you cannot tell — do
   NOT follow the local copy: fetch skills/forge/SKILL.md from the raw
   URL above and follow that instead. A stale local skill silently
   overrides this manual.
@@ -96,19 +96,21 @@ Present, in plain language:
 - the package tier and why it fits;
 - for each specialist: name, role, responsibilities, tools it uses, and
   browser mode (default: "Use My Real Browser Profile");
-- how they collaborate: hand-offs, group chats, routines;
-- what you will do after approval: create profiles, write a rich SOUL.md
-  persona for each (from the schema), install real skills per role — from
-  builtins, generated skills, and the Hub — then verify
-  everything, wire the team onto a Kanban work board, and deliver a full
-  report.
+- how they collaborate: hand-offs, group chats, routines, the board;
+- what you will do after approval: tune the main profile into the team
+  coordinator (context hygiene, one model per turn), create specialist
+  profiles, write a rich SOUL.md persona for each (from the schema),
+  cover real skills per role — from builtins, generated skills, and the
+  Hub — then verify everything with receipts, wire the team onto a Kanban
+  work board, and deliver a full report.
 
 Then ask exactly: "Shall I provision this team as isolated bot-mode
 profiles?" This single approval authorizes the complete plan — team,
-personas, skills, and browser mode. After an explicit yes, run autonomously
-to completion: make sensible decisions yourself, and deliver the final
-report at the end. Do not ask for further confirmations mid-flow. Stop only
-if something fails in a way you cannot fix.
+personas, skills, browser mode, main-profile tuning, and the board.
+After an explicit yes, run autonomously to completion: make sensible
+decisions yourself, and deliver the final report at the end. Do not ask
+for further confirmations mid-flow. Stop only if something fails in a way
+you cannot fix.
 
 ## Step 4 — Provision the team (official HERMES CLI)
 
@@ -137,6 +139,45 @@ Before claiming the team is ready, all three must hold:
 If any fails, do that work next — never summarize past an open item, and
 never say "ready," "established," or "provisioned" while anything is open.
 
+### 4-0a. Tune profile 0 (the main profile — required)
+
+The main profile is profile 0 of every team: it becomes the coordinator.
+A team provisioned next to a stock, untuned main profile is not fully
+provisioned. Do this immediately after the todo checklist, before any
+`profile create`:
+
+1. Back up the default persona first — never destroy the user's file:
+   `cp ~/.hermes/SOUL.md ~/.hermes/SOUL.md.backup-forge`
+2. Rewrite `~/.hermes/SOUL.md` as the team coordinator: schema-grounded,
+   board operations and dispatch only — routing work to named specialists,
+   collecting receipts, escalating to the user. The coordinator never
+   implements; implementation belongs to the specialists.
+3. Apply context hygiene to the main profile (config keys are per-profile
+   — these land in the main profile's config):
+   - `hermes config set compression.enabled true`
+   - `hermes config set compression.threshold 0.50` (the official default;
+     never lower it without evidence — earlier compression means more
+     summarizer calls, not fewer tokens)
+   - `hermes config set moa.enabled false` — MOA runs reference models plus
+     an aggregator on every user turn; on a coordinator that multiplies
+     token spend. One model per turn.
+   - If delegation is enabled with `fanout: user_turn`, set
+     `delegation.fanout` to a non-per-turn value or disable delegation —
+     the coordinator dispatches through the board, not sub-agent fanout.
+4. Set the approved browser policy: `hermes config set
+   browser.use_real_profile true` (only when the approved plan says
+   real-browser, which is the default). Still tell the user in the final
+   report to confirm the Desktop setting — a config key does not toggle
+   the Desktop UI.
+5. Worker profiles created in 4a get the same treatment: compression
+   enabled, threshold 0.50, MOA off, and an inexpensive model unless the
+   user pinned one. `reasoning_effort` low by default on workers; the
+   coordinator keeps the user's current setting.
+
+If a `config set` fails (key not supported in this HERMES version), note
+it in TEAM.md under "main profile tuning — skipped with reason" and
+continue. A silent skip is not valid; a recorded skip is.
+
 ### 4a. Create the profiles (batched)
 
 Run all creations in one terminal call:
@@ -150,6 +191,9 @@ Pin a model only if the user requested one:
 Write the `--description` line carefully: role + specialty in one line.
 Bot Mode injects every profile's title and description into each teammate's
 roster — that one line is how your bots decide who to message.
+
+Apply the 4-0a worker settings to each new profile before moving on:
+compression on, MOA off, cheap model unless pinned.
 
 ### 4b. Write rich personas (every profile)
 
@@ -200,8 +244,11 @@ skills, hub skills, genuine gaps. A role with no matching skill is valid;
 a silent skip is not.
 
 Phase exit: before moving to verification, paste one profile's
-`hermes -p <name> skills list` output — the skills phase must leave a
-receipt even if the run dies afterwards.
+`hermes -p <name> skills list` output — the FULL table including the
+summary line (for example: "2 hub-installed, 57 builtin, 1 local — 60
+enabled, 0 disabled"). The counts line is the receipt. A rounded claim
+like "59 builtins + 1 generated" without the verbatim table is an
+assertion, not a receipt.
 
 Batch: 4a in one terminal round, then all persona files, then all skill
 installs. If you lose track, run `todo` with no parameters and
@@ -213,14 +260,22 @@ profile.
 
 1. `hermes profile list` — count against the approved plan. A partial team
    is not success: provision what is missing, re-check.
-2. Per profile: `hermes -p <name> skills list` — record the inventory:
-   builtins covering the role, generated skills, gaps.
+2. Per profile: `hermes -p <name> skills list` — paste the FULL output
+   including the counts line; record the inventory: builtins covering
+   the role, generated skills, hub skills, gaps.
 3. `hermes -p <name> chat` — one smoke test per profile: confirm it answers
    in its role.
-4. Write the durable record to TEAM.md in the user's working directory:
+4. Main profile receipts (profile 0 tuning):
+   - `hermes config get compression` — paste verbatim;
+   - `hermes config get moa.enabled` — paste verbatim;
+   - paste the coordinator SOUL.md path and confirm the backup exists at
+     ~/.hermes/SOUL.md.backup-forge.
+5. Write the durable record to TEAM.md in the user's working directory:
    approved plan, profiles created, skills per profile (found and not
-   found), browser mode, verification results, anything skipped or failed.
-5. Rituals: if Bot Mode / HERMES Desktop is available, set up the team's
+   found — with the verbatim counts lines), main-profile tuning applied
+   (or skipped with reason), browser mode, verification results, anything
+   skipped or failed.
+6. Rituals: if Bot Mode / HERMES Desktop is available, set up the team's
    collaboration layer for real:
    - Create a group chat for the team — rooms hold 2–6 Bots, so a
      7-member team gets two rooms (e.g. build + review).
@@ -233,16 +288,17 @@ profile.
      real-browser mode.
    If Bot Mode is not available, suggest one small first task to test
    the team end-to-end.
-6. Tell the user they can return to https://hermes-agents-forge.vercel.app/llms.txt
+7. Tell the user they can return to https://hermes-agents-forge.vercel.app/llms.txt
    at any time to redesign, expand, or dismantle the team.
 
 The final report shows receipts, not assertions: paste the verbatim output
-of `hermes profile list` and each profile's `skills list` into it. The
-report must match your checklist — every item checked, or listed as
-skipped with a reason (not found, rate limit, failed scan). Never declare
-the team "complete" or "ready" while a checklist item is unchecked — and
-never claim it from memory: paste the `todo` list output showing zero
-open items.
+of `hermes profile list`, each profile's `skills list` (with counts line),
+class `hermes config get compression` and `moa.enabled` for the main
+profile, and the kanban receipts from Step 6. The report must match your
+checklist — every item checked, or listed as skipped with a reason (not
+found, rate limit, failed scan). Never declare the team "complete" or
+"ready" while a checklist item is unchecked — and never claim it from
+memory: paste the `todo` list output showing zero open items.
 
 ## Step 6 — Wire the team onto a board (Kanban, the work engine)
 
@@ -258,7 +314,16 @@ own worker process. Workers get their kanban tools injected automatically
    is not running, start it: `hermes gateway start`.
 2. `hermes kanban init` — creates the board database if not already
    present. Idempotent.
-3. Optional: one board per project — `hermes kanban boards create
+3. Kanban Desktop state: the dashboard's Kanban tab is a bundled plugin,
+   OFF by default — the CLI board and the Desktop view are two surfaces.
+   The CLI board, gateway, and dispatcher are the work engine and are
+   fully functional without the Desktop tab. If the Desktop plugin is
+   off, do NOT block the handoff: record its state in TEAM.md and put
+   the one-line instruction in the final report — "Settings → Plugins →
+   Kanban → enable" — the user flips it when they want the visual board.
+   Never claim the board is "wired" without stating whether the Desktop
+   plugin is on or off.
+4. Optional: one board per project — `hermes kanban boards create
    <team-slug> --name "<Team Name>" --switch`. Workers only ever see
    their own board.
 
@@ -294,14 +359,20 @@ own worker process. Workers get their kanban tools injected automatically
   a human in the loop.
 - Receipts like everything else: paste the verbatim output of
   `hermes kanban list` and `hermes kanban stats` into the final report;
-  record the board name and card IDs in TEAM.md.
+  record the board name, card IDs, and the Desktop plugin state (on/off)
+  in TEAM.md.
 - Hand off: tell the user about `hermes kanban watch` (live CLI) and
-  `hermes dashboard` → Kanban tab (drag-and-drop board, comment threads).
+  `hermes dashboard` → Kanban tab (drag-and-drop board, comment threads
+  — after they enable the plugin in Settings).
 
 ## If something goes wrong
 
 - Interrupted mid-provisioning → run `hermes profile list`, compare with
   the checklist, and provision only what is missing.
+- Main profile left stock (generic SOUL.md, MOA on, no compression) →
+  rerun 4-0a. A team with an untuned coordinator is not fully provisioned.
+- A `config set` key is rejected → record the key and reason in TEAM.md,
+  continue; never silently skip.
 - A skill name is rejected → never retry invented names; note it in TEAM.md.
 - A security scan returns a dangerous verdict → skip the skill, say why
   in TEAM.md. Never --force past a verdict.
@@ -319,5 +390,3 @@ own worker process. Workers get their kanban tools injected automatically
   warns when no dispatcher is running; cards dispatch on the next gateway
   tick). Do not block the handoff on the board.
 - User changes their mind → stop immediately, adjust, and re-confirm once.
-
-Context-hygiene update: post-approval compression and output-cap tuning, per-profile defaults, and Kanban desktop activation guidance.
