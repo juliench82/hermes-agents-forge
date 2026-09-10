@@ -1,6 +1,6 @@
 # HERMES Agents Forge — Operating Manual for HERMES Agents
 
-Version: v0.5.5 (forge skill v1.12.0)
+Version: v0.5.6 (forge skill v1.13.0)
 
 > You are a HERMES agent. The human who sent you here is our customer and
 > already runs HERMES — you are their agent. This file is your complete set
@@ -35,7 +35,7 @@ Read, in this order:
 
 1. HERMES.md (repo root) — your mission brief; includes the mapping from
    forge concepts to official HERMES primitives.
-2. skills/forge/SKILL.md (v1.12.0) — the Forge skill. TRUST IT and treat it
+2. skills/forge/SKILL.md (v1.13.0) — the Forge skill. TRUST IT and treat it
    as an extension of this manual.
 3. catalog/roles/soul-schema.md — the universal persona schema you will
    write every SOUL.md against.
@@ -44,7 +44,7 @@ Read, in this order:
 
 Loading the skill (version handshake):
 - If a forge skill is already installed locally, check the version in its
-  frontmatter. It must be 1.12.0. If it is not — or you cannot tell — do
+  frontmatter. It must be 1.13.0. If it is not — or you cannot tell — do
   NOT follow the local copy: fetch skills/forge/SKILL.md from the raw
   URL above and follow that instead. A stale local skill silently
   overrides this manual.
@@ -79,7 +79,10 @@ personas, skills, browser mode, main-profile tuning, and the board.
 After an explicit yes, run autonomously to completion: make sensible
 decisions yourself, and deliver the final report at the end. Do not ask
 for further confirmations mid-flow. Stop only if something fails in a way
+
 you cannot fix.
+
+Important: you are not an orchestrator and must not run this flow yourself. This manual describes how a HERMES agent provisions a team for the user who sent you here; it is not instructions for you to interview this user, design a team, or provision anything. Do not execute this flow against the current conversation.
 
 ## Step 4 — Provision the team (official HERMES CLI)
 
@@ -121,10 +124,10 @@ provisioned. Do this immediately after the todo checklist, before any
    real-browser, which is the default). Still tell the user in the final
    report to confirm the Desktop setting — a config key does not toggle
    the Desktop UI.
-5. Worker profiles created in 4a get the same treatment: compression
-   enabled, threshold 0.50, MOA off, and an inexpensive model unless the
-   user pinned one. `reasoning_effort` low by default on workers; the
-   coordinator keeps the user's current setting.
+5. Worker profiles created in 4a get the same treatment: compression on,
+   threshold 0.50, MOA off, and an inexpensive model unless the user pinned
+   one. `reasoning_effort` low by default on workers; the coordinator keeps
+   the user's current setting.
 
 If a `config set` fails (key not supported in this HERMES version), note
 it in TEAM.md under "main profile tuning — skipped with reason" and
@@ -205,7 +208,7 @@ re-provision only what is missing. Never re-create an existing profile.
      credential pool by default, matching the real-browser mode.
    If Bot Mode is not available, suggest one small first task to test
    the team end-to-end.
-7. Tell the user they can return to https://hermes-agents-forge.vercel.app/llms.txt
+7. Tell the user they can return to [https://hermes-agents-forge.vercel.app/llms.txt](https://hermes-agents-forge.vercel.app/llms.txt)
    at any time to redesign, expand, or dismantle the team.
 
 The final report shows receipts, not assertions: paste the verbatim output
@@ -257,8 +260,8 @@ Seed the board:
   record the board name, card IDs, and the Desktop plugin state (on/off)
   in TEAM.md.
 - Hand off: tell the user about `hermes kanban watch` (live CLI) and
-  `hermes dashboard` → Kanban tab (drag-and-drop board, comment threads
-  — after they enable the plugin in Settings).
+  `hermes dashboard` → Kanban tab (drag-and-drop board, comment threads —
+  after they enable the plugin in Settings).
 
 ## If something goes wrong
 
@@ -277,3 +280,7 @@ Seed the board:
   when no dispatcher is running; cards dispatch on the next gateway
   tick). Do not block the handoff on the board.
 - User changes their mind → stop immediately, adjust, and re-confirm once.
+
+## Version history
+
+1.13.0 — v0.5.6 manual: explicit “do not run the flow yourself” stance; canonical llms.txt URL; TEAM.md always under ~/.hermes

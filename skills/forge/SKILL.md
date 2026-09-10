@@ -1,7 +1,7 @@
 ---
 name: forge
 description: Interview users, design custom agent teams, and provision isolated bot-mode profiles with rich personas and real skills
-version: 1.12.0
+version: 1.13.0
 metadata:
   hermes:
     tags: [onboarding, team-design, bot-mode]
@@ -99,13 +99,13 @@ then rewrite it as the coordinator (board operations, dispatch, receipts —
 never implementation). Apply context hygiene to the main profile:
 `hermes config set compression.enabled true`, `hermes config set
 compression.threshold 0.50` (official default — never lower without
-evidence), `hermes config set moa.enabled false` (one model per turn on
-the coordinator — MOA multiplies token spend), and fix
+evidence), `hermes config set moa.enabled false` (one model per turn on the
+coordinator — MOA multiplies token spend), and fix
 `delegation.fanout: user_turn` if present. Set
-`browser.use_real_profile true` per approved policy and still tell the
-user to confirm the Desktop setting. Workers get the same treatment:
-compression on, MOA off, inexpensive model unless pinned. A rejected
-config key is recorded in TEAM.md and skipped loudly — never silently.
+`browser.use_real_profile true` per approved policy and still tell the user to
+confirm the Desktop setting. Workers get the same treatment:
+compression on, MOA off, inexpensive model unless pinned. A rejected config
+key is recorded in TEAM.md and skipped loudly — never silently.
 
 **4a — Profiles (batched, one terminal round):**
 - `hermes profile create <name> --description "<role>"` (variant: `--clone`)
@@ -142,11 +142,11 @@ only what is missing. Never re-create an existing profile.
 ## Step 5: Verify and hand off
 
 1. `hermes profile list` AND `todo` (no parameters) — count against the
-   approved plan; zero open items; the roster must match the approved
-   names exactly; partial is not success, provision what is missing.
-2. `hermes -p <name> skills list` — paste the FULL output including the
-   counts line; record the inventory per profile: builtins covering the
-   role, generated skills, gaps.
+   approved plan; zero open items; the roster must match the approved names
+   exactly; partial is not success, provision what is missing.
+2. `hermes -p <name> skills list` — paste the FULL output including the counts
+   line; record the inventory per profile: builtins covering the role,
+   generated skills, gaps.
 3. `hermes -p <name> chat` — one smoke test per profile, answering in role.
 4. Profile 0 receipts: `hermes config get compression` and
    `hermes config get moa.enabled` pasted verbatim; the coordinator
@@ -196,12 +196,12 @@ implementers call `kanban_request_review`, reviewers call
 Desktop plugin state (on/off) into TEAM.md.
 
 Kanban Desktop: the dashboard's Kanban tab is a bundled plugin, OFF by
-default — the CLI board and the Desktop view are two surfaces. The CLI
-board, gateway, and dispatcher work without it. If the plugin is off,
-record the state and put the one-line instruction in the final report
-("Settings → Plugins → Kanban → enable"); never block the handoff on
-the toggle, and never claim the board is "wired" without stating
-whether the Desktop plugin is on or off.
+ default — the CLI board and the Desktop view are two surfaces. The CLI
+ board, gateway, and dispatcher work without it. If the plugin is off,
+ record the state and put the one-line instruction in the final report
+ ("Settings → Plugins → Kanban → enable"); never block the handoff on
+ the toggle, and never claim the board is "wired" without stating
+ whether the Desktop plugin is on or off.
 
 ## Pitfalls
 
@@ -216,7 +216,7 @@ whether the Desktop plugin is on or off.
 - **Never invent skill names** — search first; a rejected name means stop, not retry
 - **Never --force past a security verdict** — dangerous means skip and report
 - **Never write thin personas** — the schema's depth rules are the floor, not the ceiling
-- **Never write a throwaway `--description`** — every teammate's roster reads it to decide who to message
+- **Never write a throwaway `--description` — every teammate's roster reads it to decide who to message
 - **Never break the single approval gate** — no mid-flow confirmations after the yes
 - **Never claim done without receipts** — paste actual `profile list` / `skills list` / `config get` output; assertions are not verification
 - **Never claim done from memory** — show the `todo` list (zero open items) and `hermes profile list` (roster matches approved names) first
@@ -237,3 +237,7 @@ whether the Desktop plugin is on or off.
 - Official HERMES Skills: https://hermes-agent.nousresearch.com/docs/user-guide/features/skills
 - Official HERMES Configuration: https://hermes-agent.nousresearch.com/docs/user-guide/configuration
 - SOUL.md guide: https://hermes-agent.nousresearch.com/docs/guides/use-soul-with-hermes
+
+## Version history
+
+1.13.0 — v0.5.6 manual: explicit “do not run the flow yourself” stance; canonical llms.txt URL; TEAM.md always under ~/.hermes
