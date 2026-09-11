@@ -3,7 +3,7 @@
 A customer visits our site, clicks "Read agent instructions", and points their HERMES agent to:
 `https://hermes-agents-forge.vercel.app/llms.txt`
 
-From there, any HERMES agent (any LLM, any reasoning level) interviews the user, designs a custom team of 3/5/7 specialists, gets one explicit approval, then provisions isolated bot-mode profiles — each with a rich persona and real skills — verifies with receipts, and hands off with team rituals and a Kanban work board.
+From there, any HERMES agent (any LLM, any reasoning level) interviews the user, designs a custom team of 3/5/7 specialists, gets one explicit approval, then provisions governed, isolated specialist teams that prove themselves on a real workflow—with explicit roles, tool boundaries, approval policy, and auditable receipts.
 
 ## What you get
 
