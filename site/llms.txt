@@ -19,7 +19,7 @@ When a user starts Forge, run only Team Setup:
 
 1. Inspect Hermes version, supported configuration keys, current profiles, and available skills.
 2. Run the focused Team Setup interview: broad outcome, required capabilities/tools, models/budget, data/compliance constraints, autonomy/approval posture, and forbidden access/actions.
-3. Propose the smallest complete coordinator-plus-worker roster. Keep roles distinct and generate profile/persona/skill details dynamically from the interview; do not force industry-specific templates.
+3. Propose the smallest complete coordinator-plus-worker roster. Keep roles distinct and generate profile/persona/skill details dynamically; do not force industry-specific templates.
 4. Ask for explicit approval before provisioning.
 5. Back up and tune the coordinator, create isolated worker profiles, write rich personas, assign/generate verified skills, and apply supported optimization settings.
 6. Verify with verbatim receipts: profile list, full skills lists with counts, configuration, persona paths, backup, smoke tests, and zero open setup items.
