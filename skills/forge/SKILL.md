@@ -1,97 +1,108 @@
 ---
 name: forge
-version: 1.14.0
-description: Provision minimal, governed Hermes specialist teams with explicit role contracts, runtime policy, supervised trials, and auditable receipts.
+version: 1.15.0
+description: Provision a minimal governed Hermes specialist team; stop after team setup and auditable receipts.
 metadata:
   author: juliench82
-  version: 1.14.0
-  tags: [onboarding, team-design, bot-mode, governance]
+  version: 1.15.0
+  tags: [onboarding, team-design, team-setup, bot-mode, governance]
 ---
 
 ## Mission
 
-You are the Forge skill. Interview the user once, design a minimal but complete agent team, and provision it using official HERMES CLI commands—with receipts, explicit contracts, and a supervised trial rather than assertions.
+You are Forge Team Setup. Your only job is to interview the user, design, provision, optimize, and verify a governed isolated specialist team. Do not create or execute a customer workflow during this onboarding.
 
 You operate under the llms.txt manual. If anything here conflicts with llms.txt, the manual wins—fetch it raw and follow that.
 
-## Step 0 — Pre-flight: session hygiene and cost control
+## Scope boundary
 
-Before running the forge flow:
+Forge Team Setup ends when the team is provisioned and verified. It may define broad capability domains and generic role boundaries, but it must not configure a specific business process.
 
-1. Run `/context` and `/usage` and paste the output.
-2. Unload non-required skills; enable only toolsets needed for the run.
-3. If the chat is long or multi-topic, run `/compress` or start a fresh `/new` session.
-4. Confirm auxiliary lanes use stable providers; if an auxiliary call fails, check provider settings before retrying.
+Do not perform any of the following during Team Setup:
 
-## Step 1 — Interview (single turn)
+- Create workflow-specific Kanban work cards.
+- Create workflow-specific cron jobs or recurring routines.
+- Start a real dispatcher task.
+- Connect or test a live business integration for a particular workflow.
+- Define workflow-specific source-of-truth files, detailed acceptance criteria, or production schedules.
+- Run a workflow trial or claim a workflow is operational.
+- Send, publish, merge, deploy, pay, delete, or otherwise change external state.
+
+## Step 0 — Pre-flight
+
+1. Run `/context` and `/usage`; record the baseline.
+2. Load only the skills required for team setup.
+3. If the session is long or multi-topic, run `/compress` or start a fresh `/new` session.
+4. Confirm stable auxiliary providers before continuing.
+5. Inspect the Hermes version and supported configuration keys before applying optimization settings.
+
+## Step 1 — Team Setup interview
 
 Ask these questions in one message and wait for the complete reply:
 
-1. What single outcome must this team deliver in the next 30 days?
-2. Which existing HERMES skills or tools are non-negotiable?
-3. What hard constraints apply—budget, models, data sensitivity, or compliance?
-4. How much autonomy should the coordinator have, from 1 to 10?
-5. What would make onboarding a waste of time or money?
+1. What broad outcome or capability should this team support?
+2. Which specialist capabilities and tools are required or non-negotiable?
+3. What model, budget, data-sensitivity, and compliance constraints apply?
+4. What autonomy, communication, and approval posture should the team use?
+5. What must the team never access or do?
 
-Do not proceed until all five answers are clear.
+Do not ask for a workflow trigger, production schedule, live integration setup, or task-specific source-of-truth files at this stage.
 
-## Step 2 — Design the governed team (one internal turn)
+## Step 2 — Design the team
 
 Using the answers, draft:
 
-- A coordinator role responsible for routing, board operations, receipts, contract maintenance, and reconciliation—but never implementation.
-- One to three worker roles covering the outcome end-to-end.
-- A minimal skill set per role, preferring builtins over generated skills.
-- A `TEAM-CONTRACT.md` populated from `templates/TEAM-CONTRACT.md`, with ownership, exclusions, inputs, outputs, sources of truth, allowed tools, approval boundaries, forbidden actions, and exact handoff artifacts.
-- A `TEAM-POLICY.md` populated from `templates/TEAM-POLICY.md`, with concurrency, model, data-access, external-action, and cost-review rules.
-- A `TRIAL.md` populated from `templates/TRIAL.md`, defining one real mission requiring at least two specialists and a final integrator.
+- A coordinator responsible for routing, receipts, contract maintenance, and reconciliation—but never implementation.
+- One to three workers with distinct capability ownership.
+- A minimal role-appropriate skill set, preferring builtins and generating only genuine gaps.
+- `TEAM-CONTRACT.md` with generic role ownership, exclusions, inputs, outputs, tools, boundaries, and handoff expectations.
+- `TEAM-POLICY.md` with team-wide models, concurrency, data boundaries, approval rules, and cost limits.
 
-Show the user the roster, contract summary, policy, trial mission, and skill coverage plan. Ask for explicit yes/no approval. Do not provision without approval.
+Show the user the proposed roster, role boundaries, skills, optimization settings, team policy, and verification plan. Ask for explicit approval before provisioning.
 
-## Step 3 — Provision after approval
+## Step 3 — Provision and optimize
 
-Before claiming the team is ready:
+After approval:
 
-1. `hermes profile list` shows exactly the approved names, with no extras.
-2. `todo` shows zero open items.
-3. Every profile has a complete `skills list` receipt, including the counts line.
-4. The three governance artifacts are written to the durable team record location.
+1. Back up and tune the coordinator profile before creating workers.
+2. Apply supported compression, model, reasoning, browser, and MOA settings. Record rejected keys and reasons.
+3. Create only the approved isolated profiles.
+4. Write rich schema-grounded personas for every profile.
+5. Install or generate only approved team-capability skills; verify their provenance and assigned profile.
+6. Optionally create an empty communication room for the team. Do not create workflow cards or routines.
+7. Do not initialize or populate a workflow execution board during this phase.
 
-Provisioning steps:
+## Step 4 — Verify team setup
 
-1. Apply approved main-profile context and model settings. Record rejected keys and reasons; never skip silently.
-2. Create only missing profiles with `hermes profile create <name> --description "<one-line role>"`.
-3. Write each persona and assign only the approved skills.
-4. Smoke-test each profile with `hermes -p <name> chat`.
-5. If Bot Mode is available, create the approved group room and verify membership.
-6. Optionally initialize Kanban and create cards whose assignees exactly match the roster.
-7. Write populated `TEAM-CONTRACT.md`, `TEAM-POLICY.md`, and `TRIAL.md` under `~/.hermes/TEAM.md` or its team-specific durable directory. Preserve the templates' headings and record any skipped step.
+The required completion receipts are:
 
-## Step 4 — Supervised cross-role trial
+- `hermes profile list` matches the approved roster exactly.
+- Every profile's complete `skills list`, including the counts line.
+- Coordinator and worker configuration receipts.
+- Persona paths and backup confirmation.
+- Team policy and contract paths.
+- Profile smoke-test results.
+- A zero-open-items checklist.
 
-A provisioned team is not operational until it completes a supervised trial:
+A team smoke test validates role identity, assigned capabilities, boundaries, and escalation behavior. It does not execute a business workflow.
 
-1. Start the defined real task with at least two specialists.
-2. Record owner, input/source, output artifact, handoff, approval, and result for every step.
-3. Verify that the final integrator reconciles outputs against the acceptance criteria.
-4. Record duplication, missing context, blockers, approval events, duration, and usage.
-5. If the trial fails, revise the contract, policy, skill assignment, or roster and rerun it.
-6. Mark the team `operational` only after human sign-off in `TRIAL.md`.
+## Step 5 — Team Setup handoff
 
-## Step 5 — Final receipts and handoff
+Write the durable team record to `~/.hermes/TEAM.md` and set:
 
-The final report must include verbatim output for:
+```text
+TEAM STATUS: PROVISIONED
+WORKFLOW STATUS: NONE
+```
 
-- `hermes profile list`.
-- `todo`.
-- Every profile's full `skills list`, including counts.
-- Main-profile `config get` receipts.
-- Bot Mode room membership, if used.
-- Kanban list/stats, if used.
-- The populated governance artifact paths.
-- The trial evidence and human sign-off.
+The final report must state clearly:
 
-Never claim the team is complete, ready, or operational while any required receipt or trial result is missing. Mark skipped or failed items explicitly with a reason.
+- The team is provisioned and verified.
+- No workflow has been created or activated.
+- No workflow-specific cron, cards, live integrations, or trial were run.
+- The next step is to invoke the separate Workflow Builder when the user is ready.
+
+Never claim a workflow is ready or operational from Team Setup alone.
 
 ## Runtime rules
 
@@ -99,15 +110,10 @@ Never claim the team is complete, ready, or operational while any required recei
 - Never invent skill names; search first.
 - Never force past a dangerous security verdict.
 - Never let the coordinator implement worker-owned tasks.
-- Never allow a worker to act outside its contract without a new approval.
-- Never send, publish, merge, deploy, delete, purchase, or modify external state without the configured approval gate.
-- Never accept a handoff without source references, evidence, blockers, and the exact next action.
-- Never create recurring routines before the supervised trial passes.
+- Never allow a worker to act outside its team contract.
+- Never send, publish, merge, deploy, delete, purchase, pay, or modify external state.
+- Never create workflow routines, schedules, cards, or live integration jobs here.
 - Never claim verification without verbatim receipts.
-
-## Cost-awareness
-
-Compare accepted-task cost, duration, rework, approval rate, and duplicate-work incidents before and after the trial. Review the team after seven days and remove or merge roles that do not add measurable value.
 
 ## References
 
@@ -116,3 +122,4 @@ Compare accepted-task cost, duration, rework, approval rate, and duplicate-work 
 - Official HERMES Skills: https://hermes-agent.nousresearch.com/docs/user-guide/features/skills
 - Official HERMES Configuration: https://hermes-agent.nousresearch.com/docs/user-guide/configuration
 - SOUL.md guide: https://hermes-agent.nousresearch.com/docs/guides/use-soul-with-hermes
+- Workflow Builder: `skills/workflow-builder/SKILL.md`
