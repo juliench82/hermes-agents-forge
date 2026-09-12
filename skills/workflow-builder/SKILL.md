@@ -1,10 +1,10 @@
 ---
 name: workflow-builder
-version: 1.3.0
+version: 1.4.0
 description: Discover, design, test, and activate the first or a later workflow using an existing provisioned Hermes team.
 metadata:
   author: juliench82
-  version: 1.3.0
+  version: 1.4.0
   tags: [workflow, orchestration, kickoff, trial, activation, idempotency, control-plane, governance]
 ---
 
@@ -42,57 +42,68 @@ assignee: <stable coordinator profile name>
 status: READY
 ```
 
-The coordinator must claim it by recording a receipt with card ID, prior state, new state, coordinator identity, timestamp, and team record path. Then and only then may it move the card to `DESIGNING`. If multiple matching cards exist, stop.
+The dispatcher must route this card only to the exact coordinator and must not spawn a specialist or execute customer-work tools. If the dispatcher cannot enforce the metadata, the card must remain unclaimed and the handoff must be queued locally.
 
-## Workflow interview and design
+## Explicit workflow interview
 
-Ask the workflow questions from this skill in one message. Do not provision a team or silently broaden permissions.
+Ask these questions in one message:
 
-After the interview, create drafts only and set:
+1. Which existing provisioned team will own this workflow?
+2. What exact trigger starts it, and what observable final outcome defines success?
+3. What inputs, systems, source-of-truth files, and outputs are involved?
+4. Which approved profile owns each stage, and what exact artifact is handed off next?
+5. Which actions are reversible, irreversible, external, sensitive, or approval-gated?
+6. What schedule, concurrency, timeout, retry, and escalation rules apply?
+7. What safe test data, sandbox, dry-run mode, or limited scope will be used first?
+8. What metrics and acceptance criteria determine whether the workflow is useful and safe to activate?
+
+Do not provision a team or silently broaden permissions. If a required capability is missing, document the gap and stop for approval rather than changing the team implicitly.
+
+## Claim and recovery protocol
+
+Claiming the kickoff card is a two-phase operation:
+
+1. Validate metadata, team preconditions, uniqueness, and coordinator identity.
+2. Atomically write the claim receipt and transition `READY → DESIGNING`.
+3. If either write fails, do not continue. Re-read the card and receipt:
+   - If both show the new state and receipt, resume.
+   - If neither changed, retry once with the same key.
+   - If they disagree, mark `WORKFLOW HANDOFF: CLAIM-RECOVERY-REQUIRED` and stop.
+
+The receipt must include card ID, key, prior/new state, coordinator, timestamp, and team record path.
+
+## Workflow design and approval
+
+After a successful claim and interview, set:
 
 ```text
 WORKFLOW HANDOFF: DESIGNING
 WORKFLOW STATUS: DESIGNING
 ```
 
-Create `WORKFLOW-CONTRACT.md`, `WORKFLOW-POLICY.md`, `WORKFLOW-RUNBOOK.md`, and `TRIAL.md`. The contract must define trigger, outcome, stages, owners, inputs, outputs, handoffs, source of truth, acceptance criteria, exceptions, approvals, runtime controls, and status transitions.
+Create drafts only:
 
-The workflow policy must be at least as restrictive as the team policy.
+- `WORKFLOW-CONTRACT.md`.
+- `WORKFLOW-POLICY.md`.
+- `WORKFLOW-RUNBOOK.md`.
+- `TRIAL.md`.
 
-## Workflow-design approval gate
+The contract must define trigger, outcome, stages, owners, inputs, outputs, handoffs, source of truth, acceptance criteria, exceptions, approvals, runtime controls, and status transitions. The workflow policy must be at least as restrictive as the team policy.
 
-Record an approval receipt containing the workflow ID/version, exact artifact paths, profiles/tools, integration and credential scope, external actions and approvals, test scope, runtime limits, schedule, approver, decision, and timestamp.
+Record an approval receipt containing workflow ID/version, exact artifact paths, profiles/tools, integration and credential scope, allowed external actions and approvals, test scope, runtime limits, schedule, approver, decision, and timestamp.
 
-Before that receipt, do not create execution cards, connect credentials, change permissions, create routines, start a trial, or perform external actions.
-
-After approval, set:
-
-```text
-WORKFLOW STATUS: DESIGNED
-```
-
-and provision only the approved execution assets.
+Before that receipt, do not create execution cards, connect credentials, change permissions, create routines, start a trial, or perform external actions. After approval, set `WORKFLOW STATUS: DESIGNED` and provision only approved execution assets.
 
 ## Supervised trial and activation
 
 Use safe data, sandbox, dry-run, or limited scope. Record stage evidence, handoffs, approvals, blockers, retries, exceptions, duration, usage, and acceptance results.
 
-Set:
-
-```text
-WORKFLOW STATUS: TRIAL-PASSED
-```
-
-only when every acceptance criterion passes. Set:
-
-```text
-WORKFLOW STATUS: OPERATIONAL
-```
-
-only after explicit human activation approval.
+Set `WORKFLOW STATUS: TRIAL-PASSED` only when every acceptance criterion passes. Set `WORKFLOW STATUS: OPERATIONAL` only after explicit human activation approval.
 
 ## Receipts and runtime rules
 
-Report team status, stable coordinator, card metadata, idempotency key, state transitions, handoff receipt, workflow artifacts, approval receipt, execution assets, trial evidence, activation approval, and skipped/failed items verbatim.
+Report team status, stable coordinator, card metadata, idempotency key, state transitions, handoff/claim receipt, workflow artifacts, approval receipt, execution assets, trial evidence, activation approval, and skipped/failed items verbatim.
+
+Store workflow-specific artifacts and receipts under `~/.hermes/workflows/<workflow-id>/` and keep `TEAM.md` as the team-level index and status record.
 
 Never allow a specialist to own discovery or workflow-design approval. Never reuse an idempotency key for a different workflow. Never act externally without the applicable approval gate.

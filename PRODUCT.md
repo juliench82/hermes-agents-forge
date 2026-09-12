@@ -10,19 +10,7 @@ Hermes Agents Forge provisions governed, isolated specialist teams. It creates p
 
 Team Setup interviews for broad capability, specialist requirements, constraints, autonomy, data boundaries, and approval posture. It provisions the smallest useful coordinator-plus-worker team, rich personas, verified capabilities, supported optimization, team contracts, team policy, and receipts.
 
-After setup verification, it creates exactly one first-workflow control-plane handoff with key `workflow-builder-kickoff:first-workflow:v1`, unless that active handoff already exists. The handoff is assigned to the stable coordinator profile and is non-executable:
-
-```yaml
-kind: onboarding
-control_plane: true
-execution_allowed: false
-workflow_scope: first-workflow-only
-idempotency_key: workflow-builder-kickoff:first-workflow:v1
-assignee: <stable coordinator>
-status: READY
-```
-
-This is an automatic handoff, not automatic automation.
+After setup verification, it creates exactly one first-workflow control-plane handoff with key `workflow-builder-kickoff:first-workflow:v1`, unless that active handoff already exists. The handoff is assigned to the stable coordinator profile and is non-executable. If the dispatcher cannot enforce the control-plane metadata, Forge queues the handoff locally instead of creating an executable card.
 
 Team Setup ends with:
 
@@ -36,20 +24,22 @@ No workflow execution cards, live integrations, routines, schedules, trials, or 
 
 ### Phase 2 — Workflow Builder
 
-The stable coordinator verifies the handoff and claims the kickoff card. It records the handoff receipt, then transitions:
+The stable coordinator verifies the handoff and claims the kickoff card. The claim writes a receipt and transitions:
 
 ```text
 WORKFLOW HANDOFF: READY → DESIGNING
 WORKFLOW STATUS: NONE → DESIGNING
 ```
 
-It interviews the customer and creates drafts for one workflow. It must obtain explicit workflow-design approval before provisioning execution assets. After approval:
+If claim state and receipt disagree, the workflow enters `CLAIM-RECOVERY-REQUIRED` and stops. The coordinator interviews the customer and creates drafts for one workflow. It must obtain explicit workflow-design approval before provisioning execution assets.
+
+After approval:
 
 ```text
 WORKFLOW STATUS: DESIGNING → DESIGNED → TRIAL-PASSED → OPERATIONAL
 ```
 
-The first automatic handoff is limited to the first workflow. Later workflows use separate workflow IDs and idempotency keys, for example `workflow:<workflow-slug>:v1`.
+The first automatic handoff is limited to the first workflow. Later workflows use separate workflow IDs and idempotency keys, for example `workflow:<workflow-slug>:v1`. Workflow-specific artifacts and receipts live under `~/.hermes/workflows/<workflow-id>/`; `TEAM.md` remains the team-level index.
 
 ## Roles
 

@@ -26,7 +26,7 @@ Run `skills/forge/SKILL.md` only:
 6. Resolve and record the stable coordinator profile.
 7. Search for `workflow-builder-kickoff:first-workflow:v1`.
 8. Reuse one active matching card, create exactly one if none exists, and stop on duplicates.
-9. Card metadata must include `kind: onboarding`, `control_plane: true`, `execution_allowed: false`, `workflow_scope: first-workflow-only`, the exact idempotency key, stable assignee, and `READY` status.
+9. Before creating a card, verify the dispatcher supports `control_plane: true` and `execution_allowed: false`. If not, queue locally.
 10. Record the handoff receipt in `~/.hermes/TEAM.md`.
 11. Report:
 
@@ -40,18 +40,19 @@ Do not create workflow execution cards, live integrations, routines, schedules, 
 
 ## Stage 2: Workflow Builder
 
-Run `skills/workflow-builder/SKILL.md` only after verifying the team record and one valid kickoff card:
+Run `skills/workflow-builder/SKILL.md` only after verifying the team record and one valid kickoff card or local handoff:
 
 1. Confirm stable coordinator identity and exact card metadata.
-2. Stop on duplicate active cards.
-3. Record the claim/handoff receipt.
-4. Keep the kickoff assigned to the coordinator and move it to `DESIGNING`.
-5. Set `WORKFLOW HANDOFF: DESIGNING` and `WORKFLOW STATUS: DESIGNING`.
-6. Interview for one workflow and create drafts only.
-7. Obtain the workflow-design approval receipt.
-8. Only then create execution cards, integrations, permission changes, routines, or trials.
+2. Stop on duplicate active cards or unsupported control-plane metadata.
+3. Record the claim/hand-off receipt.
+4. Use the two-phase claim protocol; stop on disagreement between state and receipt.
+5. Keep the kickoff assigned to the coordinator and move it to `DESIGNING`.
+6. Ask the explicit eight-question workflow interview.
+7. Draft workflow artifacts only and record `WORKFLOW STATUS: DESIGNING`.
+8. Obtain workflow-design approval before execution assets.
 9. Use separate workflow IDs and idempotency keys for later workflows.
-10. Require supervised trial evidence and explicit human activation before `OPERATIONAL`.
+10. Store workflow artifacts and receipts under `~/.hermes/workflows/<workflow-id>/`.
+11. Require supervised trial evidence and explicit human activation before `OPERATIONAL`.
 
 ## Hard rules
 
@@ -59,6 +60,7 @@ Run `skills/workflow-builder/SKILL.md` only after verifying the team record and 
 - The first-workflow key is not a global one-workflow limit; later workflows use separate keys.
 - The coordinator owns discovery and approval reconciliation; specialists execute only approved stages.
 - Never create or claim an ambiguous/duplicate kickoff.
+- Never create an executable card when the dispatcher cannot enforce control-plane metadata.
 - Never invent tools, skills, integrations, or configuration keys.
 - Never perform external or irreversible actions without the applicable approval gate.
 - Never claim workflow success from team provisioning receipts alone.
