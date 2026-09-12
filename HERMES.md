@@ -1,6 +1,30 @@
 # Hermes Agents Forge — Bootstrap Instructions
 
-Point Hermes at this repository or its `site/llms.txt` instructions. Follow the two-stage lifecycle exactly.
+You are a HERMES agent. The human who points you here is the customer. Read this brief, then follow `site/llms.txt` as the canonical operating manual.
+
+## Product boundary
+
+Hermes Agents Forge has two deliberately separate stages:
+
+1. **Team Setup** provisions the governed, isolated team.
+2. **Workflow Builder** applies that existing team to one concrete workflow.
+
+Team Setup must finish before Workflow Builder begins. A successful Team Setup does not prove that any customer workflow works.
+
+## Mapping: Forge concepts → Hermes primitives
+
+| Forge concept | Hermes primitive |
+|---|---|
+| Coordinator profile | Main/default Hermes profile; record its stable name in `TEAM.md` |
+| Isolated specialist | `hermes profile create <name> --description "<role>"` |
+| Rich persona | `~/.hermes/profiles/<name>/SOUL.md` |
+| Skills engine | `hermes -p <name> skills list` → generated skills → inspected Hub gaps |
+| Team receipts | Profile list, full skills lists, config, smoke tests, and `TEAM.md` |
+| Team contract/policy | `TEAM-CONTRACT.md` and `TEAM-POLICY.md` |
+| Workflow kickoff | One coordinator-owned Kanban control-plane card |
+| Workflow artifacts | `WORKFLOW-CONTRACT.md`, `WORKFLOW-POLICY.md`, `WORKFLOW-RUNBOOK.md`, `TRIAL.md` |
+| Approval records | Exact action, target, payload/change, approver, decision, timestamp |
+| Context/cost hygiene | Hermes compression, model, reasoning, concurrency, and MOA settings supported by the installed version |
 
 ## Stage 1: Team Setup
 
@@ -10,10 +34,11 @@ Do not create a customer workflow during Stage 1. Do not create workflow executi
 
 When team receipts pass:
 
-1. Read `~/.hermes/TEAM.md` and check for `workflow-builder-kickoff:v1`.
-2. If an active kickoff card already exists, reuse it; never create a duplicate.
-3. Otherwise queue exactly one coordinator-owned control-plane card titled `Start Workflow Builder — define first workflow` in `READY` status with that idempotency key.
-4. Record the card ID and a handoff receipt in `~/.hermes/TEAM.md`.
+1. Resolve and record the stable coordinator profile identity.
+2. Read `~/.hermes/TEAM.md` and search for the **first-workflow** idempotency key `workflow-builder-kickoff:first-workflow:v1`.
+3. If an active first-workflow kickoff card already exists, reuse it; never create a duplicate.
+4. Otherwise queue exactly one coordinator-owned control-plane card in `READY` status with the metadata defined by `templates/WORKFLOW-KICKOFF.md`.
+5. Record the card ID and a handoff receipt in `~/.hermes/TEAM.md`.
 
 Record:
 
@@ -25,8 +50,34 @@ WORKFLOW STATUS: NONE
 
 ## Stage 2: Workflow Builder
 
-Run `skills/workflow-builder/SKILL.md` from the coordinator kickoff card. Verify the team record, kickoff idempotency key, card uniqueness, and handoff receipt before starting discovery. Keep the card assigned to the main coordinator/profile 0 and move it to `DESIGNING` only when the coordinator begins the workflow interview.
+Run `skills/workflow-builder/SKILL.md` from the coordinator kickoff card. Verify the team record, stable coordinator identity, kickoff metadata, card uniqueness, and handoff receipt before starting discovery. Keep the card assigned to the coordinator and move it to `DESIGNING` only when the coordinator begins the workflow interview.
 
 Draft the workflow contract, workflow policy, runbook, and trial plan. Record a handoff receipt and stop for explicit workflow-design approval. No execution cards, credentials, permission changes, routines, trials, or external actions may occur before that receipt.
 
 After approval, provision only the approved workflow execution and later require supervised trial evidence plus explicit human activation approval before `OPERATIONAL`.
+
+## Hard rules
+
+- Never ask the user to install or clone anything merely to run Forge.
+- Never provision before explicit team approval.
+- Never duplicate an enabled builtin skill.
+- Never invent skill names, tools, integrations, or configuration keys; inspect first.
+- Never force past a dangerous security-scan verdict.
+- Never claim verification without verbatim receipts.
+- Never let the coordinator implement worker-owned tasks.
+- Never let a specialist own workflow discovery or workflow-design approval.
+- Never execute external or irreversible actions without the applicable approval gate.
+- Never treat the kickoff card as a customer-work card.
+
+## References
+
+- Canonical manual: `site/llms.txt`
+- Team Setup: `skills/forge/SKILL.md`
+- Workflow Builder: `skills/workflow-builder/SKILL.md`
+- Team contract: `templates/TEAM-CONTRACT.md`
+- Team policy: `templates/TEAM-POLICY.md`
+- Workflow kickoff: `templates/WORKFLOW-KICKOFF.md`
+- Persona schema: `catalog/roles/soul-schema.md`
+- Skills manifest: `catalog/skills.json`
+- Product requirements: `PRODUCT.md`
+- Official HERMES docs: https://hermes-agent.nousresearch.com/docs/

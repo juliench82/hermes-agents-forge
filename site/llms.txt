@@ -2,32 +2,33 @@
 
 ## Identity
 
-Hermes Agents Forge provisions governed, isolated Hermes specialist teams. It intentionally separates initial **Team Setup** from later **Workflow Builder** onboarding, using one coordinator-owned control-plane card as the handoff.
+Hermes Agents Forge provisions governed, isolated specialist teams, then applies them to workflows through a separate approval-gated lifecycle.
 
 ## Canonical lifecycle
 
 ```text
 Team Setup → TEAM STATUS: PROVISIONED + WORKFLOW HANDOFF: READY
-Kickoff card → WORKFLOW HANDOFF: DESIGNING
+Kickoff claim → WORKFLOW HANDOFF: DESIGNING + WORKFLOW STATUS: DESIGNING
 Workflow-design approval → WORKFLOW STATUS: DESIGNED
 Supervised trial → WORKFLOW STATUS: TRIAL-PASSED
 Human activation → WORKFLOW STATUS: OPERATIONAL
 ```
 
-## Phase 1: Forge Team Setup
+## Stage 1: Team Setup
 
-When a user starts Forge, run only Team Setup:
+Run `skills/forge/SKILL.md` only:
 
-1. Inspect Hermes version, supported configuration keys, current profiles, and available skills.
-2. Run the focused Team Setup interview: broad outcome, required capabilities/tools, models/budget, data/compliance constraints, autonomy/approval posture, and forbidden access/actions.
-3. Propose the smallest complete coordinator-plus-worker roster. Keep roles distinct and generate profile/persona/skill details dynamically; do not force industry-specific templates.
-4. Ask for explicit approval before provisioning.
-5. Back up and tune the coordinator, create isolated worker profiles, write rich personas, assign/generate verified skills, and apply supported optimization settings.
-6. Verify with verbatim receipts: profile list, full skills lists with counts, configuration, persona paths, backup, smoke tests, and zero open setup items.
-7. Write `~/.hermes/TEAM.md`, `TEAM-CONTRACT.md`, and `TEAM-POLICY.md`.
-8. After all setup receipts pass, create exactly one coordinator-owned control-plane card titled `Start Workflow Builder — define first workflow` in `READY` status using `templates/WORKFLOW-KICKOFF.md`.
-9. Stop. Do not create workflow execution cards, cron jobs, routines, live integrations, source-of-truth mappings, production schedules, or workflow trials.
-10. Report exactly:
+1. Inspect Hermes version, supported configuration keys, current profiles, and skills.
+2. Interview for broad capability, required specialist capabilities/tools, models/budget, data/compliance constraints, autonomy/approval posture, and forbidden access/actions.
+3. Propose the smallest complete coordinator-plus-worker roster; generate role/persona/skill details dynamically.
+4. Obtain explicit team approval.
+5. Provision isolated profiles, rich personas, verified skills, supported optimization, team contract, team policy, and receipts.
+6. Resolve and record the stable coordinator profile.
+7. Search for `workflow-builder-kickoff:first-workflow:v1`.
+8. Reuse one active matching card, create exactly one if none exists, and stop on duplicates.
+9. Card metadata must include `kind: onboarding`, `control_plane: true`, `execution_allowed: false`, `workflow_scope: first-workflow-only`, the exact idempotency key, stable assignee, and `READY` status.
+10. Record the handoff receipt in `~/.hermes/TEAM.md`.
+11. Report:
 
 ```text
 TEAM STATUS: PROVISIONED
@@ -35,43 +36,29 @@ WORKFLOW HANDOFF: READY
 WORKFLOW STATUS: NONE
 ```
 
-The main coordinator may pick up the card and begin discovery. Specialist profiles must not be assigned until workflow-design approval exists.
+Do not create workflow execution cards, live integrations, routines, schedules, trials, or external actions.
 
-## Phase 2: Workflow Builder
+## Stage 2: Workflow Builder
 
-Workflow Builder is a separate skill at `skills/workflow-builder/SKILL.md`. It may run only after `TEAM STATUS: PROVISIONED` and the kickoff card are verified.
+Run `skills/workflow-builder/SKILL.md` only after verifying the team record and one valid kickoff card:
 
-During kickoff/discovery it must:
+1. Confirm stable coordinator identity and exact card metadata.
+2. Stop on duplicate active cards.
+3. Record the claim/handoff receipt.
+4. Keep the kickoff assigned to the coordinator and move it to `DESIGNING`.
+5. Set `WORKFLOW HANDOFF: DESIGNING` and `WORKFLOW STATUS: DESIGNING`.
+6. Interview for one workflow and create drafts only.
+7. Obtain the workflow-design approval receipt.
+8. Only then create execution cards, integrations, permission changes, routines, or trials.
+9. Use separate workflow IDs and idempotency keys for later workflows.
+10. Require supervised trial evidence and explicit human activation before `OPERATIONAL`.
 
-1. Keep the card assigned to the main coordinator/profile 0.
-2. Move the card from `READY` to `DESIGNING`.
-3. Interview for one specific trigger-to-outcome workflow.
-4. Draft `WORKFLOW-CONTRACT.md`, `WORKFLOW-POLICY.md`, `WORKFLOW-RUNBOOK.md`, and `TRIAL.md` only.
-5. Present the complete design and obtain an explicit workflow-design approval receipt.
-6. Before that receipt, do not create execution cards, connect live systems, change permissions, create routines, start a trial, or perform external actions.
-7. After approval, provision the approved workflow execution and keep the status `DESIGNED` until the supervised trial passes.
-8. Set `WORKFLOW STATUS: TRIAL-PASSED` only after evidence satisfies all acceptance criteria.
-9. Set `WORKFLOW STATUS: OPERATIONAL` only after explicit human activation approval.
+## Hard rules
 
-## Hard separation rules
-
-- Team Setup never creates or runs a customer workflow.
-- The kickoff card is an automatic handoff, not automatic automation.
-- The main coordinator owns workflow discovery; specialist profiles do not.
-- Workflow Builder never creates team profiles.
-- Neither phase may send, publish, merge, deploy, pay, delete, or modify external state without the applicable approval gate.
-- Do not claim team provisioning proves workflow success.
-- Do not claim workflow readiness from profiles and skills alone.
-- Never invent skills, tools, integrations, or configuration keys; inspect first and record unavailable items.
-
-## Source files
-
-- Team Setup: `skills/forge/SKILL.md`
-- Workflow Builder: `skills/workflow-builder/SKILL.md`
-- Kickoff card: `templates/WORKFLOW-KICKOFF.md`
-- Team contract: `templates/TEAM-CONTRACT.md`
-- Team policy: `templates/TEAM-POLICY.md`
-- Workflow contract: `templates/WORKFLOW-CONTRACT.md`
-- Workflow policy: `templates/WORKFLOW-POLICY.md`
-- Workflow runbook: `templates/WORKFLOW-RUNBOOK.md`
-- Workflow trial: `templates/TRIAL.md`
+- The kickoff is an automatic handoff, not automatic automation.
+- The first-workflow key is not a global one-workflow limit; later workflows use separate keys.
+- The coordinator owns discovery and approval reconciliation; specialists execute only approved stages.
+- Never create or claim an ambiguous/duplicate kickoff.
+- Never invent tools, skills, integrations, or configuration keys.
+- Never perform external or irreversible actions without the applicable approval gate.
+- Never claim workflow success from team provisioning receipts alone.

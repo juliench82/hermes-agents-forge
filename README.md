@@ -2,39 +2,35 @@
 
 Hermes Agents Forge provisions a governed, isolated Hermes specialist team before it creates any customer workflow.
 
-## Two-stage lifecycle
+## Team Setup first
 
-### 1. Team Setup
+Forge interviews the customer, proposes the smallest useful team, and—after approval—provisions isolated profiles, rich personas, verified capabilities, model/cost optimization, team contracts, approval policy, and auditable receipts.
 
-Forge interviews the customer, proposes the smallest useful coordinator-plus-worker team, and—after approval—provisions:
+The main profile is recorded as a stable coordinator identity in `TEAM.md`. The coordinator owns routing, discovery, approvals, and receipts; it never performs worker implementation.
 
-- Isolated Hermes profiles.
-- Rich role personas.
-- Verified builtin, generated, or approved external skills.
-- Model, compression, reasoning, concurrency, and cost optimization.
-- Team-wide contracts, boundaries, and approval policy.
-- Auditable receipts and a durable `~/.hermes/TEAM.md` record.
+## First Workflow handoff
 
-Team Setup does not create a live business workflow, connect workflow integrations, schedule routines, or run a trial.
-
-After all setup receipts pass, Forge queues exactly one control-plane card:
+After setup verification, Forge queues exactly one non-executable control-plane card for the first workflow:
 
 ```text
-Start Workflow Builder — define first workflow
-Assignee: main coordinator / profile 0
+Title: Start Workflow Builder — define first workflow
+Assignee: <stable coordinator profile>
 Status: READY
-Type: onboarding/control-plane
+Key: workflow-builder-kickoff:first-workflow:v1
+Kind: onboarding
+Control plane: true
+Execution allowed: false
 ```
 
-This is an automatic handoff, not automatic automation. The card is a safe next step for workflow discovery; it is not permission to execute customer work.
+If the card already exists, Forge reuses it. If duplicates exist, it stops and reports them. This is an automatic handoff, not automatic automation.
 
-### 2. Workflow Builder
+## Workflow Builder
 
-The main coordinator claims the kickoff card, interviews the customer, and drafts one workflow contract, policy, runbook, and trial plan. It remains in discovery mode until the customer approves the workflow design.
+The coordinator claims the card, records the handoff receipt, and moves it to `DESIGNING`. It drafts one workflow contract, policy, runbook, and trial plan, then stops for workflow-design approval.
 
-Only after the approval receipt may Workflow Builder create execution cards, connect integrations, change workflow permissions, schedule routines, or start a supervised trial.
+Only after approval can Workflow Builder create execution cards, connect integrations, change workflow permissions, schedule routines, or run a supervised trial.
 
-## Status lifecycle
+## State lifecycle
 
 ```text
 TEAM STATUS: PROVISIONED
@@ -42,6 +38,7 @@ WORKFLOW HANDOFF: READY
 WORKFLOW STATUS: NONE
         ↓
 WORKFLOW HANDOFF: DESIGNING
+WORKFLOW STATUS: DESIGNING
         ↓
 WORKFLOW STATUS: DESIGNED
         ↓
@@ -52,6 +49,6 @@ WORKFLOW STATUS: OPERATIONAL
 
 ## Safety principle
 
-Team Setup builds capability. Workflow Builder applies capability to one declared process. The coordinator owns discovery; specialist profiles do not design or activate workflows. Every transition is receipt-backed, and external or irreversible actions remain approval-gated.
+Team Setup builds capability. Workflow Builder applies it to one declared process. Every transition is receipt-backed, and external or irreversible actions remain approval-gated.
 
-See `PRODUCT.md`, `site/llms.txt`, and the skills under `skills/forge/` and `skills/workflow-builder/` for the canonical operating instructions.
+Canonical instructions: `site/llms.txt`.

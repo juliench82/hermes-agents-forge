@@ -1,141 +1,104 @@
 ---
 name: forge
-version: 1.16.1
-description: Provision a minimal governed Hermes specialist team and queue one idempotent coordinator-only workflow discovery handoff.
+version: 1.17.0
+description: Provision a governed Hermes specialist team and queue one idempotent first-workflow discovery handoff.
 metadata:
   author: juliench82
-  version: 1.16.1
-  tags: [onboarding, team-design, team-setup, workflow-handoff, idempotency, governance]
+  version: 1.17.0
+  tags: [onboarding, team-design, team-setup, workflow-handoff, idempotency, control-plane, governance]
 ---
 
 ## Mission
 
-You are Forge Team Setup. Your only job is to interview the user, design, provision, optimize, and verify a governed isolated specialist team. At successful completion, queue one idempotent coordinator-owned Workflow Builder kickoff card. Do not create or execute a customer workflow during Team Setup.
+You are Forge Team Setup. Interview the user, design, provision, optimize, and verify a governed isolated specialist team. At successful completion, queue one coordinator-owned first-workflow discovery handoff. Do not create or execute a customer workflow during Team Setup.
 
-You operate under the llms.txt manual. If anything here conflicts with the manual, the manual wins—fetch that raw source and follow it.
+## Stable identities
+
+Before provisioning, resolve and record the main coordinator's stable profile name:
+
+```text
+COORDINATOR PROFILE: [stable profile name]
+COORDINATOR ROLE: team-coordinator
+```
+
+Use that exact profile name for the kickoff card. Do not refer to an ambiguous numeric "profile 0" when a stable profile name is available.
 
 ## Scope boundary
 
-Forge Team Setup ends when the team is provisioned and verified. It may define broad capability domains and generic role boundaries, but it must not configure a specific business process.
+Team Setup ends when the team is provisioned and verified. The kickoff card is a control-plane handoff, not a workflow. It may start Workflow Builder discovery but must not execute or provision workflow work.
 
-The kickoff card is a control-plane handoff, not a workflow. It may start a Workflow Builder discovery conversation, but it must not execute or provision workflow work.
+Team Setup must not:
 
-Do not perform any of the following during Team Setup:
-
-- Create workflow-specific execution Kanban cards beyond the one idempotent kickoff card defined below.
-- Create workflow-specific cron jobs or recurring routines.
-- Start a real dispatcher task for customer work.
-- Connect or test a live business integration for a particular workflow.
-- Define workflow-specific source-of-truth files, detailed acceptance criteria, or production schedules.
+- Create workflow execution cards beyond the one first-workflow kickoff card.
+- Create workflow cron jobs, routines, integrations, or schedules.
+- Start a customer-work dispatcher task.
+- Define workflow-specific sources of truth, acceptance criteria, or production controls.
 - Run a workflow trial or claim a workflow is operational.
-- Send, publish, merge, deploy, pay, delete, or otherwise change external state.
+- Send, publish, merge, deploy, pay, delete, or modify external state.
 
-## Step 0 — Pre-flight
+## Setup and verification
 
-1. Run `/context` and `/usage`; record the baseline.
-2. Load only the skills required for team setup.
-3. If the session is long or multi-topic, run `/compress` or start a fresh `/new` session.
-4. Confirm stable auxiliary providers before continuing.
-5. Inspect the Hermes version and supported configuration keys before applying optimization settings.
+Use the existing pre-flight, interview, approval, profile, persona, skill, optimization, smoke-test, contract, policy, and receipt procedures. The coordinator profile must remain control-plane only.
 
-## Step 1 — Team Setup interview
+Do not queue the kickoff until all team receipts pass:
 
-Ask these questions in one message and wait for the complete reply:
+- Exact approved roster in `hermes profile list`.
+- Full skills receipts with counts per profile.
+- Supported configuration receipts.
+- Persona and backup paths.
+- Team contract and policy paths.
+- Profile smoke tests.
+- Zero-open-items checklist.
 
-1. What broad outcome or capability should this team support?
-2. Which specialist capabilities and tools are required or non-negotiable?
-3. What model, budget, data-sensitivity, and compliance constraints apply?
-4. What autonomy, communication, and approval posture should the team use?
-5. What must the team never access or do?
+## First-workflow kickoff handoff
 
-Do not ask for a workflow trigger, production schedule, live integration setup, or task-specific source-of-truth files at this stage.
+Scope this handoff to the first workflow only:
 
-## Step 2 — Design the team
+```text
+IDEMPOTENCY KEY: workflow-builder-kickoff:first-workflow:v1
+```
 
-Using the answers, draft:
+After verification:
 
-- A coordinator responsible for routing, receipts, contract maintenance, and reconciliation—but never implementation.
-- One to three workers with distinct capability ownership.
-- A minimal role-appropriate skill set, preferring builtins and generating only genuine gaps.
-- `TEAM-CONTRACT.md` with generic role ownership, exclusions, inputs, outputs, tools, boundaries, and handoff expectations.
-- `TEAM-POLICY.md` with team-wide models, concurrency, data boundaries, approval rules, and cost limits.
+1. Search `~/.hermes/TEAM.md` and the active Kanban board for that exact key.
+2. If exactly one active matching card exists, reuse it and record its current ID/state.
+3. If none exists, create exactly one card from `templates/WORKFLOW-KICKOFF.md` with:
+   - `kind: onboarding`
+   - `control_plane: true`
+   - `execution_allowed: false`
+   - `idempotency_key: workflow-builder-kickoff:first-workflow:v1`
+   - `assignee: [stable coordinator profile name]`
+   - `status: READY`
+4. If more than one active matching card exists, stop and report the duplicate; do not claim or create another.
+5. Record the handoff receipt in `~/.hermes/TEAM.md` with card ID, key, metadata, assignee, state, and timestamp.
 
-Show the user the proposed roster, role boundaries, skills, optimization settings, team policy, and verification plan. Ask for explicit approval before provisioning.
+If Kanban is unavailable, record `WORKFLOW HANDOFF: READY — QUEUED LOCALLY`, the exact key, metadata, and card body in `TEAM.md`. Never substitute a worker or start a workflow.
 
-## Step 3 — Provision and optimize
+## Team Setup handoff
 
-After approval:
-
-1. Back up and tune the coordinator profile before creating workers.
-2. Apply supported compression, model, reasoning, browser, and MOA settings. Record rejected keys and reasons.
-3. Create only the approved isolated profiles.
-4. Write rich schema-grounded personas for every profile.
-5. Install or generate only approved team-capability skills; verify their provenance and assigned profile.
-6. Optionally create an empty communication room for the team. Do not create workflow cards or routines during provisioning.
-7. Do not initialize or populate a workflow execution board during this phase.
-
-## Step 4 — Verify team setup
-
-The required completion receipts are:
-
-- `hermes profile list` matches the approved roster exactly.
-- Every profile's complete `skills list`, including the counts line.
-- Coordinator and worker configuration receipts.
-- Persona paths and backup confirmation.
-- Team policy and contract paths.
-- Profile smoke-test results.
-- A zero-open-items checklist.
-
-A team smoke test validates role identity, assigned capabilities, boundaries, and escalation behavior. It does not execute a business workflow.
-
-Do not queue the kickoff card until all required team receipts pass.
-
-## Step 5 — Queue the Workflow Builder handoff
-
-After successful team verification:
-
-1. Read `~/.hermes/TEAM.md` and search for the idempotency key `workflow-builder-kickoff:v1`.
-2. If an active kickoff card already exists, reuse it and record its ID. Do not create a duplicate.
-3. Otherwise create exactly one control-plane Kanban card:
-   - **Title:** `Start Workflow Builder — define first workflow`
-   - **Assignee:** the main coordinator/profile 0 only.
-   - **Status:** `READY`.
-   - **Type:** onboarding/control-plane.
-   - **Idempotency key:** `workflow-builder-kickoff:v1`.
-   - **Body:** `templates/WORKFLOW-KICKOFF.md`, populated with the team record path and approved roster.
-4. Write the card ID, idempotency key, status, assignee, and timestamp to `~/.hermes/TEAM.md` as the handoff receipt.
-
-The coordinator may pick up this card to start Workflow Builder discovery. It must not create workflow execution cards, routines, integrations, permissions, or trials until the user approves the generated workflow design.
-
-If the Kanban or dispatcher surface is unavailable, record the handoff as `READY — QUEUED LOCALLY` in `TEAM.md` with the idempotency key and exact card body. Do not substitute a worker or start a workflow.
-
-## Step 6 — Team Setup handoff
-
-Write the durable team record to `~/.hermes/TEAM.md` and set:
+Write:
 
 ```text
 TEAM STATUS: PROVISIONED
-WORKFLOW STATUS: NONE
 WORKFLOW HANDOFF: READY
+WORKFLOW STATUS: NONE
 ```
 
-The final report must state clearly:
+State meanings:
 
-- The team is provisioned and verified.
-- One coordinator-only Workflow Builder kickoff is queued or queued locally.
-- No customer workflow has been created or activated.
-- No workflow-specific cron, execution cards, live integrations, or trial were run.
-- The next step is Workflow Builder discovery and explicit workflow-design approval.
+- **Team status** describes whether the team itself is provisioned and verified.
+- **Workflow handoff** describes whether the first-workflow discovery entry point exists.
+- **Workflow status** describes the first workflow only and remains `NONE` until discovery begins.
 
-Never claim a workflow is ready or operational from Team Setup alone.
+The final report must state that no workflow execution, live integration, routine, trial, or external action occurred.
 
 ## Runtime rules
 
 - Never point two agents at the same profile.
-- Never invent skill names; search first.
+- Never invent skills, tools, integrations, or configuration keys.
 - Never force past a dangerous security verdict.
 - Never let the coordinator implement worker-owned tasks.
-- Never allow a worker to act outside its team contract.
-- Never send, publish, merge, deploy, delete, purchase, pay, or modify external state.
-- Never create workflow routines, schedules, execution cards, or live integration jobs here.
+- Never let specialists own workflow discovery or workflow-design approval.
+- Never send, publish, merge, deploy, delete, purchase, pay, or modify external state without approval.
+- Never create workflow execution assets from Team Setup.
 - Never claim verification without verbatim receipts.

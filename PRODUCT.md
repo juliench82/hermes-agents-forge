@@ -2,19 +2,29 @@
 
 ## Product definition
 
-Hermes Agents Forge is a Hermes-native bootstrap system for creating governed, isolated specialist teams. It provisions profiles, personas, tools, skills, optimization, approval boundaries, and auditable receipts before any customer workflow is activated.
+Hermes Agents Forge provisions governed, isolated specialist teams. It creates profiles, personas, tools, skills, optimization, approval boundaries, and auditable receipts before applying the team to any customer workflow.
 
-The product deliberately separates **Team Setup** from **Workflow Builder**. This prevents a promising team configuration from being judged by an unrelated or prematurely designed workflow, and it gives customers a clean checkpoint before live integrations, routines, and external actions are introduced.
-
-## Lifecycle
+## Two-stage lifecycle
 
 ### Phase 1 — Team Setup
 
-Team Setup interviews the customer about broad outcomes, required capabilities, autonomy, constraints, data boundaries, and approval posture. It then designs and provisions the smallest useful team with isolated profiles, rich personas, verified skills, supported model/cost optimization, generic role contracts, and a team-wide policy.
+Team Setup interviews for broad capability, specialist requirements, constraints, autonomy, data boundaries, and approval posture. It provisions the smallest useful coordinator-plus-worker team, rich personas, verified capabilities, supported optimization, team contracts, team policy, and receipts.
 
-After all setup receipts pass, Team Setup automatically queues exactly one coordinator-owned **Workflow Builder Kickoff** card in `READY` status. The handoff uses the idempotency key `workflow-builder-kickoff:v1`, records its card ID in the durable team record, and reuses an existing active card instead of creating a duplicate. This is an automatic handoff, not automatic automation: the card starts workflow discovery but cannot execute a customer workflow.
+After setup verification, it creates exactly one first-workflow control-plane handoff with key `workflow-builder-kickoff:first-workflow:v1`, unless that active handoff already exists. The handoff is assigned to the stable coordinator profile and is non-executable:
 
-Team Setup does not create workflow-specific execution cards, schedules, live integrations, production routines, or workflow trials. It finishes with:
+```yaml
+kind: onboarding
+control_plane: true
+execution_allowed: false
+workflow_scope: first-workflow-only
+idempotency_key: workflow-builder-kickoff:first-workflow:v1
+assignee: <stable coordinator>
+status: READY
+```
+
+This is an automatic handoff, not automatic automation.
+
+Team Setup ends with:
 
 ```text
 TEAM STATUS: PROVISIONED
@@ -22,58 +32,34 @@ WORKFLOW HANDOFF: READY
 WORKFLOW STATUS: NONE
 ```
 
+No workflow execution cards, live integrations, routines, schedules, trials, or external actions are allowed in Phase 1.
+
 ### Phase 2 — Workflow Builder
 
-The main coordinator claims the kickoff card only after verifying its idempotency key and uniqueness. It records a handoff receipt, moves the card to `DESIGNING`, and interviews the customer about one concrete workflow.
-
-It drafts the workflow contract, policy, runbook, and trial plan, then must stop for an explicit workflow-design approval receipt. Only then may Workflow Builder create execution cards, configure integrations, change workflow permissions, create routines, or start a trial:
+The stable coordinator verifies the handoff and claims the kickoff card. It records the handoff receipt, then transitions:
 
 ```text
-TEAM STATUS: PROVISIONED
 WORKFLOW HANDOFF: READY → DESIGNING
-WORKFLOW STATUS: NONE → DESIGNED
+WORKFLOW STATUS: NONE → DESIGNING
 ```
 
-A workflow becomes operational only after trial evidence and explicit human activation approval:
+It interviews the customer and creates drafts for one workflow. It must obtain explicit workflow-design approval before provisioning execution assets. After approval:
 
 ```text
-WORKFLOW STATUS: DESIGNED → TRIAL-PASSED → OPERATIONAL
+WORKFLOW STATUS: DESIGNING → DESIGNED → TRIAL-PASSED → OPERATIONAL
 ```
 
-## What Team Setup provides
+The first automatic handoff is limited to the first workflow. Later workflows use separate workflow IDs and idempotency keys, for example `workflow:<workflow-slug>:v1`.
 
-- A coordinator profile that routes work, maintains receipts, and reconciles outputs without implementing worker tasks.
-- One to three isolated workers with distinct, generated capability ownership.
-- Rich schema-grounded personas based on the customer’s requirements.
-- Builtin, generated, or approved external skills with provenance and verification receipts.
-- Team-wide model, concurrency, data, tool, and approval policy.
-- Compression and cost controls compatible with the installed Hermes version.
-- Durable `TEAM.md`, `TEAM-CONTRACT.md`, and `TEAM-POLICY.md` records.
-- Profile smoke tests and auditable completion evidence.
-- One idempotent coordinator-owned Workflow Builder Kickoff card in `READY` status.
+## Roles
 
-## What Workflow Builder provides
-
-- One specific trigger-to-outcome workflow.
-- Workflow-specific contracts, permissions, data boundaries, and acceptance criteria.
-- A runbook covering execution, exceptions, monitoring, takeover, pause, and rollback.
-- Safe test/sandbox or dry-run configuration.
-- Workflow-specific Kanban execution cards, integrations, routines, and delivery targets after approval.
-- Supervised trial evidence and human activation sign-off.
+- **Coordinator:** control-plane routing, discovery, approvals, contracts, receipts, and reconciliation; never worker implementation.
+- **Specialists:** execute approved workflow stages only; never own workflow discovery or workflow-design approval.
 
 ## Customer promise
 
-> First, Forge builds your governed AI team. Then, it automatically hands the team to the coordinator for workflow discovery. Nothing is automated until you approve the workflow design and its trial plan.
+> First, Forge builds your governed AI team. Then it hands the team to the coordinator for workflow discovery. Nothing is automated until the workflow design is approved, trial evidence passes, and activation is explicitly approved.
 
-## Non-goals of Team Setup
+## Verification principle
 
-Team Setup must not claim to have automated a customer workflow. It must not create live schedules, run production tasks, or report workflow success. Those belong to Workflow Builder after workflow-design approval.
-
-## Status vocabulary
-
-- **Team provisioned:** Profiles, skills, policies, optimization, and receipts are complete.
-- **Workflow handoff ready:** One coordinator-owned discovery card is queued; no workflow execution exists.
-- **Workflow designing:** The coordinator is gathering requirements and drafting workflow artifacts.
-- **Workflow designed:** A specific workflow contract and policy are approved, but execution has not passed trial.
-- **Workflow trial-passed:** Controlled execution met acceptance criteria and preserved approvals.
-- **Workflow operational:** Human activation approval exists and the approved runtime is active.
+Every setup and workflow state transition requires evidence. Never treat profile or skill creation as proof that a workflow works. Never claim operational status without trial evidence and human activation approval.
