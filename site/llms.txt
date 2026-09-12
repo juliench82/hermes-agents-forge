@@ -59,6 +59,10 @@ Workflow Builder owns the explicit workflow interview, workflow-scoped contracts
 
 Before workflow approval, it may only validate the handoff, claim it safely, interview the user, and create drafts. It may not create execution cards, connect credentials, change permissions, create routines, start trials, or perform external actions.
 
+## Acceptance gate
+
+Use `ACCEPTANCE.md` for the fresh-install and isolated-runtime acceptance test. Do not call the product production-ready until the applicable Team Setup, handoff, negative, and Workflow Builder entry checks have evidence. Distinguish `SPECIFICATION PASS` from `RUNTIME PASS`.
+
 ## Hard separation rules
 
 - Preserve all Team Setup quality; remove only workflow creation/execution from Team Setup.

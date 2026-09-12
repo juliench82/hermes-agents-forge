@@ -56,28 +56,6 @@ Draft the workflow contract, workflow policy, runbook, and trial plan. Record a 
 
 After approval, provision only the approved workflow execution and later require supervised trial evidence plus explicit human activation approval before `OPERATIONAL`.
 
-## Hard rules
+## Acceptance
 
-- Never ask the user to install or clone anything merely to run Forge.
-- Never provision before explicit team approval.
-- Never duplicate an enabled builtin skill.
-- Never invent skill names, tools, integrations, or configuration keys; inspect first.
-- Never force past a dangerous security-scan verdict.
-- Never claim verification without verbatim receipts.
-- Never let the coordinator implement worker-owned tasks.
-- Never let a specialist own workflow discovery or workflow-design approval.
-- Never execute external or irreversible actions without the applicable approval gate.
-- Never treat the kickoff card as a customer-work card.
-
-## References
-
-- Canonical manual: `site/llms.txt`
-- Team Setup: `skills/forge/SKILL.md`
-- Workflow Builder: `skills/workflow-builder/SKILL.md`
-- Team contract: `templates/TEAM-CONTRACT.md`
-- Team policy: `templates/TEAM-POLICY.md`
-- Workflow kickoff: `templates/WORKFLOW-KICKOFF.md`
-- Persona schema: `catalog/roles/soul-schema.md`
-- Skills manifest: `catalog/skills.json`
-- Product requirements: `PRODUCT.md`
-- Official HERMES docs: https://hermes-agent.nousresearch.com/docs/
+Use `ACCEPTANCE.md` to validate the final branch on a fresh Hermes installation or isolated runtime. Do not claim runtime readiness without evidence for Team Setup quality, handoff safety/idempotency, negative separation checks, and Workflow Builder entry checks.

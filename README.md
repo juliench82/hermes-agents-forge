@@ -23,14 +23,6 @@ After one explicit approval, Forge provisions:
 
 Team Setup does not create a live business workflow, connect workflow integrations, schedule routines, or run a trial.
 
-## Team size guidance
-
-- **3 specialists:** focused, single-domain work.
-- **5 specialists:** multi-stage work needing analysis, execution, and review.
-- **7 specialists:** complex, coordination-heavy work across multiple domains.
-
-The exact roster and capabilities are generated dynamically from the customer’s needs; these are not fixed industry packages.
-
 ## First Workflow handoff
 
 After setup verification, Forge queues exactly one non-executable control-plane card for the first workflow:
@@ -52,6 +44,10 @@ If the card already exists, Forge reuses it. If duplicates exist or the dispatch
 The coordinator claims the card with a receipt, moves it to `DESIGNING`, asks the workflow interview questions, and drafts one workflow contract, policy, runbook, and trial plan. It then stops for workflow-design approval.
 
 Only after approval can Workflow Builder create execution cards, connect integrations, change workflow permissions, schedule routines, or run a supervised trial. Workflow-specific artifacts live under `~/.hermes/workflows/<workflow-id>/`.
+
+## Validation
+
+Use `ACCEPTANCE.md` for the fresh-install acceptance plan. Distinguish specification readiness from runtime readiness; do not claim production readiness without evidence.
 
 ## State lifecycle
 

@@ -53,3 +53,7 @@ The first automatic handoff is limited to the first workflow. Later workflows us
 ## Verification principle
 
 Every setup and workflow state transition requires evidence. Never treat profile or skill creation as proof that a workflow works. Never claim operational status without trial evidence and human activation approval.
+
+## Release readiness
+
+The branch is specification-ready when the two-stage contracts are present. It is runtime-ready only after `ACCEPTANCE.md` passes on a fresh Hermes installation or isolated runtime.
