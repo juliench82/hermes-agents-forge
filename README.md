@@ -1,53 +1,57 @@
-# Hermes-Agents-Forge
+# Hermes Agents Forge
 
-A customer visits our site, clicks "Read agent instructions", and points their HERMES agent to:
-`https://hermes-agents-forge.vercel.app/llms.txt`
+Hermes Agents Forge provisions a governed, isolated Hermes specialist team before it creates any customer workflow.
 
-From there, any HERMES agent (any LLM, any reasoning level) interviews the user, designs a custom team of 3/5/7 specialists, gets one explicit approval, then provisions governed, isolated specialist teams that prove themselves on a real workflow—with explicit roles, tool boundaries, approval policy, and auditable receipts.
+## Two-stage lifecycle
 
-## What you get
+### 1. Team Setup
 
-- **Custom team design** — 3 (basic), 5 (intermediate), or 7 (complex) specialists generated from your workflows, not a fixed catalog.
-- **Rich personas** — every profile gets a 10-section SOUL.md persona grounded in your quoted answers and real skill knowledge.
-- **Real skills** — three-tier engine: builtins first, then bespoke generated skills for uncovered roles, Hub only for genuine gaps.
-- **Receipts, not assertions** — final report includes verbatim `hermes profile list`, per-profile `skills list`, smoke-test chat output, and kanban receipts.
-- **Kanban work board** — after verification, your team gets a durable board: cards seeded, review loop wired, progress observable in `hermes kanban watch` or the dashboard.
-- **Team rituals** — group chat (2–6 Bots per room), `message_agent` DMs, optional weekly digest routine.
+Forge interviews the customer, proposes the smallest useful coordinator-plus-worker team, and—after approval—provisions:
 
-## Trust & safety
+- Isolated Hermes profiles.
+- Rich role personas.
+- Verified builtin, generated, or approved external skills.
+- Model, compression, reasoning, concurrency, and cost optimization.
+- Team-wide contracts, boundaries, and approval policy.
+- Auditable receipts and a durable `~/.hermes/TEAM.md` record.
 
-- You never install anything — your HERMES agent sets itself up from one URL.
-- One approval gate — after your yes, the agent runs autonomously to completion.
-- Security scanning — every skill install (generated or Hub) is scanned; dangerous verdicts are skipped and reported.
-- Context hygiene — post-gate compression and output caps tuned per profile for token-efficient runs.
-- Interrupt recovery — if the agent stalls mid-provisioning, it resumes from the `todo` checklist and `hermes profile list`, provisioning only what's missing.
+Team Setup does not create a live business workflow, connect workflow integrations, schedule routines, or run a trial.
 
-## How it works (at a glance)
+After all setup receipts pass, Forge queues exactly one control-plane card:
 
-1. **Interview** — 5 questions about your workflows, tools, quality bar, complexity, and boundaries.
-2. **Proposal** — package tier, specialist roster (name, role, tools, browser mode), collaboration plan, and what provisioning will do.
-3. **Approval** — one explicit yes covers team, personas, skills, browser mode, and board wiring.
-4. **Provisioning** — batched profile creation, SOUL.md personas, three-tier skills, phase-exit receipts.
-5. **Verification** — `hermes profile list`, per-profile `skills list`, smoke-test chat, `todo` zero open items, `TEAM.md` written.
-6. **Board wiring** — gateway + kanban init, first cards seeded (goal-mode where appropriate), review loop, kanban receipts.
-7. **Handoff** — group chat, shared inbox, kickoff routine (or one small first task if Bot Mode unavailable).
+```text
+Start Workflow Builder — define first workflow
+Assignee: main coordinator / profile 0
+Status: READY
+Type: onboarding/control-plane
+```
 
-## Team sizes
+This is an automatic handoff, not automatic automation. The card is a safe next step for workflow discovery; it is not permission to execute customer work.
 
-- **Package 3** — basic: 3 specialists; single-domain, simple workflows.
-- **Package 5** — intermediate: 5 specialists; multi-domain, needs analysis and review.
-- **Package 7** — complex: 7 specialists; multi-project, coordination-heavy.
+### 2. Workflow Builder
 
-The team is exactly 3, 5, or 7 specialists — never 4 or 6.
+The main coordinator claims the kickoff card, interviews the customer, and drafts one workflow contract, policy, runbook, and trial plan. It remains in discovery mode until the customer approves the workflow design.
 
-## Get started
+Only after the approval receipt may Workflow Builder create execution cards, connect integrations, change workflow permissions, schedule routines, or start a supervised trial.
 
-Point your HERMES agent to:
-`https://hermes-agents-forge.vercel.app/llms.txt`
+## Status lifecycle
 
-The agent will read the operating manual, interview you, and guide you through the rest.
+```text
+TEAM STATUS: PROVISIONED
+WORKFLOW HANDOFF: READY
+WORKFLOW STATUS: NONE
+        ↓
+WORKFLOW HANDOFF: DESIGNING
+        ↓
+WORKFLOW STATUS: DESIGNED
+        ↓
+WORKFLOW STATUS: TRIAL-PASSED
+        ↓
+WORKFLOW STATUS: OPERATIONAL
+```
 
-## References
+## Safety principle
 
-- Operating manual: https://hermes-agents-forge.vercel.app/llms.txt
-- Official HERMES docs: https://hermes-agent.nousresearch.com/docs/
+Team Setup builds capability. Workflow Builder applies capability to one declared process. The coordinator owns discovery; specialist profiles do not design or activate workflows. Every transition is receipt-backed, and external or irreversible actions remain approval-gated.
+
+See `PRODUCT.md`, `site/llms.txt`, and the skills under `skills/forge/` and `skills/workflow-builder/` for the canonical operating instructions.

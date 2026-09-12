@@ -12,7 +12,7 @@ The product deliberately separates **Team Setup** from **Workflow Builder**. Thi
 
 Team Setup interviews the customer about broad outcomes, required capabilities, autonomy, constraints, data boundaries, and approval posture. It then designs and provisions the smallest useful team with isolated profiles, rich personas, verified skills, supported model/cost optimization, generic role contracts, and a team-wide policy.
 
-After all setup receipts pass, Team Setup automatically queues exactly one coordinator-owned **Workflow Builder Kickoff** card in `READY` status. This is an automatic handoff, not automatic automation: the card starts workflow discovery but cannot execute a customer workflow.
+After all setup receipts pass, Team Setup automatically queues exactly one coordinator-owned **Workflow Builder Kickoff** card in `READY` status. The handoff uses the idempotency key `workflow-builder-kickoff:v1`, records its card ID in the durable team record, and reuses an existing active card instead of creating a duplicate. This is an automatic handoff, not automatic automation: the card starts workflow discovery but cannot execute a customer workflow.
 
 Team Setup does not create workflow-specific execution cards, schedules, live integrations, production routines, or workflow trials. It finishes with:
 
@@ -24,9 +24,9 @@ WORKFLOW STATUS: NONE
 
 ### Phase 2 — Workflow Builder
 
-The main coordinator picks up the kickoff card and interviews the customer about one concrete workflow. It moves the card to `DESIGNING` and drafts the workflow contract, policy, runbook, and trial plan.
+The main coordinator claims the kickoff card only after verifying its idempotency key and uniqueness. It records a handoff receipt, moves the card to `DESIGNING`, and interviews the customer about one concrete workflow.
 
-The coordinator must stop and obtain an explicit workflow-design approval receipt. Only then may Workflow Builder create execution cards, configure integrations, change workflow permissions, create routines, or start a trial:
+It drafts the workflow contract, policy, runbook, and trial plan, then must stop for an explicit workflow-design approval receipt. Only then may Workflow Builder create execution cards, configure integrations, change workflow permissions, create routines, or start a trial:
 
 ```text
 TEAM STATUS: PROVISIONED
@@ -50,7 +50,7 @@ WORKFLOW STATUS: DESIGNED → TRIAL-PASSED → OPERATIONAL
 - Compression and cost controls compatible with the installed Hermes version.
 - Durable `TEAM.md`, `TEAM-CONTRACT.md`, and `TEAM-POLICY.md` records.
 - Profile smoke tests and auditable completion evidence.
-- One coordinator-owned Workflow Builder Kickoff card in `READY` status.
+- One idempotent coordinator-owned Workflow Builder Kickoff card in `READY` status.
 
 ## What Workflow Builder provides
 

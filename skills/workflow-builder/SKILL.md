@@ -1,11 +1,11 @@
 ---
 name: workflow-builder
-version: 1.1.0
-description: Discover, design, test, and activate one workflow using an existing provisioned Hermes team.
+version: 1.2.0
+description: Discover, design, test, and activate one workflow using an existing provisioned Hermes team and a verified kickoff handoff.
 metadata:
   author: juliench82
-  version: 1.1.0
-  tags: [workflow, orchestration, kickoff, trial, activation, governance]
+  version: 1.2.0
+  tags: [workflow, orchestration, kickoff, trial, activation, idempotency, governance]
 ---
 
 ## Mission
@@ -20,7 +20,9 @@ Before interviewing for a workflow:
 2. Confirm it contains `TEAM STATUS: PROVISIONED`.
 3. Confirm it contains `WORKFLOW HANDOFF: READY` or the user explicitly invokes Workflow Builder.
 4. Confirm the team roster and required skills have verification receipts.
-5. If the team is missing or unverified, stop and direct the user to Forge Team Setup.
+5. Confirm the kickoff idempotency key is `workflow-builder-kickoff:v1`.
+6. Confirm exactly one non-closed kickoff card exists and is assigned to the main coordinator/profile 0.
+7. If the team or handoff is missing or unverified, stop and direct the user to Forge Team Setup.
 
 ## Kickoff card contract
 
@@ -29,9 +31,10 @@ The Forge handoff creates exactly one card with:
 - Assignee: main coordinator/profile 0.
 - Status: `READY`.
 - Type: onboarding/control-plane.
+- Idempotency key: `workflow-builder-kickoff:v1`.
 - Objective: begin workflow discovery only.
 
-When the coordinator picks it up, it must remain in discovery mode. It may interview the user and draft artifacts, but it must not create workflow execution cards, routines, integrations, permission changes, or trials before workflow-design approval.
+When the coordinator claims the card, record a handoff receipt with the card ID, prior state, new state, coordinator identity, timestamp, and team record path. It may then move the card to `DESIGNING`. If multiple matching cards exist, stop and report the duplicate instead of claiming any.
 
 ## Workflow interview
 
@@ -50,7 +53,7 @@ Do not provision a team in this flow. Do not silently expand permissions or inst
 
 ## Design state
 
-After the interview, set the handoff/card state to `DESIGNING` and create drafts only:
+After the interview, set the kickoff card to `DESIGNING` and create drafts only:
 
 - `WORKFLOW-CONTRACT.md` from `templates/WORKFLOW-CONTRACT.md`.
 - `WORKFLOW-POLICY.md` from `templates/WORKFLOW-POLICY.md`.
@@ -135,7 +138,8 @@ WORKFLOW STATUS: OPERATIONAL
 Report verbatim:
 
 - Team status and source `TEAM.md`.
-- Kickoff card ID, type, assignee, and state transitions.
+- Kickoff card ID, idempotency key, type, assignee, and state transitions.
+- Handoff receipt with prior/new state, coordinator, timestamp, and team record.
 - Workflow contract, policy, runbook, and trial paths.
 - Workflow-design approval receipt.
 - Board/card IDs and assignees.
@@ -147,10 +151,11 @@ Report verbatim:
 
 ## Runtime rules
 
-- Never run without a verified provisioned team.
+- Never run without a verified provisioned team and kickoff handoff.
 - Never create profiles in Workflow Builder.
 - Never broaden team permissions silently.
 - Never let specialist profiles own workflow discovery or workflow-design approval.
+- Never claim a kickoff is valid if duplicate active cards exist.
 - Never send, publish, merge, deploy, pay, delete, or modify external state without the workflow approval gate.
 - Never create recurring routines before the supervised trial passes unless the routine is explicitly a disabled/dry-run test fixture.
 - Never claim operational status without trial evidence and human activation approval.

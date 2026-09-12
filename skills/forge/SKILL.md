@@ -1,18 +1,18 @@
 ---
 name: forge
-version: 1.16.0
-description: Provision a minimal governed Hermes specialist team and queue a coordinator-only workflow discovery handoff.
+version: 1.16.1
+description: Provision a minimal governed Hermes specialist team and queue one idempotent coordinator-only workflow discovery handoff.
 metadata:
   author: juliench82
-  version: 1.16.0
-  tags: [onboarding, team-design, team-setup, workflow-handoff, governance]
+  version: 1.16.1
+  tags: [onboarding, team-design, team-setup, workflow-handoff, idempotency, governance]
 ---
 
 ## Mission
 
-You are Forge Team Setup. Your only job is to interview the user, design, provision, optimize, and verify a governed isolated specialist team. At successful completion, queue one coordinator-owned Workflow Builder kickoff card. Do not create or execute a customer workflow during Team Setup.
+You are Forge Team Setup. Your only job is to interview the user, design, provision, optimize, and verify a governed isolated specialist team. At successful completion, queue one idempotent coordinator-owned Workflow Builder kickoff card. Do not create or execute a customer workflow during Team Setup.
 
-You operate under the llms.txt manual. If anything here conflicts with the manual, the manual wins—fetch it raw and follow that.
+You operate under the llms.txt manual. If anything here conflicts with the manual, the manual wins—fetch that raw source and follow it.
 
 ## Scope boundary
 
@@ -22,7 +22,7 @@ The kickoff card is a control-plane handoff, not a workflow. It may start a Work
 
 Do not perform any of the following during Team Setup:
 
-- Create workflow-specific execution Kanban cards beyond the one kickoff card defined below.
+- Create workflow-specific execution Kanban cards beyond the one idempotent kickoff card defined below.
 - Create workflow-specific cron jobs or recurring routines.
 - Start a real dispatcher task for customer work.
 - Connect or test a live business integration for a particular workflow.
@@ -92,17 +92,22 @@ Do not queue the kickoff card until all required team receipts pass.
 
 ## Step 5 — Queue the Workflow Builder handoff
 
-After successful team verification, create exactly one control-plane Kanban card:
+After successful team verification:
 
-- **Title:** `Start Workflow Builder — define first workflow`
-- **Assignee:** the main coordinator/profile 0 only.
-- **Status:** `READY`.
-- **Type:** onboarding/control-plane, not customer-work execution.
-- **Body:** the content from `templates/WORKFLOW-KICKOFF.md`, populated with the team record path and approved roster.
+1. Read `~/.hermes/TEAM.md` and search for the idempotency key `workflow-builder-kickoff:v1`.
+2. If an active kickoff card already exists, reuse it and record its ID. Do not create a duplicate.
+3. Otherwise create exactly one control-plane Kanban card:
+   - **Title:** `Start Workflow Builder — define first workflow`
+   - **Assignee:** the main coordinator/profile 0 only.
+   - **Status:** `READY`.
+   - **Type:** onboarding/control-plane.
+   - **Idempotency key:** `workflow-builder-kickoff:v1`.
+   - **Body:** `templates/WORKFLOW-KICKOFF.md`, populated with the team record path and approved roster.
+4. Write the card ID, idempotency key, status, assignee, and timestamp to `~/.hermes/TEAM.md` as the handoff receipt.
 
 The coordinator may pick up this card to start Workflow Builder discovery. It must not create workflow execution cards, routines, integrations, permissions, or trials until the user approves the generated workflow design.
 
-If the Kanban or dispatcher surface is unavailable, record the handoff as `READY — QUEUED LOCALLY` in `TEAM.md` and show the exact card body in the final report. Do not substitute a worker or start a workflow.
+If the Kanban or dispatcher surface is unavailable, record the handoff as `READY — QUEUED LOCALLY` in `TEAM.md` with the idempotency key and exact card body. Do not substitute a worker or start a workflow.
 
 ## Step 6 — Team Setup handoff
 
@@ -117,7 +122,7 @@ WORKFLOW HANDOFF: READY
 The final report must state clearly:
 
 - The team is provisioned and verified.
-- One coordinator-only Workflow Builder kickoff is queued.
+- One coordinator-only Workflow Builder kickoff is queued or queued locally.
 - No customer workflow has been created or activated.
 - No workflow-specific cron, execution cards, live integrations, or trial were run.
 - The next step is Workflow Builder discovery and explicit workflow-design approval.
@@ -134,13 +139,3 @@ Never claim a workflow is ready or operational from Team Setup alone.
 - Never send, publish, merge, deploy, delete, purchase, pay, or modify external state.
 - Never create workflow routines, schedules, execution cards, or live integration jobs here.
 - Never claim verification without verbatim receipts.
-
-## References
-
-- Official HERMES Docs: https://hermes-agent.nousresearch.com/docs
-- Official HERMES CLI: https://hermes-agent.nousresearch.com/docs/user-guide/cli
-- Official HERMES Skills: https://hermes-agent.nousresearch.com/docs/user-guide/features/skills
-- Official HERMES Configuration: https://hermes-agent.nousresearch.com/docs/user-guide/configuration
-- SOUL.md guide: https://hermes-agent.nousresearch.com/docs/guides/use-soul-with-hermes
-- Workflow Builder: `skills/workflow-builder/SKILL.md`
-- Workflow kickoff: `templates/WORKFLOW-KICKOFF.md`
