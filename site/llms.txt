@@ -1,6 +1,6 @@
 # HERMES Agents Forge — Operating Manual for HERMES Agents
 
-Version: v0.6.0 (Forge Team Setup 1.19.0; Workflow Builder 1.4.0)
+Version: v0.6.1 (Forge Team Setup 1.20.0; Workflow Builder 1.4.0)
 
 > You are a HERMES agent. The human who sent you here is our customer and already runs HERMES — you are their agent. This manual is the complete operating contract for provisioning a high-quality governed team, then handing it to the separate Workflow Builder.
 
@@ -33,6 +33,23 @@ Workflow Builder → WORKFLOW STATUS: DESIGNING → DESIGNED → TRIAL-PASSED �
 ```
 
 Team Setup quality is unchanged from the original Forge flow. The split changes only the stopping point: it removes workflow creation/execution from Team Setup; it does not remove team design, provisioning, optimization, skill resolution, persona quality, or verification.
+
+## Builtin tool usage
+
+Team Setup and Workflow Builder run on Hermes builtin tools. The procedures reference the `hermes` CLI surface for receipts; the agent-facing tool surface that implements the same operations is these toolsets (see the official Built-in Tools Reference):
+
+- `todo` — session task checklist with nested subtasks. The zero-open-items verification gate is read from it (call with no parameters).
+- `read_file` / `write_file` / `patch` / `search_files` — all file operations: `SOUL.md` writes, generated-skill authoring, template population, and `~/.hermes/TEAM.md` refreshes. Hermes explicitly directs agents to use these instead of `cat`, `head`, `tail`, `echo`, `sed`, `awk`, `grep`, `rg`, and `find`. Use `patch` for targeted edits so prior receipts in TEAM.md are never overwritten.
+- `skills_list` / `skill_view` / `skill_manage` — skills inventory receipts, loading full skill content, and generated-skill creation.
+- `memory` — persistent cross-session facts: stable coordinator identity, team record path, and rejected-configuration history.
+- `session_search` — interruption recovery; locate the last completed step in past sessions before re-provisioning anything.
+- `clarify` — batched clarification questions with selectable choices (2–5 questions per call) when interview answers are ambiguous. Never a substitute for the approval gates.
+- `delegate_task` — optional parallel subagent provisioning for 5- and 7-specialist packages; only final summaries return to the coordinator.
+- `execute_code` — batch repeated CLI checks with filtering logic when many profiles require identical verification.
+- `kanban` toolset (12 tools) — coordinator handoff card and Workflow Builder execution boards.
+- `cronjob` — Workflow Builder routines only, after the supervised trial passes. Never during Team Setup.
+
+Tool availability varies by platform, credentials, and enabled toolsets. An unavailable tool is recorded as `SKIPPED` with the exact reason, exactly like an unsupported configuration key. Never claim a tool-based receipt for a tool that was not available.
 
 ## Stage 1 — Team Setup
 
@@ -131,7 +148,7 @@ Do not claim success until all applicable receipts exist:
 8. Zero-open-items checklist.
 9. Explicit record that no workflow assets or external workflow actions were created.
 
-A rejected setting, unavailable tool, provider failure, or unsupported runtime feature is recorded as `SKIPPED` with the exact reason. Never silently convert partial setup into “complete.”
+A rejected setting, unavailable tool, provider failure, or unsupported runtime feature is recorded as `SKIPPED` with the exact reason. Never silently convert partial setup into "complete."
 
 ### Step 7 — Coordinator-only handoff
 
@@ -220,7 +237,8 @@ The complete Workflow Builder procedure is `skills/workflow-builder/SKILL.md`. L
 - `catalog/skills.json`
 - `skills/workflow-builder/SKILL.md`
 - `templates/WORKFLOW-KICKOFF.md`
-- Official HERMES docs: https://hermes-agent.nousresearch.com/docs/
+- Official HERMES docs: [https://hermes-agent.nousresearch.com/docs/](https://hermes-agent.nousresearch.com/docs/)
+- Built-in Tools Reference: [https://hermes-agent.nousresearch.com/docs/reference/tools-reference](https://hermes-agent.nousresearch.com/docs/reference/tools-reference)
 
 ## Important
 

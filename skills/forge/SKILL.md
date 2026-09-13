@@ -1,10 +1,10 @@
 ---
 name: forge
-version: 1.19.0
+version: 1.20.0
 description: Provision a high-quality governed Hermes specialist team, optimize and verify it completely, then queue a non-executable coordinator workflow-discovery handoff.
 metadata:
   author: juliench82
-  version: 1.19.0
+  version: 1.20.0
   tags: [onboarding, team-design, team-setup, profiles, personas, skills, optimization, receipts, governance]
 ---
 
@@ -28,6 +28,32 @@ Never do workflow work here:
 - No worker assignment to a business process.
 
 The only post-setup card allowed is the idempotent, non-executable control-plane kickoff defined in `## Coordinator handoff`.
+
+## Builtin tool usage
+
+Team Setup runs on Hermes builtin tools. Use them directly instead of raw shell equivalents; Hermes itself directs agents to `read_file`/`write_file`/`patch`/`search_files` rather than `cat`, `echo`, `sed`, `awk`, `grep`, `rg`, or `find`:
+
+| Tool | Use in this flow |
+|------|------------------|
+| `todo` | Track every provisioning step as a nested checklist; call with no parameters to read it; the Step 5 "Zero-open-items checklist" receipt is read from it |
+| `read_file` | Read `SOUL.md` files, templates, and `~/.hermes/TEAM.md` |
+| `write_file` | Write new `SOUL.md` files, generated skills, contracts, and policy artifacts |
+| `patch` | Targeted edits to existing files — append handoff receipts to `~/.hermes/TEAM.md` without overwriting prior receipts |
+| `search_files` | Locate files or search content during recovery and verification |
+| `skills_list` / `skill_view` | Inspect enabled builtins and load full skill content before creating anything |
+| `skill_manage` | Create generated skills for genuine uncovered team capabilities |
+| `memory` | Persist stable coordinator identity, team record path, and rejected-configuration history across sessions |
+| `session_search` | Interruption recovery — find the last completed step in past sessions before provisioning anything |
+| `clarify` | Batch follow-up questions with selectable choices when interview answers are ambiguous (2–5 questions per call) |
+| `delegate_task` | Optional parallel provisioning of worker profiles in isolated subagent contexts; only final summaries return — for 5- and 7-specialist packages |
+| `execute_code` | Batch repeated CLI checks with filtering logic when many profiles require identical verification |
+
+Rules:
+
+- Tool availability varies by platform, credentials, and enabled toolsets. If a tool is absent, record `SKIPPED` with the exact reason — never emulate a file edit with unsafe shell fallbacks.
+- `clarify` and `delegate_task` never replace the single approval gate; they operate after it or outside it.
+- Coordinator handoff card creation uses the official `hermes kanban` CLI or the `kanban` toolset — never ad-hoc writes into board state.
+- `cronjob` is never used during Team Setup; routines belong to Workflow Builder after the supervised trial passes.
 
 ## Step 0 — Pre-flight and session hygiene
 
@@ -136,7 +162,7 @@ Do not claim Team Setup is complete until all required receipts exist:
 8. Zero-open-items checklist.
 9. No workflow assets or external workflow actions were created.
 
-A rejected setting or unavailable tool is recorded as `SKIPPED` with the reason; it is never silently absorbed into “complete.”
+A rejected setting or unavailable tool is recorded as `SKIPPED` with the reason; it is never silently absorbed into "complete."
 
 ## Coordinator handoff
 

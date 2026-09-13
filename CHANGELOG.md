@@ -6,6 +6,13 @@
 
 ## [Unreleased]
 
+### v0.6.1 — 2026-09-13
+- docs: made builtin tool usage explicit in `site/llms.txt` and `skills/forge/SKILL.md` (forge skill v1.20.0; manual v0.6.1).
+- Added a "Builtin tool usage" section to both files mapping each flow step to the Hermes builtin tools that implement it: `todo`, `read_file`, `write_file`, `patch`, `search_files`, `skills_list`, `skill_view`, `skill_manage`, `memory`, `session_search`, `clarify`, `delegate_task`, `execute_code`, and the `kanban` toolset.
+- Grounded tool names in the official Built-in Tools Reference (https://hermes-agent.nousresearch.com/docs/reference/tools-reference) and added that link to the manual's Source files.
+- Documented the SKIPPED-with-reason rule for unavailable tools (availability varies by platform, credentials, and enabled toolsets).
+- No procedural content was changed or removed; the additions are strictly additive on top of the v0.6.0 two-stage content.
+
 ### v0.6.0 — 2026-09-13
 - feat: split onboarding into two explicit phases: Team Setup and Workflow Builder
 - docs: restore complete historical changelog entries (v0.3.0 through v0.5.6)
