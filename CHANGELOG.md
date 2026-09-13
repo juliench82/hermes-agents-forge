@@ -6,10 +6,21 @@
 
 ## [Unreleased]
 
-### v0.5.6 — 2026-09-10
-- docs: explicit “do not run the flow yourself” stance in llms.txt; forge skill v1.13.0; canonical llms.txt URL; TEAM.md always under ~/.hermes
+### v0.6.1 — 2026-09-13
+- docs: made builtin tool usage explicit in `site/llms.txt` and `skills/forge/SKILL.md` (forge skill v1.20.0; manual v0.6.1).
+- Added a "Builtin tool usage" section to both files mapping each flow step to the Hermes builtin tools that implement it: `todo`, `read_file`, `write_file`, `patch`, `search_files`, `skills_list`, `skill_view`, `skill_manage`, `memory`, `session_search`, `clarify`, `delegate_task`, `execute_code`, and the `kanban` toolset.
+- Grounded tool names in the official Built-in Tools Reference (https://hermes-agent.nousresearch.com/docs/reference/tools-reference) and added that link to the manual's Source files.
+- Documented the SKIPPED-with-reason rule for unavailable tools (availability varies by platform, credentials, and enabled toolsets).
+- No procedural content was changed or removed; the additions are strictly additive on top of the v0.6.0 two-stage content.
 
-## [2026-09-10] — v0.5.5: TEAM.md fixed home, changelog history restored, typo fix
+### v0.6.0 — 2026-09-13
+- feat: split onboarding into two explicit phases: Team Setup and Workflow Builder
+- docs: restore complete historical changelog entries (v0.3.0 through v0.5.6)
+- Added explicit two-stage lifecycle with coordinator handoff receipt
+- Added workflow-specific contracts, policies, runbooks, and trial plans
+- Preserved team governance artifacts while separating workflow execution
+
+## [2026-09-10] — v0.5.6: TEAM.md fixed home, changelog history restored, typo fix
 
 ### Added
 - Standing maintenance policy at the top of CHANGELOG.md: update on every
@@ -36,7 +47,6 @@
 
 The v0.5.4 flow wrote TEAM.md to the shell CWD, which could be Downloads,
 Desktop, or any unrelated project directory — not a durable home under
-
 HERMES install. The v0.5.5 fix moves the durable record to
 ~/.hermes/TEAM.md, a fixed path that survives CWD changes and is
 co-located with the profiles and skills. The changelog history for v0.3.0
@@ -81,7 +91,6 @@ plus a Pro aggregator, no compression block — the opposite of a cheap
 orchestrator; the official Kanban cost guidance says coordinator strong /
 workers cheap, and profile 0 was never tuned. (2) Kanban Desktop is a
 plugin off by default — the run claimed "board wired" while the user had
-
 to find and flip a Settings toggle manually; the docs treated CLI board
 and Desktop tab as one surface. (3) The final report rounded the skills
 inventory ("59 builtins + 1 generated") while the live table read "2
@@ -155,7 +164,6 @@ plus a Pro aggregator, no compression block — the opposite of a cheap
 orchestrator; the official Kanban cost guidance says coordinator strong /
 workers cheap, and profile 0 was never tuned. (2) Kanban Desktop is a
 plugin off by default — the run claimed "board wired" while the user had
-
 to find and flip a Settings toggle manually; the docs treated CLI board
 and Desktop tab as one surface. (3) The final report rounded the skills
 inventory ("59 builtins + 1 generated") while the live table read "2
@@ -189,14 +197,14 @@ vs Desktop plugin state, and closes the receipts gap.
 
 Run 7 was hijacked by a pre-v0.3 local forge skill left in ~/.hermes/skills
 from an earlier session — nothing in the flow detected version skew, and
- the run executed a dead flow while the manual said "TRUST IT". Run 8
+the run executed a dead flow while the manual said "TRUST IT". Run 8
 (clean install) validated the flow itself — interview, Package 7, the
 exact gate question, batched provisioning, a schema-grounded persona with
 quoted answers — but the model degenerated mid-4b (channel-token loops,
 72.7s stall, off-task drift), and nothing after the first persona had a
 receipt. v0.5.1 makes runs self-verifying: the version is quotable, the
 skill's age is checkable, and every phase transition leaves evidence
- even if the run dies.
+even if the run dies.
 
 ## [2026-09-06] — v0.5.0: Kanban team-wiring — the board is the work engine
 
@@ -299,10 +307,10 @@ Run 4 receipts: all 7 profiles show `0 hub-installed, 57 builtin` — every
 Hub install attempt failed (GitHub API rate limits, largely burned on
 skills duplicating builtins), yet the final report claimed verified skill
 installation. Meanwhile the builtin library (test-driven-development,
- systematic-debugging, github, codebase-inspection, computer-use,
- google-workspace…) already covers most of the manifest's domains. The
+systematic-debugging, github, codebase-inspection, computer-use,
+google-workspace…) already covers most of the manifest's domains. The
 skills engine's real job is verifying builtin coverage and filling genuine
- gaps — not performing redundant installs.
+gaps — not performing redundant installs.
 
 ## [2026-09-03] — v0.3.4: Verbatim receipts + honest final reports
 
@@ -322,10 +330,10 @@ skills engine's real job is verifying builtin coverage and filling genuine
 
 Run 4 (12B local model, v0.3.0 build) recovered cleanly from a
 mid-provisioning model collapse via the resume rule — but its final report
- declared "the technical setup is complete" while its own checklist showed
- two skill installations unchecked (GitHub API rate limits), and it asserted
- verification results without showing any command output. Assertions are
- not receipts.
+declared "the technical setup is complete" while its own checklist showed
+two skill installations unchecked (GitHub API rate limits), and it asserted
+verification results without showing any command output. Assertions are
+not receipts.
 
 ## [2026-09-02] — v0.3.3: HERMES.md aligned with the v0.3 flow
 
@@ -396,7 +404,7 @@ catalog/skills.json.
 
 Hermes v2026.8.31 turned Bot Mode into the platform's native multi-agent
 layer: profiles are Bots with built-in bot-to-bot messaging, group rooms,
- and routines, sharing the main profile's credential pool by default. The
+and routines, sharing the main profile's credential pool by default. The
 Forge's funnel maps 1:1 onto those primitives — this patch makes the
 handoff create the real collaboration layer, not just suggest one.
 
@@ -427,51 +435,11 @@ handoff create the real collaboration layer, not just suggest one.
 ### Why
 
 Post-test review (runs 1–3) showed the product provisioned thin personas
-  (3-line SOUL.md) and installed no skills — quality lived in the model's
-  imagination instead of in the repo. The persona engine moves depth into
-  a universal schema + grounding sources; the skills engine moves
-  capability into the HERMES Skills Hub with a real security gate; the
-  single approval gate removes confirmation fatigue.
-
-### Impact on user flow
-
-Customers now get: one approval → a team of isolated profiles, each with a
-rich, grounded persona and real installed skills, verified with receipts
-and handed off with collaboration rituals — on any LLM, any reasoning
-level, for any role they ask for.
-
-## [2026-09-01] — v0.3.0: The Supercharged Forge (persona engine + skills engine)
-
-### Added
-- `catalog/roles/soul-schema.md` — universal 10-section SOUL.md schema with
-  grounding sources and depth rules; role-agnostic by design.
-- `catalog/roles/examples/` — golden-sample personas (system-architect,
-  social-media-manager) to calibrate depth, not to limit coverage.
-- `catalog/skills.json` — skills manifest: per-domain search terms, vetted
-  third-party packs (superpowers), and the SkillSpector security-gate policy.
-- Single approval gate: one yes authorizes profiles + personas + skills;
-  zero mid-flow confirmations afterwards.
-- Receipts verification: `hermes profile list` count, per-profile skill
-  inventory, per-profile chat smoke test, durable TEAM.md record.
-- Team rituals in handoff: group chat, shared inbox, kickoff routine (Bot Mode).
-
-### Changed
-- `site/llms.txt` — Step 4 split into 4a profiles (batched) / 4b persona
-  engine (schema-driven, grounded in interview quotes + skill knowledge) /
-  4c skills engine (search → inspect → install, SkillSpector-gated).
-- `skills/forge/SKILL.md` — v1.1.0, mirrors the same protocol; pitfalls
-  updated (no thin personas, no invented names, no unscanned installs,
-  no broken approval gate).
-- `PRODUCT.md` — success criteria raised to the new bar; test log added.
-
-### Why
-
-Post-test review (runs 1–3) showed the product provisioned thin personas
-  (3-line SOUL.md) and installed no skills — quality lived in the model's
-  imagination instead of in the repo. The persona engine moves depth into
-  a universal schema + grounding sources; the skills engine moves
-  capability into the HERMES Skills Hub with a real security gate; the
-  single approval gate removes confirmation fatigue.
+(3-line SOUL.md) and installed no skills — quality lived in the model's
+imagination instead of in the repo. The persona engine moves depth into
+a universal schema + grounding sources; the skills engine moves
+capability into the HERMES Skills Hub with a real security gate; the
+single approval gate removes confirmation fatigue.
 
 ### Impact on user flow
 

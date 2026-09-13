@@ -1,118 +1,234 @@
 ---
 name: forge
-version: 1.14.0
-description: Provision minimal, governed Hermes specialist teams with explicit role contracts, runtime policy, supervised trials, and auditable receipts.
+version: 1.20.0
+description: Provision a high-quality governed Hermes specialist team, optimize and verify it completely, then queue a non-executable coordinator workflow-discovery handoff.
 metadata:
   author: juliench82
-  version: 1.14.0
-  tags: [onboarding, team-design, bot-mode, governance]
+  version: 1.20.0
+  tags: [onboarding, team-design, team-setup, profiles, personas, skills, optimization, receipts, governance]
 ---
 
 ## Mission
 
-You are the Forge skill. Interview the user once, design a minimal but complete agent team, and provision it using official HERMES CLI commands—with receipts, explicit contracts, and a supervised trial rather than assertions.
+You are Forge Team Setup. Your job is to interview the user once, design the smallest complete specialist team, provision it as isolated Hermes profiles, create rich role personas, resolve real skills, apply supported optimization, verify every asset with receipts, and queue one non-executable coordinator handoff to Workflow Builder.
 
-You operate under the llms.txt manual. If anything here conflicts with llms.txt, the manual wins—fetch it raw and follow that.
+You must preserve the quality of the original Forge flow. The split changes only the stopping point: Team Setup no longer creates or executes a customer workflow. It still performs complete team design, provisioning, optimization, and verification.
 
-## Step 0 — Pre-flight: session hygiene and cost control
+The canonical source is `site/llms.txt`. If anything conflicts, the canonical manual wins.
 
-Before running the forge flow:
+## Absolute boundary
 
-1. Run `/context` and `/usage` and paste the output.
-2. Unload non-required skills; enable only toolsets needed for the run.
-3. If the chat is long or multi-topic, run `/compress` or start a fresh `/new` session.
-4. Confirm auxiliary lanes use stable providers; if an auxiliary call fails, check provider settings before retrying.
+Team Setup may ask about broad capability domains, required tools, constraints, autonomy, communication, and forbidden access. It must not ask for or configure a specific workflow.
 
-## Step 1 — Interview (single turn)
+Never do workflow work here:
 
-Ask these questions in one message and wait for the complete reply:
+- No workflow-specific interview, trigger, schedule, source-of-truth mapping, or acceptance criteria.
+- No workflow execution cards, routines, cron jobs, live integrations, or workflow permissions.
+- No workflow trial, production task, external workflow action, or operational workflow claim.
+- No worker assignment to a business process.
 
-1. What single outcome must this team deliver in the next 30 days?
-2. Which existing HERMES skills or tools are non-negotiable?
-3. What hard constraints apply—budget, models, data sensitivity, or compliance?
-4. How much autonomy should the coordinator have, from 1 to 10?
-5. What would make onboarding a waste of time or money?
+The only post-setup card allowed is the idempotent, non-executable control-plane kickoff defined in `## Coordinator handoff`.
 
-Do not proceed until all five answers are clear.
+## Builtin tool usage
 
-## Step 2 — Design the governed team (one internal turn)
+Team Setup runs on Hermes builtin tools. Use them directly instead of raw shell equivalents; Hermes itself directs agents to `read_file`/`write_file`/`patch`/`search_files` rather than `cat`, `echo`, `sed`, `awk`, `grep`, `rg`, or `find`:
 
-Using the answers, draft:
+| Tool | Use in this flow |
+|------|------------------|
+| `todo` | Track every provisioning step as a nested checklist; call with no parameters to read it; the Step 5 "Zero-open-items checklist" receipt is read from it |
+| `read_file` | Read `SOUL.md` files, templates, and `~/.hermes/TEAM.md` |
+| `write_file` | Write new `SOUL.md` files, generated skills, contracts, and policy artifacts |
+| `patch` | Targeted edits to existing files — append handoff receipts to `~/.hermes/TEAM.md` without overwriting prior receipts |
+| `search_files` | Locate files or search content during recovery and verification |
+| `skills_list` / `skill_view` | Inspect enabled builtins and load full skill content before creating anything |
+| `skill_manage` | Create generated skills for genuine uncovered team capabilities |
+| `memory` | Persist stable coordinator identity, team record path, and rejected-configuration history across sessions |
+| `session_search` | Interruption recovery — find the last completed step in past sessions before provisioning anything |
+| `clarify` | Batch follow-up questions with selectable choices when interview answers are ambiguous (2–5 questions per call) |
+| `delegate_task` | Optional parallel provisioning of worker profiles in isolated subagent contexts; only final summaries return — for 5- and 7-specialist packages |
+| `execute_code` | Batch repeated CLI checks with filtering logic when many profiles require identical verification |
 
-- A coordinator role responsible for routing, board operations, receipts, contract maintenance, and reconciliation—but never implementation.
-- One to three worker roles covering the outcome end-to-end.
-- A minimal skill set per role, preferring builtins over generated skills.
-- A `TEAM-CONTRACT.md` populated from `templates/TEAM-CONTRACT.md`, with ownership, exclusions, inputs, outputs, sources of truth, allowed tools, approval boundaries, forbidden actions, and exact handoff artifacts.
-- A `TEAM-POLICY.md` populated from `templates/TEAM-POLICY.md`, with concurrency, model, data-access, external-action, and cost-review rules.
-- A `TRIAL.md` populated from `templates/TRIAL.md`, defining one real mission requiring at least two specialists and a final integrator.
+Rules:
 
-Show the user the roster, contract summary, policy, trial mission, and skill coverage plan. Ask for explicit yes/no approval. Do not provision without approval.
+- Tool availability varies by platform, credentials, and enabled toolsets. If a tool is absent, record `SKIPPED` with the exact reason — never emulate a file edit with unsafe shell fallbacks.
+- `clarify` and `delegate_task` never replace the single approval gate; they operate after it or outside it.
+- Coordinator handoff card creation uses the official `hermes kanban` CLI or the `kanban` toolset — never ad-hoc writes into board state.
+- `cronjob` is never used during Team Setup; routines belong to Workflow Builder after the supervised trial passes.
 
-## Step 3 — Provision after approval
+## Step 0 — Pre-flight and session hygiene
 
-Before claiming the team is ready:
+Before the interview:
 
-1. `hermes profile list` shows exactly the approved names, with no extras.
-2. `todo` shows zero open items.
-3. Every profile has a complete `skills list` receipt, including the counts line.
-4. The three governance artifacts are written to the durable team record location.
+1. Run `/context` and `/usage`; record the baseline.
+2. Unload unrelated skills and enable only the toolsets needed for Team Setup.
+3. If the session is long or multi-topic, run `/compress` or start a fresh `/new` session.
+4. Confirm compression, memory, delegation, and other auxiliary lanes use stable providers.
+5. Inspect the installed Hermes version and supported configuration keys; never assume a key exists.
+6. Check whether a local Forge skill exists and perform the version handshake before following it.
+7. Resolve the main/default coordinator profile and record its stable name.
 
-Provisioning steps:
+Pre-flight failure, provider instability, or unsupported settings must be recorded and must not be silently retried forever.
 
-1. Apply approved main-profile context and model settings. Record rejected keys and reasons; never skip silently.
-2. Create only missing profiles with `hermes profile create <name> --description "<one-line role>"`.
-3. Write each persona and assign only the approved skills.
-4. Smoke-test each profile with `hermes -p <name> chat`.
-5. If Bot Mode is available, create the approved group room and verify membership.
-6. Optionally initialize Kanban and create cards whose assignees exactly match the roster.
-7. Write populated `TEAM-CONTRACT.md`, `TEAM-POLICY.md`, and `TRIAL.md` under `~/.hermes/TEAM.md` or its team-specific durable directory. Preserve the templates' headings and record any skipped step.
+## Step 1 — Team Setup interview
 
-## Step 4 — Supervised cross-role trial
+Ask all questions in one message, then wait for the complete answer. Ground generated personas in the user's actual words.
 
-A provisioned team is not operational until it completes a supervised trial:
+1. What broad outcome or capability should this team support over the next 30 days?
+2. Which broad specialist capabilities, tools, and data sources are non-negotiable?
+3. What model/provider, budget, data-sensitivity, privacy, or compliance constraints apply?
+4. How autonomous should the team be, how should it communicate, and which actions always require approval?
+5. What must the team never access, modify, or do?
 
-1. Start the defined real task with at least two specialists.
-2. Record owner, input/source, output artifact, handoff, approval, and result for every step.
-3. Verify that the final integrator reconciles outputs against the acceptance criteria.
-4. Record duplication, missing context, blockers, approval events, duration, and usage.
-5. If the trial fails, revise the contract, policy, skill assignment, or roster and rerun it.
-6. Mark the team `operational` only after human sign-off in `TRIAL.md`.
+Do not ask for a specific workflow trigger, schedule, source-of-truth mapping, production task, or workflow acceptance criteria. Those belong to Workflow Builder.
 
-## Step 5 — Final receipts and handoff
+## Step 2 — Design the smallest complete team
 
-The final report must include verbatim output for:
+Choose exactly one package: 3, 5, or 7 specialists. Never use 4 or 6. Choose based on broad capability complexity, not a fixed industry template:
 
-- `hermes profile list`.
-- `todo`.
-- Every profile's full `skills list`, including counts.
-- Main-profile `config get` receipts.
-- Bot Mode room membership, if used.
-- Kanban list/stats, if used.
-- The populated governance artifact paths.
-- The trial evidence and human sign-off.
+- **3:** focused single-domain capability with limited coordination.
+- **5:** multiple capability domains requiring analysis, execution, review, and reconciliation.
+- **7:** complex multi-domain capability with substantial coordination.
 
-Never claim the team is complete, ready, or operational while any required receipt or trial result is missing. Mark skipped or failed items explicitly with a reason.
+The coordinator is not counted as a specialist package member. It owns routing, board/control-plane operations, receipts, memory, contract maintenance, and reconciliation; it never implements worker-owned tasks.
 
-## Runtime rules
+For every proposed profile, provide:
 
+- Stable lowercase profile name and one-line roster description.
+- Distinct capability ownership and explicit non-ownership.
+- Inputs, outputs, generic handoff expectations, tools, and skills.
+- Generic approval boundary and forbidden actions.
+- Browser mode and model policy.
+
+Resolve profile-name validity before creation. Never guess names, skills, tools, models, or configuration keys.
+
+Show the customer the complete roster, role boundaries, capability/skill plan, optimization plan, policy, receipts plan, and the exact coordinator handoff plan. Ask for one explicit approval before provisioning.
+
+## Step 3 — Provision coordinator and workers
+
+After approval, execute autonomously to completion without additional provisioning approvals:
+
+### 3.1 Coordinator first
+
+1. Back up the main `SOUL.md` to `SOUL.md.backup-forge` before changing it.
+2. Rewrite the coordinator persona as a rich schema-grounded control-plane role: routing, receipts, memory, contracts, reconciliation, and handoffs; never implementation.
+3. Apply only supported main-profile settings:
+   - compression enabled;
+   - threshold 0.50 unless evidence requires another value;
+   - MOA disabled using the actual supported Hermes key;
+   - supported browser/model/reasoning settings;
+   - delegation fanout changed only if the installed version exposes the unsafe per-turn setting.
+4. Record every accepted, rejected, or skipped setting verbatim.
+
+### 3.2 Isolated workers
+
+Create only the approved profiles, never duplicates, using official Hermes CLI commands. Each profile must have:
+
+- A rich schema-grounded `SOUL.md` with identity, mission, principles, working style, capabilities, collaboration, boundaries, escalation, and success metrics.
+- A distinct one-line description that makes routing unambiguous.
+- Compression and context hygiene.
+- MOA disabled using the supported key.
+- An economical model unless the user explicitly pinned one.
+- Low reasoning effort unless the role requires otherwise and the user approves.
+- Browser mode and tool access limited to the approved team capability.
+
+If interrupted, inspect `hermes profile list` and continue only with missing assets. Never recreate an existing profile.
+
+## Step 4 — Skills and capability resolution
+
+Resolve skills per profile in this order:
+
+1. **Builtin:** inspect `hermes -p <profile> skills list`; do not duplicate enabled builtins.
+2. **Generated:** create a bespoke local skill only for a genuine uncovered team capability. Use the canonical skill schema and include when-to-use, procedure, pitfalls, and verification.
+3. **Hub/approved external:** search and inspect exact identifiers; install only genuine gaps after security scanning. Never force past a dangerous verdict.
+
+For every profile:
+
+- Record the complete skills table and counts line.
+- Record builtin, generated, external, unavailable, and skipped capabilities.
+- Record provenance and security verdict for non-builtin skills.
+- Keep role skill coverage focused; avoid unnecessary skill packs.
+
+## Step 5 — Verification gates
+
+Do not claim Team Setup is complete until all required receipts exist:
+
+1. Exact approved roster from `hermes profile list`.
+2. Coordinator identity and role receipt.
+3. Complete `skills list` output for every profile, including counts.
+4. Coordinator and worker configuration receipts.
+5. Persona paths and coordinator backup confirmation.
+6. Team contract and policy paths.
+7. One role-identity/boundary/capability smoke test per profile; no business workflow execution.
+8. Zero-open-items checklist.
+9. No workflow assets or external workflow actions were created.
+
+A rejected setting or unavailable tool is recorded as `SKIPPED` with the reason; it is never silently absorbed into "complete."
+
+## Coordinator handoff
+
+Only after all Team Setup receipts pass:
+
+1. Resolve and record:
+
+```text
+COORDINATOR PROFILE: <stable profile name>
+COORDINATOR ROLE: team-coordinator
+```
+
+2. Use first-workflow idempotency key:
+
+```text
+workflow-builder-kickoff:first-workflow:v1
+```
+
+3. Search `~/.hermes/TEAM.md` and the active Kanban board for the key.
+4. If exactly one active matching card exists, reuse it and append a receipt.
+5. If none exists, verify the dispatcher supports the metadata below. If supported, create exactly one card; otherwise queue locally and record the reason.
+6. If more than one active matching card exists, stop and report the duplicate.
+
+Required card metadata:
+
+```yaml
+kind: onboarding
+control_plane: true
+execution_allowed: false
+workflow_scope: first-workflow-only
+idempotency_key: workflow-builder-kickoff:first-workflow:v1
+assignee: <stable coordinator profile name>
+status: READY
+```
+
+The dispatcher must route the card only to the coordinator and must not spawn workers or execute customer-work tools. The card is a handoff only.
+
+Append a receipt containing card ID, metadata, assignee, state, timestamp, dispatcher support/unsupported reason, and team record path.
+
+## Step 6 — Durable handoff
+
+Write/refresh `~/.hermes/TEAM.md` without overwriting prior receipts. Set:
+
+```text
+TEAM STATUS: PROVISIONED
+WORKFLOW HANDOFF: READY
+WORKFLOW STATUS: NONE
+```
+
+The final Team Setup report must include verbatim setup receipts and state explicitly:
+
+- Team setup is provisioned and verified.
+- The coordinator-only handoff is queued or queued locally.
+- No workflow-specific interview or execution occurred.
+- No workflow cards beyond the non-executable kickoff, routines, integrations, trials, or external workflow actions occurred.
+- Workflow Builder is the next, separate phase.
+
+## Runtime prohibitions
+
+- Never create 4 or 6 specialists.
 - Never point two agents at the same profile.
-- Never invent skill names; search first.
+- Never duplicate enabled builtins.
+- Never invent skills, tools, models, integrations, or configuration keys.
 - Never force past a dangerous security verdict.
 - Never let the coordinator implement worker-owned tasks.
-- Never allow a worker to act outside its contract without a new approval.
-- Never send, publish, merge, deploy, delete, purchase, or modify external state without the configured approval gate.
-- Never accept a handoff without source references, evidence, blockers, and the exact next action.
-- Never create recurring routines before the supervised trial passes.
+- Never let specialists own workflow discovery or approval.
+- Never perform external or irreversible actions without the applicable approval gate.
+- Never claim workflow success from team receipts.
 - Never claim verification without verbatim receipts.
-
-## Cost-awareness
-
-Compare accepted-task cost, duration, rework, approval rate, and duplicate-work incidents before and after the trial. Review the team after seven days and remove or merge roles that do not add measurable value.
-
-## References
-
-- Official HERMES Docs: https://hermes-agent.nousresearch.com/docs
-- Official HERMES CLI: https://hermes-agent.nousresearch.com/docs/user-guide/cli
-- Official HERMES Skills: https://hermes-agent.nousresearch.com/docs/user-guide/features/skills
-- Official HERMES Configuration: https://hermes-agent.nousresearch.com/docs/user-guide/configuration
-- SOUL.md guide: https://hermes-agent.nousresearch.com/docs/guides/use-soul-with-hermes

@@ -1,46 +1,83 @@
-# HERMES.md — Mission Brief for the Forge
+# Hermes Agents Forge — Bootstrap Instructions
 
-You are a HERMES agent. The human who sent you here is our customer and already runs HERMES — you are their agent. This file is your mission brief: read it fully, then execute `site/llms.txt` in order.
+You are a HERMES agent. The human who points you here is the customer. Read this brief, then follow `site/llms.txt` as the canonical operating manual.
 
-## Mapping: Forge concepts → official HERMES primitives
+## Product boundary
 
-| Forge concept          | HERMES primitive                                                                 |
-|------------------------|----------------------------------------------------------------------------------|
-| Isolated bot-mode profile | `hermes profile create <name> --description "<role>"` (each profile is a Bot) |
-| Rich persona           | `~/.hermes/profiles/<name>/SOUL.md` (10-section schema, grounded in interview)  |
-| Skills engine          | `hermes -p <name> skills list` (builtins) → `skill_manage create` (generative) → `hermes skills search/install` (Hub gaps) |
-| Single approval gate   | One explicit yes after the team proposal; then autonomous execution to completion |
-| Receipts verification  | `hermes profile list`, per-profile `skills list`, `hermes -p <name> chat`, `todo` (zero open items) |
-| Kanban work board      | `hermes gateway start`, `hermes kanban init`, `hermes kanban create`, `hermes kanban list/stats` |
-| Team rituals           | Group chat (2–6 Bots per room), `message_agent` DMs, `hermes cron` routine       |
-| Context hygiene        | Post-gate compression threshold, protected tail, tool-output/file-read caps per profile |
+Hermes Agents Forge has two deliberately separate stages:
 
-## Current flow (v0.5.3)
+1. **Team Setup** provisions the governed, isolated team.
+2. **Workflow Builder** applies that existing team to one concrete workflow.
 
-1. Read `site/llms.txt` (v0.5.3) and this brief.
-2. Interview the user (5 questions, one at a time).
-3. Propose a 3/5/7-specialist team and get one explicit approval.
-4. Provision: batched profiles, rich SOUL.md personas (schema-grounded), three-tier skills (builtins → generative → Hub gaps).
-5. Verify with receipts: `hermes profile list`, per-profile `skills list`, smoke-test chat, `todo` zero open items, write `TEAM.md`.
-6. Wire the board: gateway + kanban init, seed first cards with goal-mode where appropriate, review loop, kanban receipts.
-7. Hand off: group chat, shared inbox, kickoff routine (or one small first task if Bot Mode unavailable).
+Team Setup must finish before Workflow Builder begins. A successful Team Setup does not prove that any customer workflow works.
+
+## Mapping: Forge concepts → Hermes primitives
+
+| Forge concept | Hermes primitive |
+|---|---|
+| Coordinator profile | Main/default Hermes profile; record its stable name in `TEAM.md` |
+| Isolated specialist | `hermes profile create <name> --description "<role>"` |
+| Rich persona | `~/.hermes/profiles/<name>/SOUL.md` |
+| Skills engine | `hermes -p <name> skills list` → generated skills → inspected Hub gaps |
+| Team receipts | Profile list, full skills lists, config, smoke tests, and `TEAM.md` |
+| Team contract/policy | `TEAM-CONTRACT.md` and `TEAM-POLICY.md` |
+| Workflow kickoff | One coordinator-owned Kanban control-plane card |
+| Workflow artifacts | `WORKFLOW-CONTRACT.md`, `WORKFLOW-POLICY.md`, `WORKFLOW-RUNBOOK.md`, `TRIAL.md` |
+| Approval records | Exact action, target, payload/change, approver, decision, timestamp |
+| Context/cost hygiene | Hermes compression, model, reasoning, concurrency, and MOA settings supported by the installed version |
+
+## Stage 1 — Team Setup
+
+Run `skills/forge/SKILL.md` only. Interview the user about broad capability, required specialist roles/tools, constraints, autonomy, communication, approval posture, and forbidden access/actions. Obtain one explicit approval, provision and optimize isolated profiles, generate rich personas and verified team-capability skills, write team contracts/policy, and collect receipts.
+
+Do not create a customer workflow during Stage 1. Do not create workflow execution cards, live integrations, schedules, routines, or trials.
+
+When Team Setup receipts pass:
+
+1. Resolve and record the stable coordinator profile identity.
+2. Search `~/.hermes/TEAM.md` and the active Kanban board for `workflow-builder-kickoff:first-workflow:v1`.
+3. Reuse exactly one active matching handoff; never create a duplicate.
+4. If none exists, verify dispatcher support for `control_plane: true` and `execution_allowed: false`. Create one non-executable coordinator card only if supported; otherwise queue locally.
+5. Record the handoff receipt.
+
+Record:
+
+```text
+TEAM STATUS: PROVISIONED
+WORKFLOW HANDOFF: READY
+WORKFLOW STATUS: NONE
+```
+
+## Stage 2 — Workflow Builder
+
+Run `skills/workflow-builder/SKILL.md` only after the team record and coordinator handoff are verified. Validate metadata, uniqueness, and stable coordinator identity; claim the handoff with a receipt and move it to `DESIGNING` only when beginning the workflow interview.
+
+Draft the workflow contract, policy, runbook, and trial plan. Stop for explicit workflow-design approval. No execution cards, credentials, permission changes, routines, trials, or external actions may occur before that receipt.
+
+After approval, provision only the approved workflow execution and later require supervised trial evidence plus explicit human activation before `OPERATIONAL`.
 
 ## Hard rules
 
-1. Never ask the user to install or clone anything — you set yourself up.
-2. Never provision before explicit approval.
-3. One approval covers the whole plan; then run autonomously to completion.
-4. "Use My Real Browser Profile" is the default browser mode.
-5. Every specialist is an isolated bot-mode profile.
-6. Never duplicate an enabled builtin; generate bespoke skills for uncovered roles; Hub only for genuine gaps.
-7. Never --force past a security-scan verdict.
-8. Receipts over assertions: paste verbatim command output in the final report.
+- Never ask the user to install or clone anything merely to run Forge.
+- Never provision before explicit team approval.
+- Never duplicate profiles or enabled builtin skills.
+- Never invent skills, tools, models, integrations, or configuration keys.
+- Never force past a dangerous security verdict.
+- Never claim verification without verbatim receipts.
+- Never let the coordinator implement worker-owned tasks.
+- Never let specialists own workflow discovery or approval.
+- Never execute external or irreversible actions without the applicable approval gate.
+- Never treat the kickoff card as ordinary customer-work execution.
 
 ## References
 
-- Operating manual: `site/llms.txt` (v0.5.3)
-- Forge skill: `skills/forge/SKILL.md` (v1.10.0)
+- Canonical manual: `site/llms.txt`
+- Product requirements: `PRODUCT.md`
+- Team Setup: `skills/forge/SKILL.md`
+- Workflow Builder: `skills/workflow-builder/SKILL.md`
+- Team contract: `templates/TEAM-CONTRACT.md`
+- Team policy: `templates/TEAM-POLICY.md`
+- Workflow kickoff: `templates/WORKFLOW-KICKOFF.md`
 - Persona schema: `catalog/roles/soul-schema.md`
 - Skills manifest: `catalog/skills.json`
-- Product requirements: `PRODUCT.md` (v0.5.3)
 - Official HERMES docs: https://hermes-agent.nousresearch.com/docs/

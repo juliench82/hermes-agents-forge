@@ -1,125 +1,144 @@
-# PRODUCT.md — Hermes-Agents-Forge Product Requirements
+# Hermes Agents Forge — Product Requirements
 
-## v0.5.3
+## Product definition
 
-A customer visits our site, clicks "Read agent instructions", and points their HERMES agent to:
-`https://hermes-agents-forge.vercel.app/llms.txt`
+Hermes Agents Forge is a Hermes-native bootstrap product for customers who want to create governed, isolated specialist teams from their own goals and capability needs. A customer points Hermes at the canonical `site/llms.txt` instructions; the agent interviews the customer, designs the smallest useful team, provisions it with real profiles and skills, optimizes it, and verifies the result with receipts.
 
-From there, any HERMES agent (any LLM, any reasoning level) must:
-1. Interview the user
-2. Design a custom team of agents (3/5/7 by complexity)
-3. Get one explicit approval for the full plan
-4. Provision isolated bot-mode profiles — each with a rich persona and real skills
-5. Verify with receipts and hand off with team rituals
+The product is intentionally model-agnostic and role-agnostic. It must generate team roles, personas, skills, boundaries, and handoffs dynamically from the customer's requirements rather than forcing a fixed industry catalog or a pre-stored persona library.
 
-## Core Flow
+The product has two deliberately separated phases:
 
+1. **Team Setup** creates and verifies the team.
+2. **Workflow Builder** applies that existing team to one declared workflow.
+
+The split changes only the stopping point of the original Forge flow. It must not reduce the quality of team design, provisioning, optimization, skill resolution, persona generation, governance, or receipts.
+
+## Customer entry and promise
+
+Customers should not need to clone this repository or manually assemble profiles. They provide Hermes with the canonical LLM instructions, and Forge guides the setup flow from there.
+
+The customer promise is:
+
+> First, Forge builds your governed AI team. Then it hands that team to the coordinator for workflow discovery. Nothing is automated until the workflow design is approved, the supervised trial passes, and activation is explicitly approved.
+
+## Phase 1 — Team Setup
+
+Team Setup asks only for broad capability and governance inputs:
+
+- Broad outcome or capability target.
+- Required specialist capability domains, tools, and data sources.
+- Model/provider and budget constraints.
+- Privacy, data-sensitivity, and compliance boundaries.
+- Autonomy, communication, and approval posture.
+- Forbidden access, modifications, and actions.
+
+It does not ask for a business-process trigger, production schedule, workflow-specific source of truth, workflow acceptance criteria, or live test data.
+
+### Team package sizing
+
+The team is generated dynamically using exactly one package:
+
+- **3 specialists:** focused single-domain work with limited coordination.
+- **5 specialists:** multi-stage work requiring analysis, implementation, review, and reconciliation.
+- **7 specialists:** complex multi-domain or coordination-heavy work.
+
+The coordinator is separate from the package count and owns routing, control-plane operations, contracts, receipts, memory, and reconciliation. It never implements worker-owned tasks. Four- and six-specialist packages are not used because they create ambiguous sizing and unnecessary coordination overhead.
+
+### Team Setup outputs
+
+After one explicit approval, Team Setup provisions:
+
+- Isolated Hermes profiles with stable names and unambiguous descriptions.
+- Rich schema-grounded `SOUL.md` personas grounded in the customer's own words.
+- Team-wide contracts, data/tool boundaries, approval gates, and operating policy.
+- Builtin skills first, generated skills for genuine capability gaps, and inspected/security-scanned external skills only where required.
+- Model, compression, reasoning, browser, MOA, concurrency, and cost optimization supported by the installed Hermes version.
+- Smoke tests for role identity, boundaries, and assigned capabilities.
+- Verbatim profile, skill, configuration, and verification receipts.
+- Durable append-only team records under `~/.hermes/TEAM.md`.
+
+### Team Setup completion
+
+Team Setup must not claim workflow success. It completes only after all setup receipts pass and creates/reuses one non-executable coordinator handoff for the first workflow:
+
+```yaml
+kind: onboarding
+control_plane: true
+execution_allowed: false
+workflow_scope: first-workflow-only
+idempotency_key: workflow-builder-kickoff:first-workflow:v1
+assignee: <stable coordinator profile name>
+status: READY
 ```
-read llms.txt / verify forge skill version
-  ↓
-interview user
-  ↓
-propose team + personas + skills plan
-  ↓
-ONE approval for everything
-  ↓
-provision: profiles + rich SOUL.md + real skills (three-tier engine: builtins → generative → Hub gaps)
-  ↓
-verify with receipts → TEAM.md → rituals handoff
+
+The final Team Setup state is:
+
+```text
+TEAM STATUS: PROVISIONED
+WORKFLOW HANDOFF: READY
+WORKFLOW STATUS: NONE
 ```
 
-## The Persona Engine
+Team Setup never creates workflow execution cards, schedules, routines, live integrations, trials, or external workflow actions.
 
-Personas are generated, never enumerated:
-- Universal schema (catalog/roles/soul-schema.md): 10 sections, same for
-  every role — depth comes from structure.
-- Grounded content: the user's quoted interview answers + the knowledge of
-  the role's skills (all tiers count).
-- Depth rules enforced by self-review — anything that could apply to any
-  role unchanged gets rewritten.
-- Golden examples in catalog/roles/examples/ calibrate the quality bar —
-  they do not limit coverage.
+## Phase 2 — Workflow Builder
 
-## The Skills Engine
+Workflow Builder starts only after Team Setup has produced a verified team record and valid coordinator handoff. It does not recreate the team or silently broaden its permissions.
 
-Three tiers, in order — stop when the role's needs are covered:
-- Tier 1 — Builtins (~57 per profile): verify coverage, never duplicate.
-- Tier 2 — Generative: the agent authors a bespoke skill for roles nothing
-  covers, via skill_manage create, grounded in the interview answers —
-  the persona engine's logic applied to capabilities.
-- Tier 3 — Hub: genuine gaps only — search → inspect → install.
-- Every role's skill needs are covered or explicitly reported as gaps —
-  never silence.
+### Workflow Builder responsibilities
 
-## Experience Requirements
+Workflow Builder:
 
-1. Zero-config onboarding — one URL is the whole entry point
-2. Single approval gate — one yes, then autonomous execution to completion
-3. Any HERMES agent works — any LLM follows the flow; small local models
-   may collapse mid-run (Run 8: 12B) — flagship-class models are the bar
-   for a full autonomous run
-4. Any role works — no fixed catalog of personas
-5. "Use My Real Browser Profile" is the default browser mode
+- Interviews the user about one concrete trigger-to-outcome workflow.
+- Assigns approved specialists to workflow stages only after workflow-design approval.
+- Defines workflow-specific inputs, outputs, sources of truth, handoffs, acceptance criteria, exceptions, and status transitions.
+- Creates `WORKFLOW-CONTRACT.md`, `WORKFLOW-POLICY.md`, `WORKFLOW-RUNBOOK.md`, and `TRIAL.md`.
+- Uses workflow-specific IDs and idempotency keys; later workflows do not reuse the first-workflow key.
+- Stores workflow artifacts and receipts under `~/.hermes/workflows/<workflow-id>/` while `TEAM.md` remains the team-level index.
+- Creates execution cards, integrations, routines, and delivery targets only after explicit workflow-design approval.
+- Runs a supervised trial with safe data, sandbox, dry-run, or limited scope.
+- Requires explicit human activation approval before `OPERATIONAL`.
 
-## Success Criteria
+Before workflow-design approval, Workflow Builder may only validate the handoff, claim it safely, interview the user, and create drafts. It may not create execution cards, credentials, permission changes, routines, trials, or external actions.
 
-- [x] Any HERMES agent can load the flow from llms.txt (verified on a 12B
-      local model: full interview → Package 7 → confirmation → provisioning,
-      zero nudges, after hardening commit 5d3dd01)
-- [ ] Personas meet schema depth rules for ANY role — including roles with
-      no template (test: social media manager)
-- [ ] Every role's skill needs are covered by enabled builtins, a generated
-      skill, or an explicit gap report
-- [ ] Zero mid-flow confirmations after the single approval
-- [ ] Skill installs pass the built-in security scan — never --force past
-      a verdict
-- [ ] Receipts: profile list + skill inventory + per-profile smoke test + TEAM.md
-- [ ] Rituals: group chat / shared inbox / kickoff proposed in handoff
-- [x] Interrupt recovery — a mid-provisioning model collapse is recoverable
-      via the resume rule without redoing work (Run 4)
-- [x] Clean-install flow — interview, package tier, exact gate question,
-      batched provisioning, schema-grounded persona (Run 8, through 4b)
-- [ ] Phase-exit receipts — a stalled run is auditable at its failure
-      point, not only in a final report (v0.5.1)
+## Governance and trust
 
-## Test Log
+- One explicit approval is required before Team Setup provisioning.
+- Workflow-design approval is required before workflow execution assets.
+- External and irreversible actions remain approval-gated.
+- The coordinator owns discovery, approval reconciliation, routing, and receipts; specialists execute approved stages only.
+- Skills are inspected and security-scanned; dangerous verdicts are never forced.
+- Unsupported configuration keys, unavailable integrations, provider failures, and skipped capabilities are reported explicitly.
+- Receipts are preferred over assertions.
+- A workflow is not operational until supervised trial evidence and explicit activation approval exist.
 
-- Run 1 (12B, no thinking): interview ✓, proposal ✓, stalled 4/7, language
-  drift, false "done" — led to checklist/batching/resume rules.
-- Run 2 (12B, thinking, pre-hardening): full proposal ✓, 7/7 profiles after
-  2 nudges, hallucinated skill names, no verification — led to skills rules.
-- Run 3 (12B, thinking, post-hardening 5d3dd01): 5/5 profiles, zero nudges,
-  graceful skill skip, error recovery, handoff ✓.
-- Run 4 (12B, thinking, v0.3.0 build): mid-provisioning model collapse
-  (repetition loop) → clean recovery via the resume rule; 7/7 profiles +
-  personas; 0 Hub skills landed (GitHub API rate limits, largely burned on
-  duplicates) while 57 builtins cover most needs; final report falsely
-  declared "complete" — led to v0.3.4 receipts rules and v0.3.5
-  builtins-first.
-- Run 5 (v0.4.0 build): four-tier engine ran; handoff still stopped at
-  group rooms + a cron digest — runs 1–5 converged on the missing work
-  engine (led to v0.5.0 Kanban wiring).
-- Run 6 (v0.4.0-line build): autonomy drift — install confirmation prompts
-  and a checklist kept only in memory — drove v0.4.1 (--yes on installs)
-  and v0.4.2 (todo-tool anti-drift gate).
-- Run 7 (v0.5.0, stale environment): hijacked by a pre-v0.3 local forge
-  skill left in ~/.hermes/skills — 4-member team, thin personas, zero
-  skill installs, no board; nothing in the flow detected version skew
-  (led to the v0.5.1 skill handshake).
-- Run 8 (v0.5.0, clean install, 12B local model): best flow adherence yet —
-  5/5 interview questions, Package 7, exact gate question, batched 4a,
-  schema-grounded persona with quoted answers; then model degeneration
-  mid-4b (channel-token loops, 72.7s stall, off-task drift) — profiles
-  left all-builtin, no skill installs, no receipts past 4b. The manual is
-  validated; model class is the remaining variable (flagship retest =
-  Run 9).
-- Run 9 (next): v0.5.3 build on a flagship-class model (HERMES
-  subscription) — success bar: full autonomous run through Step 6 board
-  wiring, phase-exit receipts at every transition, manual version quoted
-  in the first reply, context-hygiene applied before provisioning.
+## Coordination surfaces
 
-## References
+Team Setup may prepare the coordinator/control-plane surface and a non-executable handoff. Workflow Builder owns workflow-specific Kanban execution cards, routines, integrations, delivery targets, and trial evidence. The control-plane kickoff must never be treated as ordinary customer-work execution.
 
-- Official Skills docs (URL installs, skill_manage, security scanning):
-  https://hermes-agent.nousresearch.com/docs/user-guide/features/skills
-- Official docs: https://hermes-agent.nousresearch.com/docs/
+## Status vocabulary
+
+- **Team provisioned:** Profiles, personas, skills, optimization, contracts, policy, and setup receipts are complete.
+- **Workflow handoff ready:** One coordinator-owned first-workflow discovery handoff exists or is queued locally; no workflow execution exists.
+- **Workflow designing:** The coordinator is interviewing the user and drafting workflow artifacts.
+- **Workflow designed:** A workflow contract and policy are approved; execution has not yet passed trial.
+- **Workflow trial-passed:** Controlled execution met acceptance criteria and preserved approval boundaries.
+- **Workflow operational:** Human activation approval exists and the approved runtime is active.
+
+## Verification principle
+
+Every setup and workflow state transition requires evidence. Never treat profile or skill creation as proof that a workflow works. Never claim completion without verbatim receipts, and never claim runtime readiness without testing the installed Hermes environment.
+
+## Source files
+
+- Canonical instructions: `site/llms.txt`
+- Bootstrap brief: `HERMES.md`
+- Team Setup: `skills/forge/SKILL.md`
+- Workflow Builder: `skills/workflow-builder/SKILL.md`
+- Persona schema: `catalog/roles/soul-schema.md`
+- Skills manifest: `catalog/skills.json`
+- Team contract: `templates/TEAM-CONTRACT.md`
+- Team policy: `templates/TEAM-POLICY.md`
+- Workflow kickoff: `templates/WORKFLOW-KICKOFF.md`
+- Workflow contract/policy/runbook/trial: `templates/WORKFLOW-*.md`
+- Official Hermes docs: https://hermes-agent.nousresearch.com/docs/

@@ -1,53 +1,71 @@
-# Hermes-Agents-Forge
+A customer points Hermes to the canonical instructions at:
 
-A customer visits our site, clicks "Read agent instructions", and points their HERMES agent to:
 `https://hermes-agents-forge.vercel.app/llms.txt`
 
-From there, any HERMES agent (any LLM, any reasoning level) interviews the user, designs a custom team of 3/5/7 specialists, gets one explicit approval, then provisions governed, isolated specialist teams that prove themselves on a real workflow—with explicit roles, tool boundaries, approval policy, and auditable receipts.
+Forge then interviews the customer, designs a custom governed team, provisions isolated profiles and real skills, optimizes the installation, and verifies the result with receipts. No repository clone or manual profile assembly is required for the Forge flow.
 
 ## What you get
 
-- **Custom team design** — 3 (basic), 5 (intermediate), or 7 (complex) specialists generated from your workflows, not a fixed catalog.
-- **Rich personas** — every profile gets a 10-section SOUL.md persona grounded in your quoted answers and real skill knowledge.
-- **Real skills** — three-tier engine: builtins first, then bespoke generated skills for uncovered roles, Hub only for genuine gaps.
-- **Receipts, not assertions** — final report includes verbatim `hermes profile list`, per-profile `skills list`, smoke-test chat output, and kanban receipts.
-- **Kanban work board** — after verification, your team gets a durable board: cards seeded, review loop wired, progress observable in `hermes kanban watch` or the dashboard.
-- **Team rituals** — group chat (2–6 Bots per room), `message_agent` DMs, optional weekly digest routine.
+- **Custom team design** — 3, 5, or 7 specialists generated from broad capability needs, not a fixed industry catalog.
+- **Rich personas** — every profile receives a schema-grounded `SOUL.md` based on the customer's actual requirements and words.
+- **Real skills** — builtin skills first, bespoke generated skills for genuine gaps, and inspected/security-scanned external skills only where necessary.
+- **Governance** — explicit ownership, tool boundaries, data boundaries, approval gates, cost/model policy, and escalation rules.
+- **Receipts, not assertions** — profile, skill, configuration, smoke-test, handoff, and durable `TEAM.md` evidence.
+- **Optimization** — compression/context hygiene, economical worker models, reasoning policy, browser policy, concurrency, and MOA settings supported by the installed Hermes version.
+- **Coordination surface** — a coordinator-owned control-plane handoff; Workflow Builder owns workflow-specific execution boards, routines, integrations, and trials.
 
-## Trust & safety
+## Two-stage lifecycle
 
-- You never install anything — your HERMES agent sets itself up from one URL.
-- One approval gate — after your yes, the agent runs autonomously to completion.
-- Security scanning — every skill install (generated or Hub) is scanned; dangerous verdicts are skipped and reported.
-- Context hygiene — post-gate compression and output caps tuned per profile for token-efficient runs.
-- Interrupt recovery — if the agent stalls mid-provisioning, it resumes from the `todo` checklist and `hermes profile list`, provisioning only what's missing.
+### Stage 1 — Team Setup
 
-## How it works (at a glance)
+After one explicit team-provisioning approval, Forge:
 
-1. **Interview** — 5 questions about your workflows, tools, quality bar, complexity, and boundaries.
-2. **Proposal** — package tier, specialist roster (name, role, tools, browser mode), collaboration plan, and what provisioning will do.
-3. **Approval** — one explicit yes covers team, personas, skills, browser mode, and board wiring.
-4. **Provisioning** — batched profile creation, SOUL.md personas, three-tier skills, phase-exit receipts.
-5. **Verification** — `hermes profile list`, per-profile `skills list`, smoke-test chat, `todo` zero open items, `TEAM.md` written.
-6. **Board wiring** — gateway + kanban init, first cards seeded (goal-mode where appropriate), review loop, kanban receipts.
-7. **Handoff** — group chat, shared inbox, kickoff routine (or one small first task if Bot Mode unavailable).
+1. Runs pre-flight and session-hygiene checks.
+2. Designs the smallest complete 3/5/7 specialist team.
+3. Tunes the coordinator and backs up the original persona.
+4. Creates isolated workers with rich personas and focused skills.
+5. Verifies full skill inventories, configuration, smoke tests, contracts, policy, and receipts.
+6. Creates or reuses one non-executable coordinator handoff for the first workflow.
+
+Team Setup finishes with:
+
+```text
+TEAM STATUS: PROVISIONED
+WORKFLOW HANDOFF: READY
+WORKFLOW STATUS: NONE
+```
+
+It does not ask workflow-specific questions or create workflow execution cards, schedules, routines, live integrations, trials, or external workflow actions.
+
+### Stage 2 — Workflow Builder
+
+The stable coordinator validates and claims the handoff, records the receipt, asks the workflow-specific interview, and drafts the workflow contract, policy, runbook, and trial plan.
+
+Workflow Builder stops for explicit workflow-design approval. Only after approval may it create execution cards, connect integrations, change workflow permissions, create routines, or run a supervised trial. A workflow becomes operational only after trial evidence and explicit human activation approval.
 
 ## Team sizes
 
-- **Package 3** — basic: 3 specialists; single-domain, simple workflows.
-- **Package 5** — intermediate: 5 specialists; multi-domain, needs analysis and review.
-- **Package 7** — complex: 7 specialists; multi-project, coordination-heavy.
+- **3 specialists:** focused, single-domain capability.
+- **5 specialists:** multi-stage capability requiring analysis, execution, review, and reconciliation.
+- **7 specialists:** complex, coordination-heavy capability across multiple domains.
 
-The team is exactly 3, 5, or 7 specialists — never 4 or 6.
+The coordinator is separate from the package count. Four- and six-specialist packages are not used.
 
-## Get started
+## Trust and safety
 
-Point your HERMES agent to:
-`https://hermes-agents-forge.vercel.app/llms.txt`
-
-The agent will read the operating manual, interview you, and guide you through the rest.
+- One explicit approval gates Team Setup provisioning.
+- A workflow-design approval gates all workflow execution assets.
+- External and irreversible actions remain approval-gated.
+- Skills are inspected and security-scanned; dangerous verdicts are never forced.
+- Rejected settings, unavailable capabilities, and provider failures are reported explicitly.
+- Interrupted setup resumes from receipts and provisions only missing assets.
+- A workflow is not operational without supervised trial evidence and explicit human activation.
 
 ## References
 
-- Operating manual: https://hermes-agents-forge.vercel.app/llms.txt
-- Official HERMES docs: https://hermes-agent.nousresearch.com/docs/
+- Canonical instructions: `site/llms.txt`
+- Product requirements: `PRODUCT.md`
+- Bootstrap brief: `HERMES.md`
+- Team Setup: `skills/forge/SKILL.md`
+- Workflow Builder: `skills/workflow-builder/SKILL.md`
+- Official Hermes docs: https://hermes-agent.nousresearch.com/docs/
