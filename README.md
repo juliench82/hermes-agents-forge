@@ -1,78 +1,71 @@
-# Hermes Agents Forge
-
-Hermes Agents Forge helps customers build a governed AI team first, then apply that team to one workflow at a time.
-
-## Start here
-
-A customer points Hermes to the canonical instructions:
+A customer points Hermes to the canonical instructions at:
 
 `https://hermes-agents-forge.vercel.app/llms.txt`
 
-Forge then conducts the setup interview and provisions the team from the customer’s requirements—no repository clone or manual installation is required for the Forge flow.
+Forge then interviews the customer, designs a custom governed team, provisions isolated profiles and real skills, optimizes the installation, and verifies the result with receipts. No repository clone or manual profile assembly is required for the Forge flow.
 
-## Team Setup first
+## What you get
 
-After one explicit approval, Forge provisions:
+- **Custom team design** — 3, 5, or 7 specialists generated from broad capability needs, not a fixed industry catalog.
+- **Rich personas** — every profile receives a schema-grounded `SOUL.md` based on the customer's actual requirements and words.
+- **Real skills** — builtin skills first, bespoke generated skills for genuine gaps, and inspected/security-scanned external skills only where necessary.
+- **Governance** — explicit ownership, tool boundaries, data boundaries, approval gates, cost/model policy, and escalation rules.
+- **Receipts, not assertions** — profile, skill, configuration, smoke-test, handoff, and durable `TEAM.md` evidence.
+- **Optimization** — compression/context hygiene, economical worker models, reasoning policy, browser policy, concurrency, and MOA settings supported by the installed Hermes version.
+- **Coordination surface** — a coordinator-owned control-plane handoff; Workflow Builder owns workflow-specific execution boards, routines, integrations, and trials.
 
-- The smallest useful coordinator-plus-worker team, selected from broad capability needs rather than a fixed industry catalog.
-- Isolated Hermes profiles with rich role personas.
-- Verified builtin, generated, or approved external skills.
-- Model, compression, reasoning, concurrency, and cost optimization.
-- Team-wide contracts, tool boundaries, approval policy, and auditable receipts.
-- A durable `~/.hermes/TEAM.md` team record.
+## Two-stage lifecycle
 
-Team Setup does not create a live business workflow, connect workflow integrations, schedule routines, or run a trial.
+### Stage 1 — Team Setup
 
-## First Workflow handoff
+After one explicit team-provisioning approval, Forge:
 
-After setup verification, Forge queues exactly one non-executable control-plane card for the first workflow:
+1. Runs pre-flight and session-hygiene checks.
+2. Designs the smallest complete 3/5/7 specialist team.
+3. Tunes the coordinator and backs up the original persona.
+4. Creates isolated workers with rich personas and focused skills.
+5. Verifies full skill inventories, configuration, smoke tests, contracts, policy, and receipts.
+6. Creates or reuses one non-executable coordinator handoff for the first workflow.
 
-```text
-Title: Start Workflow Builder — define first workflow
-Assignee: <stable coordinator profile>
-Status: READY
-Key: workflow-builder-kickoff:first-workflow:v1
-Kind: onboarding
-Control plane: true
-Execution allowed: false
-```
-
-If the card already exists, Forge reuses it. If duplicates exist or the dispatcher cannot enforce the metadata, it stops or queues the handoff locally rather than creating executable work. This is an automatic handoff, not automatic automation.
-
-## Workflow Builder
-
-The coordinator claims the card with a receipt, moves it to `DESIGNING`, asks the workflow interview questions, and drafts one workflow contract, policy, runbook, and trial plan. It then stops for workflow-design approval.
-
-Only after approval can Workflow Builder create execution cards, connect integrations, change workflow permissions, schedule routines, or run a supervised trial. Workflow-specific artifacts live under `~/.hermes/workflows/<workflow-id>/`.
-
-## Validation
-
-Use `ACCEPTANCE.md` for the fresh-install acceptance plan. Distinguish specification readiness from runtime readiness; do not claim production readiness without evidence.
-
-## State lifecycle
+Team Setup finishes with:
 
 ```text
 TEAM STATUS: PROVISIONED
 WORKFLOW HANDOFF: READY
 WORKFLOW STATUS: NONE
-        ↓
-WORKFLOW HANDOFF: DESIGNING
-WORKFLOW STATUS: DESIGNING
-        ↓
-WORKFLOW STATUS: DESIGNED
-        ↓
-WORKFLOW STATUS: TRIAL-PASSED
-        ↓
-WORKFLOW STATUS: OPERATIONAL
 ```
+
+It does not ask workflow-specific questions or create workflow execution cards, schedules, routines, live integrations, trials, or external workflow actions.
+
+### Stage 2 — Workflow Builder
+
+The stable coordinator validates and claims the handoff, records the receipt, asks the workflow-specific interview, and drafts the workflow contract, policy, runbook, and trial plan.
+
+Workflow Builder stops for explicit workflow-design approval. Only after approval may it create execution cards, connect integrations, change workflow permissions, create routines, or run a supervised trial. A workflow becomes operational only after trial evidence and explicit human activation approval.
+
+## Team sizes
+
+- **3 specialists:** focused, single-domain capability.
+- **5 specialists:** multi-stage capability requiring analysis, execution, review, and reconciliation.
+- **7 specialists:** complex, coordination-heavy capability across multiple domains.
+
+The coordinator is separate from the package count. Four- and six-specialist packages are not used.
 
 ## Trust and safety
 
-- One approval is required before team provisioning.
-- Workflow-design approval is required before workflow execution assets.
+- One explicit approval gates Team Setup provisioning.
+- A workflow-design approval gates all workflow execution assets.
 - External and irreversible actions remain approval-gated.
 - Skills are inspected and security-scanned; dangerous verdicts are never forced.
-- Receipts are preferred over assertions.
-- A workflow is not operational until supervised trial evidence and explicit activation approval exist.
+- Rejected settings, unavailable capabilities, and provider failures are reported explicitly.
+- Interrupted setup resumes from receipts and provisions only missing assets.
+- A workflow is not operational without supervised trial evidence and explicit human activation.
 
-Canonical instructions: `site/llms.txt`.
+## References
+
+- Canonical instructions: `site/llms.txt`
+- Product requirements: `PRODUCT.md`
+- Bootstrap brief: `HERMES.md`
+- Team Setup: `skills/forge/SKILL.md`
+- Workflow Builder: `skills/workflow-builder/SKILL.md`
+- Official Hermes docs: https://hermes-agent.nousresearch.com/docs/
