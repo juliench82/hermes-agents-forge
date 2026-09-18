@@ -54,6 +54,16 @@ Every handoff includes:
 
 A human takes over when an approval is denied, source data conflicts, a permission boundary is reached, retries are exhausted, or the workflow cannot satisfy an acceptance criterion. The workflow must preserve the current state, evidence, and next safe action.
 
+## Tool policy
+
+Use Hermes builtin file tools for every Forge-managed artifact — this runbook, the workflow contract, policy, trial plan, receipts, and Kanban card-body source content. Use the Hermes CLI only for Hermes runtime operations and verbatim receipts.
+
+Do not use `cat`, `head`, `tail`, `echo`, shell substitution, heredocs, `sed`, `awk`, `grep`, `rg`, `find`, Python direct-file operations, or temporary-file content transport to read, compose, search, patch, or write Forge-managed artifacts.
+
+If a required builtin file tool is unavailable, stop and record SKIPPED with the exact unavailable tool and reason. Do not substitute shell or generic code execution for an append-only or safety-relevant artifact.
+
+A Kanban card body must be composed as a controlled literal or retrieved using a builtin file read. It must be included verbatim in the handoff receipt. Do not pass card bodies through temporary files or shell command substitution.
+
 ## Change log
 
 | Version | Date | Change | Approved by |

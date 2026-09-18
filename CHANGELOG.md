@@ -6,6 +6,12 @@
 
 ## [Unreleased]
 
+### v0.6.5 — 2026-09-19
+- docs: enforce builtin file-tool use for Forge-managed artifacts (`site/llms.txt`, `skills/forge/SKILL.md`, `skills/workflow-builder/SKILL.md`, `templates/WORKFLOW-RUNBOOK.md`).
+- Added the Forge-managed artifact tool policy: builtin file tools only for SOUL.md, generated SKILL.md files, TEAM.md, TEAM-CONTRACT.md, TEAM-POLICY.md, Workflow Builder draft artifacts, Kanban card-body source content, and receipt files; the Hermes CLI only for profile management, supported configuration operations, skill registry inspection, Kanban state operations, authentication operations, and smoke-test execution.
+- Prohibited content manipulation of Forge-managed artifacts through `cat`, `head`, `tail`, `echo`, shell substitution, heredocs, `sed`, `awk`, `grep`, `rg`, `find`, Python direct-file operations, or temporary-file content transport; a missing builtin file tool stops the flow and records `SKIPPED` rather than falling back to shell or generic code.
+- Added the Kanban body rule (card bodies composed as controlled literals or builtin file reads, included verbatim in the handoff receipt) and the required TOOL POLICY COMPLIANCE verification receipt.
+
 ### v0.6.4 — 2026-09-19
 - fix: reconcile generated skills and runtime configuration receipts (`site/llms.txt`, `skills/forge/SKILL.md`, `templates/TEAM-POLICY.md`, `templates/TEAM-SETUP-RECEIPTS.md`).
 - Added a generated-skill reconciliation rule: after any generated local skill is created or written, capture the pre-write receipt, reload/re-query the registry, run `hermes -p <profile> skills list --enabled-only`, verify the exact identifier appears once, verify the local and total count deltas, and record pre/post counts with expected vs actual delta; a mismatch marks Team Setup incomplete and stops the flow.
