@@ -6,6 +6,13 @@
 
 ## [Unreleased]
 
+### v0.6.4 — 2026-09-19
+- fix: reconcile generated skills and runtime configuration receipts (`site/llms.txt`, `skills/forge/SKILL.md`, `templates/TEAM-POLICY.md`, `templates/TEAM-SETUP-RECEIPTS.md`).
+- Added a generated-skill reconciliation rule: after any generated local skill is created or written, capture the pre-write receipt, reload/re-query the registry, run `hermes -p <profile> skills list --enabled-only`, verify the exact identifier appears once, verify the local and total count deltas, and record pre/post counts with expected vs actual delta; a mismatch marks Team Setup incomplete and stops the flow.
+- A generated skill is considered installed only when the exact fresh inventory reconciles; creation-operation success alone is never a receipt. Added the required reconciliation receipt example.
+- Added a configuration-key classification rule for every changed setting: Registry-supported (standard CLI write + `config get` receipt), Runtime-supported / CLI-unregistered (source/runtime evidence, `--force` only when approved, post-write effective-value receipt), Unsupported or stale (`SKIPPED` with the exact reason), and Existing non-schema key (never proof of active configuration).
+- Applied the classification to the known registry-drift keys `agent.reasoning_effort`, `skills.disabled`, `delegation.fanout`, and `moa.enabled`; stale YAML keys are never evidence of runtime behavior.
+
 ### v0.6.3 — 2026-09-19
 - fix: keep unenforceable workflow handoffs local and non-executable (`site/llms.txt`, `skills/forge/SKILL.md`, `skills/workflow-builder/SKILL.md`, `templates/WORKFLOW-KICKOFF.md`, `HERMES.md`, `PRODUCT.md`).
 - Defined two distinct handoff concepts everywhere they appear: `handoff_state` (semantic, e.g. `READY_FOR_WORKFLOW_BUILDER`) and `board_state` (physical Kanban state, or `null`), plus `delivery_mode` (`LOCAL_RECORD` | `ENFORCED_CONTROL_PLANE_CARD`) and `dispatcher_enforcement` (`VERIFIED` | `UNSUPPORTED`).

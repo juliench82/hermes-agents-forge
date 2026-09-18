@@ -173,6 +173,51 @@ Record per profile:
 - Unavailable or skipped capabilities with reasons.
 - Focused skill coverage; no unnecessary packs.
 
+### Generated-skill reconciliation rule
+
+After any generated local skill is created or written:
+
+1. Capture the target profile's pre-write enabled-skill receipt.
+2. Create or write the skill.
+3. Reload or re-query the target profile's skill registry.
+4. Run `hermes -p <profile> skills list --enabled-only`.
+5. Verify that the exact generated skill identifier appears exactly once.
+6. Verify the local-skill and total-enabled count deltas equal the expected change.
+7. Record the pre-write count, action, post-write count, expected delta, actual delta, and reconciliation result.
+8. If the registry does not reconcile, mark Team Setup incomplete and stop.
+
+Required receipt example:
+
+```text
+Profile: default
+Pre-write: 13 hub-installed, 57 builtin, 22 local — 92 enabled
+Action: created generated skill idea-intake-routing
+Post-write: 13 hub-installed, 57 builtin, 23 local — 93 enabled
+Expected delta: +1 local / +1 total
+Actual delta: +1 local / +1 total
+Reconciliation: PASS
+```
+
+A generated skill is considered installed only when the exact fresh inventory shows its identifier once and the count deltas match. Creation-operation success alone is never a receipt.
+
+### Configuration-key classification
+
+Require every changed setting to be classified before it is written, and record the classification in the receipts:
+
+| Classification | Rule |
+|---|---|
+| Registry-supported | Use standard CLI write and capture a `config get` receipt |
+| Runtime-supported / CLI-unregistered | Capture source/runtime evidence, use `--force` only when approved, and verify the effective runtime value |
+| Unsupported or stale | Do not write; record `SKIPPED` with the exact reason |
+| Existing non-schema key | Do not use it as proof of an active configuration; identify the supported replacement or mark it unsupported |
+
+Apply this specifically:
+
+- `agent.reasoning_effort` — treat as runtime-supported/CLI-unregistered only if the installed runtime source and resolver demonstrate it. A forced write requires a post-write effective runtime receipt.
+- `skills.disabled` — treat as runtime-supported/CLI-unregistered only if the active skill loader reads it. Verify the actual enabled skill inventory after the change.
+- `delegation.fanout` — never modify it merely because it exists in YAML. Modify only if both the current schema and runtime reader confirm it; otherwise record `SKIPPED`.
+- `moa.enabled` — do not use this field as evidence that MoA is active or inactive unless the installed version's runtime actually uses it. Verify the active supported MoA selector/preset state instead.
+
 ### Step 6 — Verify Team Setup with receipts
 
 Do not claim success until all applicable receipts exist:
