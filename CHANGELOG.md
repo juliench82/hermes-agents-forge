@@ -6,6 +6,11 @@
 
 ## [Unreleased]
 
+### v0.6.6 — 2026-09-19
+- test: add Forge remediation and content-preservation acceptance fixture (`templates/TEAM-SETUP-REMEDIATION-ACCEPTANCE.md`).
+- Added a manual acceptance matrix covering: approved-plan external skills, post-approval skill gaps, env/secret/unpinned external skills, dangerous scan verdicts, dispatcher assignee-only vs enforced control-plane behavior, generated-skill registry deltas, skills-count mismatch, runtime-read/CLI-unregistered config keys, unknown YAML keys, Forge-managed artifact tool policy, modified repository file preservation, and CHANGELOG append-only updates.
+- Added the File Preservation Report template (pre/post SHAs, additions, deletions, deletion explanations) and its completion condition; a file rebuilt from partial, inferred, cached, or older content fails acceptance.
+
 ### v0.6.5 — 2026-09-19
 - docs: enforce builtin file-tool use for Forge-managed artifacts (`site/llms.txt`, `skills/forge/SKILL.md`, `skills/workflow-builder/SKILL.md`, `templates/WORKFLOW-RUNBOOK.md`).
 - Added the Forge-managed artifact tool policy: builtin file tools only for SOUL.md, generated SKILL.md files, TEAM.md, TEAM-CONTRACT.md, TEAM-POLICY.md, Workflow Builder draft artifacts, Kanban card-body source content, and receipt files; the Hermes CLI only for profile management, supported configuration operations, skill registry inspection, Kanban state operations, authentication operations, and smoke-test execution.
