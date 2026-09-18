@@ -208,11 +208,37 @@ workflow-builder-kickoff:first-workflow:v1
 
 3. Search `~/.hermes/TEAM.md` and the active Kanban board for that exact key.
 4. Reuse exactly one active matching handoff; never create a duplicate.
-5. If none exists, verify the dispatcher supports the required metadata. If supported, create one non-executable card; if unsupported/unavailable, queue locally instead.
-6. If multiple active matching cards exist, stop and report the duplicate.
-7. Append a receipt containing card/local-handoff ID, metadata, assignee, state, timestamp, dispatcher support verdict, and team record path.
+5. Record the two distinct handoff concepts that follow, never mixing them:
+   - `handoff_state` — the semantic handoff state (e.g. `READY_FOR_WORKFLOW_BUILDER`); never a physical Kanban status.
+   - `board_state` — the actual physical Kanban state, or `null` when no card exists.
+   - `delivery_mode` — `LOCAL_RECORD` | `ENFORCED_CONTROL_PLANE_CARD`.
+   - `dispatcher_enforcement` — `VERIFIED` | `UNSUPPORTED`.
+   Do not use a generic metadata field such as `status: READY` when the actual board status is something else.
+6. A Kanban kickoff card may be created only when the installed dispatcher can enforce all of the following:
 
-Required metadata:
+   - routing only to the exact stable coordinator;
+   - no specialist spawn;
+   - no customer-work tool execution;
+   - control-plane-only state transitions.
+
+   Native assignee support and idempotency support alone are insufficient.
+7. If any enforcement requirement is unavailable:
+
+   Do not create a Kanban kickoff card.
+
+   Instead, append one local-only handoff receipt to `~/.hermes/TEAM.md` using the first-workflow idempotency key.
+
+   Set:
+
+   TEAM STATUS: PROVISIONED
+   WORKFLOW HANDOFF: READY — LOCAL ONLY
+   WORKFLOW STATUS: NONE
+   DISPATCHER ENFORCEMENT: UNSUPPORTED
+
+8. If multiple active matching cards exist, stop and report the duplicate.
+9. Append a receipt containing card/local-handoff ID, metadata, assignee, state, timestamp, dispatcher enforcement verdict, and team record path.
+
+Required card metadata for an enforced control-plane card:
 
 ```yaml
 kind: onboarding
@@ -221,10 +247,27 @@ execution_allowed: false
 workflow_scope: first-workflow-only
 idempotency_key: workflow-builder-kickoff:first-workflow:v1
 assignee: <stable coordinator profile name>
-status: READY
+handoff_state: READY_FOR_WORKFLOW_BUILDER
+delivery_mode: ENFORCED_CONTROL_PLANE_CARD
+dispatcher_enforcement: VERIFIED
+board_state: <actual Kanban state>
 ```
 
-The dispatcher must route this card only to the coordinator, never spawn a specialist, never execute customer-work tools, and never advance it beyond the control-plane state machine. If enforcement is unsupported, the handoff remains local and non-executable.
+Required local-only handoff receipt in `~/.hermes/TEAM.md`:
+
+```yaml
+handoff_state: READY_FOR_WORKFLOW_BUILDER
+delivery_mode: LOCAL_RECORD
+dispatcher_enforcement: UNSUPPORTED
+idempotency_key: workflow-builder-kickoff:first-workflow:v1
+coordinator_profile: <stable coordinator>
+team_record: ~/.hermes/TEAM.md
+workflow_execution_allowed: false
+next_required_action: explicit founder instruction to start Workflow Builder
+timestamp: <ISO-8601>
+```
+
+The dispatcher must route this card only to the coordinator, never spawn a specialist, never execute customer-work tools, and never advance it beyond the control-plane state machine. If enforcement is unsupported, the handoff remains local and non-executable, and a blocked card carrying advisory `status: READY` metadata must never be presented as enforced safety.
 
 ### Step 8 — Durable Team Setup handoff
 
@@ -254,6 +297,25 @@ Workflow Builder is separate and starts only after the provisioned team and coor
 Before workflow-design approval, it may validate the handoff, claim it safely, ask the explicit workflow interview, and create workflow drafts only. It must not create execution cards, credentials, permissions, routines, trials, or external actions before approval.
 
 The complete Workflow Builder procedure is `skills/workflow-builder/SKILL.md`. Later workflows use separate workflow IDs and idempotency keys, with artifacts under `~/.hermes/workflows/<workflow-id>/`.
+
+### Workflow Builder entry rule
+
+Workflow Builder must accept either delivery mode:
+
+- `LOCAL_RECORD`, or
+- `ENFORCED_CONTROL_PLANE_CARD`.
+
+For a `LOCAL_RECORD`, require an explicit founder instruction to start Workflow Builder before it asks the workflow interview.
+
+For an enforced Kanban card, require:
+
+1. validated stable coordinator identity;
+2. validated team record;
+3. validated idempotency key;
+4. claim receipt;
+5. valid state transition to `DESIGNING`.
+
+Never let a general "unblock card" action itself become authorization to perform workflow discovery or execution.
 
 ## Hard rules
 

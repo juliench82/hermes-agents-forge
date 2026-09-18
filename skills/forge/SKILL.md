@@ -222,10 +222,36 @@ workflow-builder-kickoff:first-workflow:v1
 
 3. Search `~/.hermes/TEAM.md` and the active Kanban board for the key.
 4. If exactly one active matching card exists, reuse it and append a receipt.
-5. If none exists, verify the dispatcher supports the metadata below. If supported, create exactly one card; otherwise queue locally and record the reason.
-6. If more than one active matching card exists, stop and report the duplicate.
+5. Record the two distinct handoff concepts that follow, never mixing them:
+   - `handoff_state` — the semantic handoff state (e.g. `READY_FOR_WORKFLOW_BUILDER`); never a physical Kanban status.
+   - `board_state` — the actual physical Kanban state, or `null` when no card exists.
+   - `delivery_mode` — `LOCAL_RECORD` | `ENFORCED_CONTROL_PLANE_CARD`.
+   - `dispatcher_enforcement` — `VERIFIED` | `UNSUPPORTED`.
+   Do not use a generic metadata field such as `status: READY` when the actual board status is something else.
+6. A Kanban kickoff card may be created only when the installed dispatcher can enforce all of the following:
 
-Required card metadata:
+   - routing only to the exact stable coordinator;
+   - no specialist spawn;
+   - no customer-work tool execution;
+   - control-plane-only state transitions.
+
+   Native assignee support and idempotency support alone are insufficient.
+7. If any enforcement requirement is unavailable:
+
+   Do not create a Kanban kickoff card.
+
+   Instead, append one local-only handoff receipt to `~/.hermes/TEAM.md` using the first-workflow idempotency key.
+
+   Set:
+
+   TEAM STATUS: PROVISIONED
+   WORKFLOW HANDOFF: READY — LOCAL ONLY
+   WORKFLOW STATUS: NONE
+   DISPATCHER ENFORCEMENT: UNSUPPORTED
+
+8. If more than one active matching card exists, stop and report the duplicate.
+
+Required card metadata for an enforced control-plane card:
 
 ```yaml
 kind: onboarding
@@ -234,21 +260,50 @@ execution_allowed: false
 workflow_scope: first-workflow-only
 idempotency_key: workflow-builder-kickoff:first-workflow:v1
 assignee: <stable coordinator profile name>
-status: READY
+handoff_state: READY_FOR_WORKFLOW_BUILDER
+delivery_mode: ENFORCED_CONTROL_PLANE_CARD
+dispatcher_enforcement: VERIFIED
+board_state: <actual Kanban state>
 ```
 
-The dispatcher must route the card only to the coordinator and must not spawn workers or execute customer-work tools. The card is a handoff only.
+Required local-only handoff receipt in `~/.hermes/TEAM.md`:
 
-Append a receipt containing card ID, metadata, assignee, state, timestamp, dispatcher support/unsupported reason, and team record path.
+```yaml
+handoff_state: READY_FOR_WORKFLOW_BUILDER
+delivery_mode: LOCAL_RECORD
+dispatcher_enforcement: UNSUPPORTED
+idempotency_key: workflow-builder-kickoff:first-workflow:v1
+coordinator_profile: <stable coordinator>
+team_record: ~/.hermes/TEAM.md
+workflow_execution_allowed: false
+next_required_action: explicit founder instruction to start Workflow Builder
+timestamp: <ISO-8601>
+```
+
+The dispatcher must route the card only to the coordinator and must not spawn workers or execute customer-work tools. The card is a handoff only. If enforcement is unsupported, no card is created, and a blocked card carrying advisory `status: READY` metadata must never be presented as enforced safety.
+
+Append a receipt containing card ID (or local-handoff ID), metadata, assignee, state, timestamp, dispatcher enforcement verdict and reason, and team record path.
 
 ## Step 6 — Durable handoff
 
-Write/refresh `~/.hermes/TEAM.md` without overwriting prior receipts. Set:
+Write/refresh `~/.hermes/TEAM.md` without overwriting prior receipts. Set the state according to the delivery mode recorded in the handoff:
+
+For an enforced control-plane card (`dispatcher_enforcement: VERIFIED`):
 
 ```text
 TEAM STATUS: PROVISIONED
 WORKFLOW HANDOFF: READY
 WORKFLOW STATUS: NONE
+DISPATCHER ENFORCEMENT: VERIFIED
+```
+
+For a local-only handoff (`dispatcher_enforcement: UNSUPPORTED`):
+
+```text
+TEAM STATUS: PROVISIONED
+WORKFLOW HANDOFF: READY — LOCAL ONLY
+WORKFLOW STATUS: NONE
+DISPATCHER ENFORCEMENT: UNSUPPORTED
 ```
 
 The final Team Setup report must include verbatim setup receipts and state explicitly:

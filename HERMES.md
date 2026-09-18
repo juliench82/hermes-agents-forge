@@ -21,7 +21,7 @@ Team Setup must finish before Workflow Builder begins. A successful Team Setup d
 | Skills engine | `hermes -p <name> skills list` → generated skills → inspected Hub gaps |
 | Team receipts | Profile list, full skills lists, config, smoke tests, and `TEAM.md` |
 | Team contract/policy | `TEAM-CONTRACT.md` and `TEAM-POLICY.md` |
-| Workflow kickoff | One coordinator-owned Kanban control-plane card |
+| Workflow kickoff | One coordinator-owned Kanban control-plane card (enforced) or one local-only `~/.hermes/TEAM.md` handoff receipt |
 | Workflow artifacts | `WORKFLOW-CONTRACT.md`, `WORKFLOW-POLICY.md`, `WORKFLOW-RUNBOOK.md`, `TRIAL.md` |
 | Approval records | Exact action, target, payload/change, approver, decision, timestamp |
 | Context/cost hygiene | Hermes compression, model, reasoning, concurrency, and MOA settings supported by the installed version |
@@ -37,8 +37,10 @@ When Team Setup receipts pass:
 1. Resolve and record the stable coordinator profile identity.
 2. Search `~/.hermes/TEAM.md` and the active Kanban board for `workflow-builder-kickoff:first-workflow:v1`.
 3. Reuse exactly one active matching handoff; never create a duplicate.
-4. If none exists, verify dispatcher support for `control_plane: true` and `execution_allowed: false`. Create one non-executable coordinator card only if supported; otherwise queue locally.
-5. Record the handoff receipt.
+4. Record the two distinct handoff concepts: `handoff_state` (semantic, e.g. `READY_FOR_WORKFLOW_BUILDER`) and `board_state` (physical Kanban state, or `null`), with `delivery_mode` (`LOCAL_RECORD` | `ENFORCED_CONTROL_PLANE_CARD`) and `dispatcher_enforcement` (`VERIFIED` | `UNSUPPORTED`).
+5. A Kanban kickoff card may be created only when the installed dispatcher can enforce routing only to the exact stable coordinator, no specialist spawn, no customer-work tool execution, and control-plane-only state transitions. Native assignee support and idempotency support alone are insufficient.
+6. If any enforcement requirement is unavailable, do not create a Kanban kickoff card; append one local-only handoff receipt to `~/.hermes/TEAM.md` and record `WORKFLOW HANDOFF: READY — LOCAL ONLY` with `DISPATCHER ENFORCEMENT: UNSUPPORTED`.
+7. Record the handoff receipt.
 
 Record:
 
@@ -68,6 +70,8 @@ After approval, provision only the approved workflow execution and later require
 - Never let specialists own workflow discovery or approval.
 - Never execute external or irreversible actions without the applicable approval gate.
 - Never treat the kickoff card as ordinary customer-work execution.
+- Never treat a general "unblock card" action as authorization for workflow discovery or execution.
+- Never create a kickoff card when dispatcher enforcement is unverified; use the local-only handoff record instead.
 
 ## References
 

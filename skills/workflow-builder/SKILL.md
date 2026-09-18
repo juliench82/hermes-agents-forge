@@ -25,7 +25,9 @@ Before discovery:
 1. Confirm `~/.hermes/TEAM.md` exists and contains `TEAM STATUS: PROVISIONED`.
 2. Resolve the stable `COORDINATOR PROFILE` from `TEAM.md`.
 3. Confirm the first-workflow kickoff key or an explicit later-workflow invocation.
-4. Confirm exactly one non-closed matching kickoff card exists and is assigned to the stable coordinator profile.
+4. Confirm the delivery mode:
+   - `ENFORCED_CONTROL_PLANE_CARD` with `dispatcher_enforcement: VERIFIED` — confirm exactly one non-closed matching kickoff card exists and is assigned to the stable coordinator profile.
+   - `LOCAL_RECORD` with `dispatcher_enforcement: UNSUPPORTED` — confirm the local-only handoff receipt carrying `workflow-builder-kickoff:first-workflow:v1` exists in `~/.hermes/TEAM.md` and that an explicit founder instruction to start Workflow Builder was received. Without that instruction, do not begin the workflow interview.
 5. Confirm team roster, skills, contracts, policy, and handoff receipt.
 6. If missing or duplicated, stop and report; never guess.
 
@@ -39,10 +41,34 @@ control_plane: true
 execution_allowed: false
 idempotency_key: workflow-builder-kickoff:first-workflow:v1
 assignee: <stable coordinator profile name>
-status: READY
+handoff_state: READY_FOR_WORKFLOW_BUILDER
+delivery_mode: ENFORCED_CONTROL_PLANE_CARD
+dispatcher_enforcement: VERIFIED
+board_state: <actual Kanban state>
 ```
 
-The dispatcher must route this card only to the exact coordinator and must not spawn a specialist or execute customer-work tools. If the dispatcher cannot enforce the metadata, the card must remain unclaimed and the handoff must be queued locally.
+The `handoff_state` is the semantic handoff state; `board_state` is the physical Kanban state. Never use one for the other, and never describe a card as ready when its actual board state is something else.
+
+The dispatcher must route this card only to the exact coordinator and must not spawn a specialist or execute customer-work tools. If the dispatcher cannot enforce the metadata, the card must remain unclaimed and the handoff must be queued locally. A kickoff card may be created only when the installed dispatcher can enforce routing only to the exact stable coordinator, no specialist spawn, no customer-work tool execution, and control-plane-only state transitions. Native assignee support and idempotency support alone are insufficient.
+
+## Delivery modes
+
+Workflow Builder must accept either delivery mode:
+
+- `LOCAL_RECORD`, or
+- `ENFORCED_CONTROL_PLANE_CARD`.
+
+For a `LOCAL_RECORD`, require an explicit founder instruction to start Workflow Builder before it asks the workflow interview.
+
+For an enforced Kanban card, require:
+
+1. validated stable coordinator identity;
+2. validated team record;
+3. validated idempotency key;
+4. claim receipt;
+5. valid state transition to `DESIGNING`.
+
+Never let a general "unblock card" action itself become authorization to perform workflow discovery or execution.
 
 ## Explicit workflow interview
 

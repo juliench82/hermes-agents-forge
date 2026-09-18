@@ -6,6 +6,14 @@
 
 ## [Unreleased]
 
+### v0.6.3 — 2026-09-19
+- fix: keep unenforceable workflow handoffs local and non-executable (`site/llms.txt`, `skills/forge/SKILL.md`, `skills/workflow-builder/SKILL.md`, `templates/WORKFLOW-KICKOFF.md`, `HERMES.md`, `PRODUCT.md`).
+- Defined two distinct handoff concepts everywhere they appear: `handoff_state` (semantic, e.g. `READY_FOR_WORKFLOW_BUILDER`) and `board_state` (physical Kanban state, or `null`), plus `delivery_mode` (`LOCAL_RECORD` | `ENFORCED_CONTROL_PLANE_CARD`) and `dispatcher_enforcement` (`VERIFIED` | `UNSUPPORTED`).
+- A Kanban kickoff card may be created only when the installed dispatcher enforces routing to the exact stable coordinator, no specialist spawn, no customer-work tool execution, and control-plane-only state transitions; native assignee and idempotency support alone are insufficient.
+- When any enforcement requirement is unavailable, no Kanban kickoff card is created; one local-only handoff receipt is appended to `~/.hermes/TEAM.md` with `WORKFLOW HANDOFF: READY — LOCAL ONLY` and `DISPATCHER ENFORCEMENT: UNSUPPORTED`.
+- Workflow Builder now accepts `LOCAL_RECORD` or `ENFORCED_CONTROL_PLANE_CARD`; the local record requires an explicit founder instruction before the workflow interview, and no general "unblock card" action authorizes discovery or execution.
+- The generic `status: READY` metadata field is no longer used where it would conflict with the actual physical board state.
+
 ### v0.6.2 — 2026-09-18
 - feat: require approval for unplanned external skill installs (forge skill v1.21.0; manual v0.6.2).
 - Added an "Approved Skill Plan" requirement to the design/proposal before Team Setup approval. Each planned capability resolution now records target profile, capability gap, resolution type (builtin / generated / hub-external), exact identifier for any Hub/external skill, source/repository, expected or actual scan verdict, and approval state.
