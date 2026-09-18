@@ -6,6 +6,14 @@
 
 ## [Unreleased]
 
+### v0.6.2 — 2026-09-18
+- feat: require approval for unplanned external skill installs (forge skill v1.21.0; manual v0.6.2).
+- Added an "Approved Skill Plan" requirement to the design/proposal before Team Setup approval. Each planned capability resolution now records target profile, capability gap, resolution type (builtin / generated / hub-external), exact identifier for any Hub/external skill, source/repository, expected or actual scan verdict, and approval state.
+- Replaced the broad Hub rule with an explicit approval amendment gate: a Hub or external skill may be installed only when its exact identifier, target profile, capability gap, and scan verdict were included in the approved skill plan. New gaps after approval require a stop-before-installation step, an explicit skill-plan amendment approval, and a recorded amendment receipt before installation. Official origin does not itself authorize an installation.
+- Explicit amendment approval is now required when a scan surfaces any meaningful finding (environment access, secret access, network credential access, shell/system command execution, unpinned dependency or package installation, or any dangerous verdict).
+- Added a skill approval-policy table to `templates/TEAM-POLICY.md` and a verification receipt requirement that each Hub/external skill record includes exact identifier, source, target profile, capability gap, scan verdict and findings, approval or amendment receipt reference, and installed / skipped / rejected state.
+- All existing content is preserved; the change is strictly additive and records scan findings and rollback/removal information.
+
 ### v0.6.1 — 2026-09-13
 - docs: made builtin tool usage explicit in `site/llms.txt` and `skills/forge/SKILL.md` (forge skill v1.20.0; manual v0.6.1).
 - Added a "Builtin tool usage" section to both files mapping each flow step to the Hermes builtin tools that implement it: `todo`, `read_file`, `write_file`, `patch`, `search_files`, `skills_list`, `skill_view`, `skill_manage`, `memory`, `session_search`, `clarify`, `delegate_task`, `execute_code`, and the `kanban` toolset.

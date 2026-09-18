@@ -1,11 +1,11 @@
 ---
 name: forge
-version: 1.20.0
+version: 1.21.0
 description: Provision a high-quality governed Hermes specialist team, optimize and verify it completely, then queue a non-executable coordinator workflow-discovery handoff.
 metadata:
   author: juliench82
-  version: 1.20.0
-  tags: [onboarding, team-design, team-setup, profiles, personas, skills, optimization, receipts, governance]
+  version: 1.21.0
+  tags: [onboarding, team-design, team-setup, profiles, personas, skills, optimization, receipts, governance, approval, skill-plan]
 ---
 
 ## Mission
@@ -103,6 +103,18 @@ Resolve profile-name validity before creation. Never guess names, skills, tools,
 
 Show the customer the complete roster, role boundaries, capability/skill plan, optimization plan, policy, receipts plan, and the exact coordinator handoff plan. Ask for one explicit approval before provisioning.
 
+The capability/skill plan presented for approval must be an **Approved Skill Plan**. Each planned capability resolution must record:
+
+- target profile
+- capability gap
+- resolution type: `builtin` / `generated` / `hub-external`
+- exact identifier for any Hub/external skill
+- source/repository
+- expected or actual scan verdict
+- approval state
+
+Without an approved plan entry, a Hub or external skill may not be installed later.
+
 ## Step 3 — Provision coordinator and workers
 
 After approval, execute autonomously to completion without additional provisioning approvals:
@@ -139,13 +151,40 @@ Resolve skills per profile in this order:
 
 1. **Builtin:** inspect `hermes -p <profile> skills list`; do not duplicate enabled builtins.
 2. **Generated:** create a bespoke local skill only for a genuine uncovered team capability. Use the canonical skill schema and include when-to-use, procedure, pitfalls, and verification.
-3. **Hub/approved external:** search and inspect exact identifiers; install only genuine gaps after security scanning. Never force past a dangerous verdict.
+3. **Hub/approved external:** install only skills that are listed in the Approved Skill Plan.
+
+A Hub or external skill may be installed only when its exact identifier,
+target profile, capability gap, and scan verdict were included in the
+approved skill plan.
+
+If a new capability gap appears after team approval:
+
+1. Re-check enabled builtins.
+2. Generate a local skill if that genuinely covers the gap.
+3. If a Hub or external skill is still necessary, stop before installation.
+4. Show the exact identifier, source, target profile, capability gap,
+   rationale, scan verdict and findings, data-access implications,
+   expected effect, and removal/rollback path.
+5. Obtain explicit skill-plan amendment approval.
+6. Record the amendment receipt before installation.
+
+Official origin does not itself authorize an installation.
+
+Explicit amendment approval is required if the scan surfaces any meaningful finding, including:
+
+- environment access
+- secret access
+- network credential access
+- shell/system command execution
+- unpinned dependency or package installation
+- any dangerous verdict
 
 For every profile:
 
 - Record the complete skills table and counts line.
 - Record builtin, generated, external, unavailable, and skipped capabilities.
 - Record provenance and security verdict for non-builtin skills.
+- Record a Hub/external skill verification receipt for each record: exact identifier, source, target profile, capability gap, scan verdict and findings, approval or amendment receipt reference, and installed / skipped / rejected state.
 - Keep role skill coverage focused; avoid unnecessary skill packs.
 
 ## Step 5 — Verification gates

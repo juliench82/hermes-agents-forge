@@ -40,6 +40,30 @@ Human approval is required before:
 
 The coordinator must record the requested action, resolved target, exact payload or change, approver, decision, and timestamp.
 
+## Skill approval policy
+
+| Skill source | Default | Required decision |
+|---|---|---|
+| Enabled builtin | Reuse | No new approval |
+| Generated local skill | Allowed only if included in the approved plan | Record provenance |
+| Hub/external with no scan finding | Deny unless exact identifier is approved | Amendment approval if newly discovered |
+| Hub/external with scan finding | Stop | Explicit founder decision required |
+| Dangerous scan verdict | Reject | Never force |
+
+Each approved skill-plan capability resolution records: target profile, capability gap, resolution type, exact identifier for any Hub/external skill, source/repository, expected or actual scan verdict, and approval state.
+
+Each Hub/external skill verification receipt must include:
+
+- exact identifier
+- source
+- target profile
+- capability gap
+- scan verdict and findings
+- approval or amendment receipt reference
+- installed / skipped / rejected state
+
+Official origin does not itself authorize an installation. A Hub or external skill may be installed only when its exact identifier, target profile, capability gap, and scan verdict were included in the approved skill plan; any new gap requires explicit amendment approval before installation.
+
 ## Source-of-truth and data handling
 
 - **Authoritative files/systems:** `[paths or systems]`
