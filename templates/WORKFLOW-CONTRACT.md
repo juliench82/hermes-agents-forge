@@ -12,10 +12,16 @@
 
 ## Trigger and outcome
 
-- **Trigger:** `[event, schedule, or manual command]`
-- **Final outcome:** `[observable result]`
+- **Trigger:** `[event, schedule, or manual command — default: one customer-created card (repos + ideas + goal) or one message to the coordinator]`
+- **Final outcome:** `[observable result — decision-gated]`
 - **Success metric:** `[metric and target]`
 - **Dry-run/sandbox scope:** `[scope]`
+- **Autonomy contract:** every stage's completion contract includes creating the next stage's card (`hermes kanban create --parent <this card> --assignee <next profile>`, artifact + acceptance criteria attached); the dispatcher daemon drives execution; approval gates and the final handoff are **decision cards** for the decision bot using the decision contract (schema v1: typed `choice` / `score` / `noul` questions → typed `decision_response` with `promote` / `request-changes` / `block` routing).
+
+## Decision gates
+
+- **`[gate name]`** → decision card for `decision-bot` → `promote` / `request-changes` / `block` → `[next action]`
+- **(list every approval gate and the final handoff here)**
 
 ## Source of truth and boundaries
 

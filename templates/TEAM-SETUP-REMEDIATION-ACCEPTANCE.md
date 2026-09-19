@@ -22,6 +22,10 @@
 | Forge-managed artifact update | Builtin file tool used; no shell/generic-code content mutation |
 | Modified repository documentation file | Full pre-edit content retrieved; no unapproved deletion |
 | CHANGELOG.md update | New entry appended without altering historical entries |
+| Worker creates next-stage card on completion | Next card exists with `--parent` link, artifact paths, and acceptance criteria; chain advances via dispatcher without coordinator action |
+| Decision bot resolves a decision card (human source) | Typed `decision_response` recorded verbatim; routing applied (`promote` / `request-changes` / `block`) |
+| Decision source unreachable | Decision bot escalates to the customer; **no approval is invented** |
+| Jev present in the provider lane | Decision-contract payload is identical; Jev usable as a drop-in source only after customer approval |
 
 ## File Preservation Report
 

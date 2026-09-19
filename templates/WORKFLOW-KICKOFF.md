@@ -53,6 +53,7 @@ delivery_mode: LOCAL_RECORD
 dispatcher_enforcement: UNSUPPORTED
 idempotency_key: workflow-builder-kickoff:first-workflow:v1
 coordinator_profile: <stable coordinator>
+decision_bot_profile: <decision bot>
 team_record: ~/.hermes/TEAM.md
 workflow_execution_allowed: false
 next_required_action: explicit founder instruction to start Workflow Builder
@@ -82,7 +83,7 @@ A blocked card carrying advisory `status: READY` metadata is not enforced safety
 
 ## Objective
 
-Interview the customer and propose exactly one first workflow for the existing team.
+Interview the customer (defaults first, one non-default question) and propose exactly one first workflow for the existing team, designed as an **autonomous chain**: the customer's manual request starts the pipeline, each stage creates the next stage's card, and every approval gate plus the final handoff is a **decision card** for the decision bot carrying the typed decision contract (schema v1 in `site/llms.txt`).
 
 ## Required output
 

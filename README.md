@@ -10,7 +10,8 @@ Forge then interviews the customer, designs a custom governed team, provisions i
 - **Rich personas** — every profile receives a schema-grounded `SOUL.md` based on the customer's actual requirements and words.
 - **Real skills** — builtin skills first, bespoke generated skills for genuine gaps, and inspected/security-scanned external skills only where necessary.
 - **Governance** — explicit ownership, tool boundaries, data boundaries, approval gates, cost/model policy, and escalation rules.
-- **Receipts, not assertions** — profile, skill, configuration, smoke-test, handoff, and durable `TEAM.md` evidence.
+- **Autonomous work force** — given your repos and ideas, the team picks work up itself: each stage creates the next card, the dispatcher runs the chain, and only a single **decision bot** approves. Like a small 9-to-5 team that reports to you.
+- **Receipts, not assertions** — profile, skill, configuration, smoke-test, decision, handoff, and durable `TEAM.md` evidence.
 - **Optimization** — compression/context hygiene, economical worker models, reasoning policy, browser policy, concurrency, and MOA settings supported by the installed Hermes version.
 - **Coordination surface** — a coordinator-owned control-plane handoff; Workflow Builder owns workflow-specific execution boards, routines, integrations, and trials.
 
@@ -21,10 +22,10 @@ Forge then interviews the customer, designs a custom governed team, provisions i
 After one explicit team-provisioning approval, Forge:
 
 1. Runs pre-flight and session-hygiene checks.
-2. Designs the smallest complete 3/5/7 specialist team.
+2. Designs the smallest complete 3/5/7 specialist team plus a coordinator and a decision bot.
 3. Tunes the coordinator and backs up the original persona.
-4. Creates isolated workers with rich personas and focused skills.
-5. Verifies full skill inventories, configuration, smoke tests, contracts, policy, and receipts.
+4. Creates isolated workers with rich personas, focused skills, and their next-stage card-creation rules.
+5. Verifies full skill inventories, configuration, smoke tests, contracts, policy, and receipts — including a decision-contract smoke test on the decision bot.
 6. Creates or reuses one non-executable coordinator handoff for the first workflow.
 
 Team Setup finishes with:
@@ -39,9 +40,9 @@ It does not ask workflow-specific questions or create workflow execution cards, 
 
 ### Stage 2 — Workflow Builder
 
-The stable coordinator validates and claims the handoff, records the receipt, asks the workflow-specific interview, and drafts the workflow contract, policy, runbook, and trial plan.
+The stable coordinator validates and claims the handoff, records the receipt, asks the workflow-specific interview (defaults first, one non-default question), and drafts the workflow contract, policy, runbook, and trial plan — as an autonomous chain with decision-bot gates.
 
-Workflow Builder stops for explicit workflow-design approval. Only after approval may it create execution cards, connect integrations, change workflow permissions, create routines, or run a supervised trial. A workflow becomes operational only after trial evidence and explicit human activation approval.
+Workflow Builder stops for explicit workflow-design approval. Only after approval may it create execution cards, connect integrations, change workflow permissions, create routines, or run a supervised trial. The trial must prove the chain self-advances without a coordinator nudge and that the decision gate produces a typed decision record. A workflow becomes operational only after trial evidence and explicit human activation approval.
 
 ## Team sizes
 
@@ -49,7 +50,7 @@ Workflow Builder stops for explicit workflow-design approval. Only after approva
 - **5 specialists:** multi-stage capability requiring analysis, execution, review, and reconciliation.
 - **7 specialists:** complex, coordination-heavy capability across multiple domains.
 
-The coordinator is separate from the package count. Four- and six-specialist packages are not used.
+The coordinator is separate from the package count, and every team also gets one **decision bot** — the only approval layer, outside the package count too. Four- and six-specialist packages are not used.
 
 ## Trust and safety
 

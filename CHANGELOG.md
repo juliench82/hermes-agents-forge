@@ -6,6 +6,18 @@
 
 ## [Unreleased]
 
+### v0.7.0 — 2026-09-19
+- feat: redefine the team as an **autonomous work force** with a mandatory **decision bot** (`site/llms.txt` v0.7.0, Forge Team Setup v1.25.0, Workflow Builder v1.6.0).
+- Added the autonomous work-force operating model: the customer's manual request (one card or one message) starts the pipeline; every stage's completion contract includes creating the next stage's card (`hermes kanban create --parent <card> --assignee <next>`); the dispatcher daemon (60s ticks) drives execution; workers never approve each other.
+- Added the **decision bot**: a dedicated profile outside the 3/5/7 package count, the only approval layer. It resolves decision cards carrying the typed **decision contract** (schema v1: state + typed `choice` / `score` / `noul` questions → typed `decision_response` with `promote` / `request-changes` / `block` routing + conditions + timestamp) and never invents approvals — an unreachable decision source escalates to the customer.
+- Decision sources are interchangeable through one schema: the customer (human chat, default) or **Jev** (TypeSafe AI "System One" model; already visible as `jev-1.13-free` in this build's `opencode-free` lane) — the payload is identical in both modes, making Jev a drop-in source when Hermes exposes it.
+- Simplified both interviews (Team Setup and Workflow Builder) to **defaults first, one non-default question**: present the default design in a short summary, ask "Is there any specific non-default case for you?", adapt only named dimensions.
+- Added the optional **9-to-5 pulse** (cron hygiene job on the coordinator: intake sweep + dispatch + stalled-card surfacing) — never enabled before the supervised trial passes and activation is approved.
+- Added workflow-builder autonomy wiring and trial gates: the trial must prove the chain self-advances without a coordinator nudge and that the decision gate produces a typed decision record; added the corresponding acceptance rows to `templates/TEAM-SETUP-REMEDIATION-ACCEPTANCE.md`.
+- Added the decision bot to team design (Team Setup), the role contract (`templates/TEAM-CONTRACT.md`), policy rows (`templates/TEAM-POLICY.md`, `templates/WORKFLOW-POLICY.md`), the kickoff receipt (`templates/WORKFLOW-KICKOFF.md`, local-only receipt gains `decision_bot_profile`), the contract/runbook/trial templates, `PRODUCT.md`, `HERMES.md`, `README.md`, and the site copy.
+- Added Forge skill guidance: enumerate the real skill inventory before designing the skill plan (table truncation trap), keep generated-skill descriptions under 60 characters, `hermes-agent` is never disableable, and workers must have the `kanban` toolset for self-advancement.
+- No existing rule, template field, historical changelog entry, or procedural content was removed; the change is strictly additive and versioned.
+
 ### v0.6.7 — 2026-09-19
 - docs: align canonical version declarations after the completed remediation series (`site/llms.txt` v0.6.6, Forge Team Setup v1.24.0, Workflow Builder v1.5.0).
 - hygiene: add final newlines to the remediation acceptance and receipt fixtures.
