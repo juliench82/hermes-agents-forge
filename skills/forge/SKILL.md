@@ -1,10 +1,10 @@
 ---
 name: forge
-version: 1.21.0
+version: 1.24.0
 description: Provision a high-quality governed Hermes specialist team, optimize and verify it completely, then queue a non-executable coordinator workflow-discovery handoff.
 metadata:
   author: juliench82
-  version: 1.21.0
+  version: 1.24.0
   tags: [onboarding, team-design, team-setup, profiles, personas, skills, optimization, receipts, governance, approval, skill-plan]
 ---
 

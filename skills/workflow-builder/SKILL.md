@@ -1,10 +1,10 @@
 ---
 name: workflow-builder
-version: 1.4.0
+version: 1.5.0
 description: Discover, design, test, and activate the first or a later workflow using an existing provisioned Hermes team.
 metadata:
   author: juliench82
-  version: 1.4.0
+  version: 1.5.0
   tags: [workflow, orchestration, kickoff, trial, activation, idempotency, control-plane, governance]
 ---
 

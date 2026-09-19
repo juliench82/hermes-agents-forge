@@ -6,6 +6,11 @@
 
 ## [Unreleased]
 
+### v0.6.7 — 2026-09-19
+- docs: align canonical version declarations after the completed remediation series (`site/llms.txt` v0.6.6, Forge Team Setup v1.24.0, Workflow Builder v1.5.0).
+- hygiene: add final newlines to the remediation acceptance and receipt fixtures.
+- No remediation rule, template field, historical changelog entry, or existing procedural content was removed or rewritten.
+
 ### v0.6.6 — 2026-09-19
 - test: add Forge remediation and content-preservation acceptance fixture (`templates/TEAM-SETUP-REMEDIATION-ACCEPTANCE.md`).
 - Added a manual acceptance matrix covering: approved-plan external skills, post-approval skill gaps, env/secret/unpinned external skills, dangerous scan verdicts, dispatcher assignee-only vs enforced control-plane behavior, generated-skill registry deltas, skills-count mismatch, runtime-read/CLI-unregistered config keys, unknown YAML keys, Forge-managed artifact tool policy, modified repository file preservation, and CHANGELOG append-only updates.
