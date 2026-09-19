@@ -11,8 +11,13 @@ execution_allowed: false
 workflow_scope: first-workflow-only
 idempotency_key: workflow-builder-kickoff:first-workflow:v1
 assignee: <stable coordinator profile name>
-status: READY
+handoff_state: READY_FOR_WORKFLOW_BUILDER
+delivery_mode: ENFORCED_CONTROL_PLANE_CARD
+dispatcher_enforcement: VERIFIED
+board_state: <actual Kanban state>
 ```
+
+`handoff_state` is the semantic handoff state; `board_state` is the physical Kanban state. Never use one for the other, and never describe a card as ready when its actual board state is something else.
 
 ## Dispatcher routing contract
 
@@ -20,12 +25,48 @@ The dispatcher must route cards with `control_plane: true` and `execution_allowe
 
 If the dispatcher cannot parse or enforce this metadata, it must leave the card unclaimed and record `DISPATCHER_UNSUPPORTED_CONTROL_PLANE_METADATA` in the handoff receipt. Forge must record the handoff as `READY — QUEUED LOCALLY` rather than creating an executable card.
 
+## Enforcement requirement
+
+A Kanban kickoff card may be created only when the installed dispatcher can enforce all of the following:
+
+- routing only to the exact stable coordinator;
+- no specialist spawn;
+- no customer-work tool execution;
+- control-plane-only state transitions.
+
+Native assignee support and idempotency support alone are insufficient.
+
+If any enforcement requirement is unavailable, do not create a Kanban kickoff card. Append one local-only handoff receipt to `~/.hermes/TEAM.md` using the first-workflow idempotency key and set:
+
+```text
+TEAM STATUS: PROVISIONED
+WORKFLOW HANDOFF: READY — LOCAL ONLY
+WORKFLOW STATUS: NONE
+DISPATCHER ENFORCEMENT: UNSUPPORTED
+```
+
+The local-only receipt carries:
+
+```yaml
+handoff_state: READY_FOR_WORKFLOW_BUILDER
+delivery_mode: LOCAL_RECORD
+dispatcher_enforcement: UNSUPPORTED
+idempotency_key: workflow-builder-kickoff:first-workflow:v1
+coordinator_profile: <stable coordinator>
+team_record: ~/.hermes/TEAM.md
+workflow_execution_allowed: false
+next_required_action: explicit founder instruction to start Workflow Builder
+timestamp: <ISO-8601>
+```
+
+A blocked card carrying advisory `status: READY` metadata is not enforced safety and must not be represented as one.
+
 ## Card identity and idempotency
 
 - **Title:** `Start Workflow Builder — define first workflow`
 - **Type:** `onboarding/control-plane`
 - **Assignee:** the exact `COORDINATOR PROFILE` recorded in `TEAM.md`
-- **Expected initial status:** `READY`
+- **Expected initial board state:** `READY` (physical Kanban state); semantic `handoff_state`: `READY_FOR_WORKFLOW_BUILDER`
 - **Idempotency scope:** first workflow only
 - **Idempotency key:** `workflow-builder-kickoff:first-workflow:v1`
 - **Duplicate rule:** At most one non-closed card may use this key. Reuse it if present; stop on duplicates.
@@ -34,7 +75,8 @@ If the dispatcher cannot parse or enforce this metadata, it must leave the card 
 
 - `TEAM STATUS` equals `PROVISIONED`.
 - `WORKFLOW STATUS` equals `NONE`.
-- `WORKFLOW HANDOFF` equals `READY`.
+- `WORKFLOW HANDOFF` equals `READY` (enforced card) or `READY — LOCAL ONLY` (local record).
+- `DISPATCHER ENFORCEMENT` equals `VERIFIED` for a card; `UNSUPPORTED` for a local record.
 - `COORDINATOR PROFILE` is resolved and matches the assignee.
 - Team receipts and policy paths are recorded.
 
@@ -79,6 +121,8 @@ approval_required: workflow-design
 timestamp: <ISO-8601 timestamp>
 ```
 
+`prior_state` and `new_state` are physical board states; the semantic handoff state moves to `DESIGNING` in the team/workflow record only when the claim receipt is written.
+
 ## Forbidden before workflow-design approval
 
 - Execution cards.
@@ -97,6 +141,7 @@ timestamp: <ISO-8601 timestamp>
 - Discovery artifacts are drafts only.
 - No workflow execution asset or external action was created.
 - Handoff receipt is written before completion.
+- For a local record (dispatcher enforcement unavailable), the acceptance is the `~/.hermes/TEAM.md` handoff receipt and no kickoff card.
 
 ## State machines
 

@@ -6,6 +6,45 @@
 
 ## [Unreleased]
 
+### v0.6.7 — 2026-09-19
+- docs: align canonical version declarations after the completed remediation series (`site/llms.txt` v0.6.6, Forge Team Setup v1.24.0, Workflow Builder v1.5.0).
+- hygiene: add final newlines to the remediation acceptance and receipt fixtures.
+- No remediation rule, template field, historical changelog entry, or existing procedural content was removed or rewritten.
+
+### v0.6.6 — 2026-09-19
+- test: add Forge remediation and content-preservation acceptance fixture (`templates/TEAM-SETUP-REMEDIATION-ACCEPTANCE.md`).
+- Added a manual acceptance matrix covering: approved-plan external skills, post-approval skill gaps, env/secret/unpinned external skills, dangerous scan verdicts, dispatcher assignee-only vs enforced control-plane behavior, generated-skill registry deltas, skills-count mismatch, runtime-read/CLI-unregistered config keys, unknown YAML keys, Forge-managed artifact tool policy, modified repository file preservation, and CHANGELOG append-only updates.
+- Added the File Preservation Report template (pre/post SHAs, additions, deletions, deletion explanations) and its completion condition; a file rebuilt from partial, inferred, cached, or older content fails acceptance.
+
+### v0.6.5 — 2026-09-19
+- docs: enforce builtin file-tool use for Forge-managed artifacts (`site/llms.txt`, `skills/forge/SKILL.md`, `skills/workflow-builder/SKILL.md`, `templates/WORKFLOW-RUNBOOK.md`).
+- Added the Forge-managed artifact tool policy: builtin file tools only for SOUL.md, generated SKILL.md files, TEAM.md, TEAM-CONTRACT.md, TEAM-POLICY.md, Workflow Builder draft artifacts, Kanban card-body source content, and receipt files; the Hermes CLI only for profile management, supported configuration operations, skill registry inspection, Kanban state operations, authentication operations, and smoke-test execution.
+- Prohibited content manipulation of Forge-managed artifacts through `cat`, `head`, `tail`, `echo`, shell substitution, heredocs, `sed`, `awk`, `grep`, `rg`, `find`, Python direct-file operations, or temporary-file content transport; a missing builtin file tool stops the flow and records `SKIPPED` rather than falling back to shell or generic code.
+- Added the Kanban body rule (card bodies composed as controlled literals or builtin file reads, included verbatim in the handoff receipt) and the required TOOL POLICY COMPLIANCE verification receipt.
+
+### v0.6.4 — 2026-09-19
+- fix: reconcile generated skills and runtime configuration receipts (`site/llms.txt`, `skills/forge/SKILL.md`, `templates/TEAM-POLICY.md`, `templates/TEAM-SETUP-RECEIPTS.md`).
+- Added a generated-skill reconciliation rule: after any generated local skill is created or written, capture the pre-write receipt, reload/re-query the registry, run `hermes -p <profile> skills list --enabled-only`, verify the exact identifier appears once, verify the local and total count deltas, and record pre/post counts with expected vs actual delta; a mismatch marks Team Setup incomplete and stops the flow.
+- A generated skill is considered installed only when the exact fresh inventory reconciles; creation-operation success alone is never a receipt. Added the required reconciliation receipt example.
+- Added a configuration-key classification rule for every changed setting: Registry-supported (standard CLI write + `config get` receipt), Runtime-supported / CLI-unregistered (source/runtime evidence, `--force` only when approved, post-write effective-value receipt), Unsupported or stale (`SKIPPED` with the exact reason), and Existing non-schema key (never proof of active configuration).
+- Applied the classification to the known registry-drift keys `agent.reasoning_effort`, `skills.disabled`, `delegation.fanout`, and `moa.enabled`; stale YAML keys are never evidence of runtime behavior.
+
+### v0.6.3 — 2026-09-19
+- fix: keep unenforceable workflow handoffs local and non-executable (`site/llms.txt`, `skills/forge/SKILL.md`, `skills/workflow-builder/SKILL.md`, `templates/WORKFLOW-KICKOFF.md`, `HERMES.md`, `PRODUCT.md`).
+- Defined two distinct handoff concepts everywhere they appear: `handoff_state` (semantic, e.g. `READY_FOR_WORKFLOW_BUILDER`) and `board_state` (physical Kanban state, or `null`), plus `delivery_mode` (`LOCAL_RECORD` | `ENFORCED_CONTROL_PLANE_CARD`) and `dispatcher_enforcement` (`VERIFIED` | `UNSUPPORTED`).
+- A Kanban kickoff card may be created only when the installed dispatcher enforces routing to the exact stable coordinator, no specialist spawn, no customer-work tool execution, and control-plane-only state transitions; native assignee and idempotency support alone are insufficient.
+- When any enforcement requirement is unavailable, no Kanban kickoff card is created; one local-only handoff receipt is appended to `~/.hermes/TEAM.md` with `WORKFLOW HANDOFF: READY — LOCAL ONLY` and `DISPATCHER ENFORCEMENT: UNSUPPORTED`.
+- Workflow Builder now accepts `LOCAL_RECORD` or `ENFORCED_CONTROL_PLANE_CARD`; the local record requires an explicit founder instruction before the workflow interview, and no general "unblock card" action authorizes discovery or execution.
+- The generic `status: READY` metadata field is no longer used where it would conflict with the actual physical board state.
+
+### v0.6.2 — 2026-09-18
+- feat: require approval for unplanned external skill installs (forge skill v1.21.0; manual v0.6.2).
+- Added an "Approved Skill Plan" requirement to the design/proposal before Team Setup approval. Each planned capability resolution now records target profile, capability gap, resolution type (builtin / generated / hub-external), exact identifier for any Hub/external skill, source/repository, expected or actual scan verdict, and approval state.
+- Replaced the broad Hub rule with an explicit approval amendment gate: a Hub or external skill may be installed only when its exact identifier, target profile, capability gap, and scan verdict were included in the approved skill plan. New gaps after approval require a stop-before-installation step, an explicit skill-plan amendment approval, and a recorded amendment receipt before installation. Official origin does not itself authorize an installation.
+- Explicit amendment approval is now required when a scan surfaces any meaningful finding (environment access, secret access, network credential access, shell/system command execution, unpinned dependency or package installation, or any dangerous verdict).
+- Added a skill approval-policy table to `templates/TEAM-POLICY.md` and a verification receipt requirement that each Hub/external skill record includes exact identifier, source, target profile, capability gap, scan verdict and findings, approval or amendment receipt reference, and installed / skipped / rejected state.
+- All existing content is preserved; the change is strictly additive and records scan findings and rollback/removal information.
+
 ### v0.6.1 — 2026-09-13
 - docs: made builtin tool usage explicit in `site/llms.txt` and `skills/forge/SKILL.md` (forge skill v1.20.0; manual v0.6.1).
 - Added a "Builtin tool usage" section to both files mapping each flow step to the Hermes builtin tools that implement it: `todo`, `read_file`, `write_file`, `patch`, `search_files`, `skills_list`, `skill_view`, `skill_manage`, `memory`, `session_search`, `clarify`, `delegate_task`, `execute_code`, and the `kanban` toolset.

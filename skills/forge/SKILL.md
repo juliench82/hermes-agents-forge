@@ -1,11 +1,11 @@
 ---
 name: forge
-version: 1.20.0
+version: 1.24.0
 description: Provision a high-quality governed Hermes specialist team, optimize and verify it completely, then queue a non-executable coordinator workflow-discovery handoff.
 metadata:
   author: juliench82
-  version: 1.20.0
-  tags: [onboarding, team-design, team-setup, profiles, personas, skills, optimization, receipts, governance]
+  version: 1.24.0
+  tags: [onboarding, team-design, team-setup, profiles, personas, skills, optimization, receipts, governance, approval, skill-plan]
 ---
 
 ## Mission
@@ -55,6 +55,64 @@ Rules:
 - Coordinator handoff card creation uses the official `hermes kanban` CLI or the `kanban` toolset — never ad-hoc writes into board state.
 - `cronjob` is never used during Team Setup; routines belong to Workflow Builder after the supervised trial passes.
 
+### Forge-managed artifact tool policy
+
+Use Hermes builtin file tools for every Forge-managed artifact:
+
+- SOUL.md
+- generated SKILL.md files
+- TEAM.md
+- TEAM-CONTRACT.md
+- TEAM-POLICY.md
+- Workflow Builder draft artifacts
+- Kanban card-body source content
+- receipt files
+
+Use Hermes CLI only for Hermes runtime operations and verbatim receipts:
+
+- profile management
+- supported configuration operations
+- skill registry inspection
+- Kanban state operations
+- authentication operations
+- smoke-test execution
+
+Prohibit content manipulation through shell and generic code execution:
+
+```md
+Do not use `cat`, `head`, `tail`, `echo`, shell substitution, heredocs,
+`sed`, `awk`, `grep`, `rg`, `find`, Python direct-file operations, or
+temporary-file content transport to read, compose, search, patch, or
+write Forge-managed artifacts.
+```
+
+Allow a narrow exception only when a builtin file tool is unavailable:
+
+```md
+If a required builtin file tool is unavailable, stop and record SKIPPED
+with the exact unavailable tool and reason. Do not substitute shell or
+generic code execution for an append-only or safety-relevant artifact.
+```
+
+Kanban body rule:
+
+```md
+A Kanban card body must be composed as a controlled literal or retrieved
+using a builtin file read. It must be included verbatim in the handoff
+receipt. Do not pass card bodies through temporary files or shell command
+substitution.
+```
+
+Verification receipt:
+
+```text
+TOOL POLICY COMPLIANCE
+- Forge-managed artifact file operations: builtin tool only | PASS/FAIL
+- CLI use: runtime operations and receipts only | PASS/FAIL
+- Shell/generic-code artifact-content operations: none | list deviations
+- Temporary content files for artifacts: none | list deviations
+```
+
 ## Step 0 — Pre-flight and session hygiene
 
 Before the interview:
@@ -103,6 +161,18 @@ Resolve profile-name validity before creation. Never guess names, skills, tools,
 
 Show the customer the complete roster, role boundaries, capability/skill plan, optimization plan, policy, receipts plan, and the exact coordinator handoff plan. Ask for one explicit approval before provisioning.
 
+The capability/skill plan presented for approval must be an **Approved Skill Plan**. Each planned capability resolution must record:
+
+- target profile
+- capability gap
+- resolution type: `builtin` / `generated` / `hub-external`
+- exact identifier for any Hub/external skill
+- source/repository
+- expected or actual scan verdict
+- approval state
+
+Without an approved plan entry, a Hub or external skill may not be installed later.
+
 ## Step 3 — Provision coordinator and workers
 
 After approval, execute autonomously to completion without additional provisioning approvals:
@@ -139,13 +209,40 @@ Resolve skills per profile in this order:
 
 1. **Builtin:** inspect `hermes -p <profile> skills list`; do not duplicate enabled builtins.
 2. **Generated:** create a bespoke local skill only for a genuine uncovered team capability. Use the canonical skill schema and include when-to-use, procedure, pitfalls, and verification.
-3. **Hub/approved external:** search and inspect exact identifiers; install only genuine gaps after security scanning. Never force past a dangerous verdict.
+3. **Hub/approved external:** install only skills that are listed in the Approved Skill Plan.
+
+A Hub or external skill may be installed only when its exact identifier,
+target profile, capability gap, and scan verdict were included in the
+approved skill plan.
+
+If a new capability gap appears after team approval:
+
+1. Re-check enabled builtins.
+2. Generate a local skill if that genuinely covers the gap.
+3. If a Hub or external skill is still necessary, stop before installation.
+4. Show the exact identifier, source, target profile, capability gap,
+   rationale, scan verdict and findings, data-access implications,
+   expected effect, and removal/rollback path.
+5. Obtain explicit skill-plan amendment approval.
+6. Record the amendment receipt before installation.
+
+Official origin does not itself authorize an installation.
+
+Explicit amendment approval is required if the scan surfaces any meaningful finding, including:
+
+- environment access
+- secret access
+- network credential access
+- shell/system command execution
+- unpinned dependency or package installation
+- any dangerous verdict
 
 For every profile:
 
 - Record the complete skills table and counts line.
 - Record builtin, generated, external, unavailable, and skipped capabilities.
 - Record provenance and security verdict for non-builtin skills.
+- Record a Hub/external skill verification receipt for each record: exact identifier, source, target profile, capability gap, scan verdict and findings, approval or amendment receipt reference, and installed / skipped / rejected state.
 - Keep role skill coverage focused; avoid unnecessary skill packs.
 
 ## Step 5 — Verification gates
@@ -163,6 +260,53 @@ Do not claim Team Setup is complete until all required receipts exist:
 9. No workflow assets or external workflow actions were created.
 
 A rejected setting or unavailable tool is recorded as `SKIPPED` with the reason; it is never silently absorbed into "complete."
+
+## Receipt and configuration reconciliation
+
+### Generated-skill reconciliation rule
+
+After any generated local skill is created or written:
+
+1. Capture the target profile's pre-write enabled-skill receipt.
+2. Create or write the skill.
+3. Reload or re-query the target profile's skill registry.
+4. Run `hermes -p <profile> skills list --enabled-only`.
+5. Verify that the exact generated skill identifier appears exactly once.
+6. Verify the local-skill and total-enabled count deltas equal the expected change.
+7. Record the pre-write count, action, post-write count, expected delta, actual delta, and reconciliation result.
+8. If the registry does not reconcile, mark Team Setup incomplete and stop.
+
+Required receipt example:
+
+```text
+Profile: default
+Pre-write: 13 hub-installed, 57 builtin, 22 local — 92 enabled
+Action: created generated skill idea-intake-routing
+Post-write: 13 hub-installed, 57 builtin, 23 local — 93 enabled
+Expected delta: +1 local / +1 total
+Actual delta: +1 local / +1 total
+Reconciliation: PASS
+```
+
+A generated skill is considered installed only when the exact fresh inventory shows its identifier once and the count deltas match. Creation-operation success alone is never a receipt.
+
+### Configuration-key classification
+
+Require every changed setting to be classified before it is written, and record the classification in the receipts:
+
+| Classification | Rule |
+|---|---|
+| Registry-supported | Use standard CLI write and capture a `config get` receipt |
+| Runtime-supported / CLI-unregistered | Capture source/runtime evidence, use `--force` only when approved, and verify the effective runtime value |
+| Unsupported or stale | Do not write; record `SKIPPED` with the exact reason |
+| Existing non-schema key | Do not use it as proof of an active configuration; identify the supported replacement or mark it unsupported |
+
+Apply this specifically:
+
+- `agent.reasoning_effort` — treat as runtime-supported/CLI-unregistered only if the installed runtime source and resolver demonstrate it. A forced write requires a post-write effective runtime receipt.
+- `skills.disabled` — treat as runtime-supported/CLI-unregistered only if the active skill loader reads it. Verify the actual enabled skill inventory after the change.
+- `delegation.fanout` — never modify it merely because it exists in YAML. Modify only if both the current schema and runtime reader confirm it; otherwise record `SKIPPED`.
+- `moa.enabled` — do not use this field as evidence that MoA is active or inactive unless the installed version's runtime actually uses it. Verify the active supported MoA selector/preset state instead.
 
 ## Coordinator handoff
 
@@ -183,10 +327,36 @@ workflow-builder-kickoff:first-workflow:v1
 
 3. Search `~/.hermes/TEAM.md` and the active Kanban board for the key.
 4. If exactly one active matching card exists, reuse it and append a receipt.
-5. If none exists, verify the dispatcher supports the metadata below. If supported, create exactly one card; otherwise queue locally and record the reason.
-6. If more than one active matching card exists, stop and report the duplicate.
+5. Record the two distinct handoff concepts that follow, never mixing them:
+   - `handoff_state` — the semantic handoff state (e.g. `READY_FOR_WORKFLOW_BUILDER`); never a physical Kanban status.
+   - `board_state` — the actual physical Kanban state, or `null` when no card exists.
+   - `delivery_mode` — `LOCAL_RECORD` | `ENFORCED_CONTROL_PLANE_CARD`.
+   - `dispatcher_enforcement` — `VERIFIED` | `UNSUPPORTED`.
+   Do not use a generic metadata field such as `status: READY` when the actual board status is something else.
+6. A Kanban kickoff card may be created only when the installed dispatcher can enforce all of the following:
 
-Required card metadata:
+   - routing only to the exact stable coordinator;
+   - no specialist spawn;
+   - no customer-work tool execution;
+   - control-plane-only state transitions.
+
+   Native assignee support and idempotency support alone are insufficient.
+7. If any enforcement requirement is unavailable:
+
+   Do not create a Kanban kickoff card.
+
+   Instead, append one local-only handoff receipt to `~/.hermes/TEAM.md` using the first-workflow idempotency key.
+
+   Set:
+
+   TEAM STATUS: PROVISIONED
+   WORKFLOW HANDOFF: READY — LOCAL ONLY
+   WORKFLOW STATUS: NONE
+   DISPATCHER ENFORCEMENT: UNSUPPORTED
+
+8. If more than one active matching card exists, stop and report the duplicate.
+
+Required card metadata for an enforced control-plane card:
 
 ```yaml
 kind: onboarding
@@ -195,21 +365,50 @@ execution_allowed: false
 workflow_scope: first-workflow-only
 idempotency_key: workflow-builder-kickoff:first-workflow:v1
 assignee: <stable coordinator profile name>
-status: READY
+handoff_state: READY_FOR_WORKFLOW_BUILDER
+delivery_mode: ENFORCED_CONTROL_PLANE_CARD
+dispatcher_enforcement: VERIFIED
+board_state: <actual Kanban state>
 ```
 
-The dispatcher must route the card only to the coordinator and must not spawn workers or execute customer-work tools. The card is a handoff only.
+Required local-only handoff receipt in `~/.hermes/TEAM.md`:
 
-Append a receipt containing card ID, metadata, assignee, state, timestamp, dispatcher support/unsupported reason, and team record path.
+```yaml
+handoff_state: READY_FOR_WORKFLOW_BUILDER
+delivery_mode: LOCAL_RECORD
+dispatcher_enforcement: UNSUPPORTED
+idempotency_key: workflow-builder-kickoff:first-workflow:v1
+coordinator_profile: <stable coordinator>
+team_record: ~/.hermes/TEAM.md
+workflow_execution_allowed: false
+next_required_action: explicit founder instruction to start Workflow Builder
+timestamp: <ISO-8601>
+```
+
+The dispatcher must route the card only to the coordinator and must not spawn workers or execute customer-work tools. The card is a handoff only. If enforcement is unsupported, no card is created, and a blocked card carrying advisory `status: READY` metadata must never be presented as enforced safety.
+
+Append a receipt containing card ID (or local-handoff ID), metadata, assignee, state, timestamp, dispatcher enforcement verdict and reason, and team record path.
 
 ## Step 6 — Durable handoff
 
-Write/refresh `~/.hermes/TEAM.md` without overwriting prior receipts. Set:
+Write/refresh `~/.hermes/TEAM.md` without overwriting prior receipts. Set the state according to the delivery mode recorded in the handoff:
+
+For an enforced control-plane card (`dispatcher_enforcement: VERIFIED`):
 
 ```text
 TEAM STATUS: PROVISIONED
 WORKFLOW HANDOFF: READY
 WORKFLOW STATUS: NONE
+DISPATCHER ENFORCEMENT: VERIFIED
+```
+
+For a local-only handoff (`dispatcher_enforcement: UNSUPPORTED`):
+
+```text
+TEAM STATUS: PROVISIONED
+WORKFLOW HANDOFF: READY — LOCAL ONLY
+WORKFLOW STATUS: NONE
+DISPATCHER ENFORCEMENT: UNSUPPORTED
 ```
 
 The final Team Setup report must include verbatim setup receipts and state explicitly:

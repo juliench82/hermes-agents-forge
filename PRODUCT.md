@@ -59,7 +59,9 @@ After one explicit approval, Team Setup provisions:
 
 ### Team Setup completion
 
-Team Setup must not claim workflow success. It completes only after all setup receipts pass and creates/reuses one non-executable coordinator handoff for the first workflow:
+Team Setup must not claim workflow success. It completes only after all setup receipts pass and creates/reuses one non-executable coordinator handoff for the first workflow — but only when the installed dispatcher can enforce routing only to the exact stable coordinator, no specialist spawn, no customer-work tool execution, and control-plane-only state transitions. Native assignee support and idempotency support alone are insufficient. If any enforcement requirement is unavailable, Team Setup records a local-only handoff in `~/.hermes/TEAM.md` and creates no Kanban card.
+
+Enforced control-plane card (dispatcher enforcement verified):
 
 ```yaml
 kind: onboarding
@@ -68,7 +70,24 @@ execution_allowed: false
 workflow_scope: first-workflow-only
 idempotency_key: workflow-builder-kickoff:first-workflow:v1
 assignee: <stable coordinator profile name>
-status: READY
+handoff_state: READY_FOR_WORKFLOW_BUILDER
+delivery_mode: ENFORCED_CONTROL_PLANE_CARD
+dispatcher_enforcement: VERIFIED
+board_state: <actual Kanban state>
+```
+
+Local-only handoff (dispatcher enforcement unsupported), appended to `~/.hermes/TEAM.md`:
+
+```yaml
+handoff_state: READY_FOR_WORKFLOW_BUILDER
+delivery_mode: LOCAL_RECORD
+dispatcher_enforcement: UNSUPPORTED
+idempotency_key: workflow-builder-kickoff:first-workflow:v1
+coordinator_profile: <stable coordinator>
+team_record: ~/.hermes/TEAM.md
+workflow_execution_allowed: false
+next_required_action: explicit founder instruction to start Workflow Builder
+timestamp: <ISO-8601>
 ```
 
 The final Team Setup state is:
@@ -77,6 +96,16 @@ The final Team Setup state is:
 TEAM STATUS: PROVISIONED
 WORKFLOW HANDOFF: READY
 WORKFLOW STATUS: NONE
+DISPATCHER ENFORCEMENT: VERIFIED
+```
+
+or, for a local-only handoff:
+
+```text
+TEAM STATUS: PROVISIONED
+WORKFLOW HANDOFF: READY — LOCAL ONLY
+WORKFLOW STATUS: NONE
+DISPATCHER ENFORCEMENT: UNSUPPORTED
 ```
 
 Team Setup never creates workflow execution cards, schedules, routines, live integrations, trials, or external workflow actions.
@@ -119,7 +148,7 @@ Team Setup may prepare the coordinator/control-plane surface and a non-executabl
 ## Status vocabulary
 
 - **Team provisioned:** Profiles, personas, skills, optimization, contracts, policy, and setup receipts are complete.
-- **Workflow handoff ready:** One coordinator-owned first-workflow discovery handoff exists or is queued locally; no workflow execution exists.
+- **Workflow handoff ready:** One coordinator-owned first-workflow discovery handoff exists as an enforced control-plane card or a local-only `~/.hermes/TEAM.md` receipt; `dispatcher_enforcement` is `VERIFIED` or `UNSUPPORTED`; no workflow execution exists. The semantic handoff state is never confused with a physical Kanban status.
 - **Workflow designing:** The coordinator is interviewing the user and drafting workflow artifacts.
 - **Workflow designed:** A workflow contract and policy are approved; execution has not yet passed trial.
 - **Workflow trial-passed:** Controlled execution met acceptance criteria and preserved approval boundaries.
