@@ -13,6 +13,8 @@
 
 | Capability | Approved profiles | Allowed scope | Approval required |
 |---|---|---|---|
+| Create next-stage cards | `[workers]` | `--parent`-linked to the current card; assignee = next approved stage owner | no |
+| Resolve decision cards | `decision-bot` only | Decision contract schema v1; typed response recorded verbatim | decision source (customer or Jev) |
 | Read data | `[profiles]` | `[systems/paths]` | `[yes/no]` |
 | Write files/records | `[profiles]` | `[systems/paths]` | `[yes/no]` |
 | Send messages | `[profiles]` | `[targets]` | `[yes/no]` |

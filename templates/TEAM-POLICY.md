@@ -21,6 +21,8 @@
 
 | Capability | Allowed profiles | Conditions |
 |---|---|---|
+| Create next-stage cards | all workers | `--parent`-linked to the current card, assigned to the next approved stage owner, artifact + acceptance criteria attached |
+| Resolve decision cards | `decision-bot` only | Decision contract schema v1; typed response recorded verbatim; routing `promote` / `request-changes` / `block` |
 | Browser access | `[profiles]` | `[conditions]` |
 | Filesystem read | `[profiles]` | `[paths or conditions]` |
 | Filesystem write | `[profiles]` | `[paths or conditions]` |
@@ -37,6 +39,8 @@ Human approval is required before:
 - Deleting or modifying external records.
 - Spending money or creating paid services.
 - Handling sensitive data outside the approved source-of-truth boundary.
+
+**The decision bot is the only approval layer.** Workers never approve each other, and the coordinator never substitutes its judgment for a decision. Every gate and the final handoff is a decision card resolved by the decision bot; a typed `decision_response` (answers, routing, conditions, approver, timestamp) is recorded verbatim on the card. If no decision source is reachable, the decision bot escalates to the customer — it never invents an approval.
 
 The coordinator must record the requested action, resolved target, exact payload or change, approver, decision, and timestamp.
 

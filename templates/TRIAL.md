@@ -23,7 +23,10 @@
 - **Task:** `[one real workflow task]`
 - **Acceptance criteria:**
   - `[criterion]`
-- **Roles involved:** `[approved profiles]`
+  - The chain **self-advances without a coordinator nudge** (each stage creates the next stage's card; dispatcher timestamps show pickup without manual intervention).
+  - At least one **decision gate is exercised with a typed `decision_response`** (choice answer + routing + conditions + timestamp), and routing moved the chain (`promote`) or returned it (`request-changes`).
+  - No approval bypass: no stage completed without a decision record where the contract required one.
+- **Roles involved:** `[approved profiles]` + `decision-bot`
 - **Final integrator:** `[profile]`
 
 ## Evidence log
@@ -31,6 +34,7 @@
 | Step | Owner | Input/source | Output/artifact | Handoff/approval | Result |
 |---|---|---|---|---|---|
 | 1 | `[profile]` | `[reference]` | `[artifact]` | `[handoff]` | `pass / fail` |
+| … | `[producing profile]` | `[artifact]` | `decision card + decision_request` | `decision-bot → promote / request-changes / block` | `pass / fail` |
 
 ## Trial review
 
