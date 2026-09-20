@@ -94,6 +94,8 @@ Jev primitives: **choice** — pick from a fixed set, returns winning key + per-
 
 The decision bot's controller task: take the decision card → resolve the questions against the configured source (human chat now; Jev when available) → record the typed response + conditions + routing verbatim on the card and in the team record (`$HERMES_HOME/TEAM.md`, default `~/.hermes/TEAM.md`) / the workflow record → apply routing (`promote` → the receiving stage proceeds or the handoff completes; `request-changes` → back to the producing stage with conditions; `block` → stop and escalate). If no decision source is reachable, **escalate to the customer — never invent an approval**.
 
+**Human-source decision gates are never auto-dispatched.** When the decision source is human, the decision card must be created in a dispatcher-exempt state (e.g. `blocked`) — never `ready` for the dispatcher, because a headless spawn cannot reach the customer and errors out. Resolution happens in the customer's **live channel**: the decision bot renders the questions, the customer answers, the bot records the typed `decision_response` + routing verbatim, and the coordinator applies the routing. A decision card may be auto-dispatched only when the source is mechanical/automated (e.g. Jev), with the customer always able to override.
+
 **Jev is a model, not a skill or integration to install.** It is a TypeSafe AI "System One" model like any chat model — its availability is checked in the model catalog / provider lanes, never the skills list or Hub. It is not yet available through Nous Portal at time of writing (this build's provider cache lists `jev-1.13-free` under the keyless `opencode-free` lane); the decision bot uses the human source until Hermes exposes it, at which point the same decision contract works unchanged.
 
 ## Interview rule (both stages)
@@ -524,6 +526,7 @@ Never let a general "unblock card" action itself become authorization to perform
 - Never let specialists own workflow discovery or approval.
 - **Never let workers approve each other; the decision bot is the only approval layer.**
 - **Never let the decision bot invent an approval — an unreachable decision source means escalate to the customer.**
+- **Never auto-dispatch a human-source decision card** — human gates wait in the customer's live channel (dispatcher-exempt card state); only mechanical sources (e.g. Jev) may be auto-spawned, and the customer always overrides.
 - **Workers may create pipeline cards only for the approved chain (`--parent`-linked, assigned to the next stage owner); discovery and design approval stay with the coordinator and the customer.**
 - Never perform external or irreversible actions without approval.
 - Never claim workflow success from Team Setup receipts.

@@ -16,7 +16,7 @@
 1. Confirm the trigger and approved scope (one customer-created card or message).
 2. Read the source-of-truth inputs.
 3. Create the intake card; the chain self-advances: each stage completes its work, attaches evidence, and **creates the next stage's card** (`hermes kanban create --parent <card> --assignee <next>`) — the dispatcher daemon picks it up on the next tick.
-4. At each approval gate and the final handoff, the producing stage creates a **decision card** for the decision bot carrying the typed decision contract; nothing proceeds past it without a recorded `decision_response`.
+4. At each approval gate and the final handoff, the producing stage creates a **decision card** for the decision bot carrying the typed decision contract; nothing proceeds past it without a recorded `decision_response`. Human-source decision cards are created in a **dispatcher-exempt state** (e.g. `blocked`) and resolved in the customer's **live channel** — never auto-dispatched headless.
 5. Apply the decision-bot routing: `promote` → next stage proceeds; `request-changes` → back to the producing stage with conditions; `block` → stop and escalate to the customer.
 6. Attach evidence to every handoff (artifact path, command output, citation, timestamp).
 7. Reconcile the final output against acceptance criteria.

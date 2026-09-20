@@ -187,6 +187,7 @@ The decision bot's protocol on each decision card:
 3. Record the `decision_response` verbatim on the card (and in the team/workflow record).
 4. Apply routing: `promote` → the next stage proceeds or the handoff completes; `request-changes` → the producing stage receives the conditions; `block` → stop and escalate.
 5. If no decision source is reachable, escalate to the customer — **never invent an approval**.
+6. **Never auto-dispatch a human-source card.** Human-source decision cards are created dispatcher-exempt (`blocked`), and resolution happens in the customer's live channel; a headless dispatcher spawn of a human gate is a process failure, not a valid resolution path.
 
 Record an approval receipt containing workflow ID/version, exact artifact paths, profiles/tools, integration and credential scope, allowed external actions and approvals, test scope, runtime limits, schedule, approver, decision, and timestamp.
 
@@ -196,7 +197,7 @@ Before that receipt, do not create execution cards, connect credentials, change 
 
 1. Create the intake card for the first run (or document that the customer's manual request creates it).
 2. Confirm each worker's SOUL.md/contract includes the next-stage card-creation rule.
-3. Confirm the decision bot is the assigned `review`-state consumer for decision cards, and that the dispatcher daemon is running (`hermes kanban daemon`).
+3. Confirm the decision bot is the assigned `review`-state consumer for decision cards, and that the dispatcher is running (verify with `hermes kanban diagnostics` / `hermes kanban dispatch` — the `daemon` subcommand is deprecated; the dispatcher runs in the gateway).
 4. Keep the 9-to-5 pulse (cron) **disabled** until the trial passes.
 
 ## Supervised trial and activation
@@ -208,6 +209,7 @@ The trial must additionally prove, with receipts:
 1. **Self-advancement:** the chain advances from intake through the stages **without a coordinator nudge** — each stage creates the next stage's card and the dispatcher daemon picks it up (record card parent/child links and timestamps).
 2. **Decision gate:** at least one decision card is resolved with a typed `decision_response` (choice answer + routing + conditions + timestamp), and routing actually moved the chain (`promote`) or returned it with conditions (`request-changes`).
 3. **No approval bypass:** no stage completed without a decision record where the contract required one.
+4. **No headless human-gate resolution:** every human-source decision card was resolved in the customer's live channel with a typed `decision_response`; **no** human-source gate was auto-spawned headlessly by the dispatcher. An auto-spawned human gate fails the trial.
 
 Set `WORKFLOW STATUS: TRIAL-PASSED` only when every acceptance criterion passes. Set `WORKFLOW STATUS: OPERATIONAL` only after explicit human activation approval. On activation, the optional 9-to-5 pulse (a cron hygiene job: intake sweep + `hermes kanban dispatch` + stalled-card surfacing) may be enabled.
 
