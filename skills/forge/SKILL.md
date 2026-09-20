@@ -124,7 +124,7 @@ Before the interview:
 5. Inspect the installed Hermes version and supported configuration keys; never assume a key exists.
 6. Check whether a local Forge skill exists and perform the version handshake before following it.
 7. Resolve the main/default coordinator profile and record its stable name.
-8. Check whether the installed Hermes exposes the Jev model (e.g. `jev-*` under the `opencode-free` lane): if yes, record it as the candidate decision source for the decision bot; if no, the decision bot uses the human decision source.
+8. Check whether the installed Hermes exposes the Jev model in the **model catalog / provider lanes** (`hermes model list`, `jev-*` lane entries) — Jev is a model, never a skill, so never search the skills list or Hub for it. Not yet available through Nous Portal at time of writing; the decision bot uses the human decision source until Hermes exposes it.
 
 Pre-flight failure, provider instability, or unsupported settings must be recorded and must not be silently retried forever.
 
@@ -448,6 +448,7 @@ The final Team Setup report must include verbatim setup receipts and state expli
 - Never create 4 or 6 specialists.
 - Never point two agents at the same profile.
 - Never duplicate enabled builtins.
+- Never read, modify, derive context from, or route work through profiles outside the approved roster — including pre-existing customer profiles. `HERMES_HOME` isolates Hermes state, not the filesystem; an agent's terminal still runs as the real user, so the real home is off-limits except the approved team paths.
 - Never invent skills, tools, models, integrations, or configuration keys.
 - Never force past a dangerous security verdict.
 - Never let the coordinator implement worker-owned tasks.
