@@ -16,10 +16,12 @@ Read, in this order:
 
 ## Version handshake and source of truth
 
-Before Team Setup:
+The handshake runs at the start of **each** phase — again before the Workflow Builder phase, using the workflow-builder skill:
 
-- Inspect any locally installed Forge skill and read its frontmatter version.
-- If it is missing, stale, or unverifiable, do not silently follow it. Fetch the repository's canonical `skills/forge/SKILL.md` and use that version.
+- Inspect any locally installed or cached copy of the relevant skill (forge for Team Setup, workflow-builder for the Workflow Builder phase) and read its frontmatter version.
+- A local copy is **never authoritative** — including the durable source cache (`~/.hermes/forge-source/`), any copy left behind by another session, or a version you were given mid-conversation. Treat it as stale-by-default.
+- If the local copy is missing, stale, or unverifiable, do not follow it. Fetch the repository's canonical skill (`skills/forge/SKILL.md`, or `skills/workflow-builder/SKILL.md`@`main`) and use that version.
+- Record the handshake verdict — local version vs canonical version, and which source you followed — in the receipts.
 - If the canonical source cannot be fetched, stop and tell the user exactly what failed. Never guess or improvise.
 - If instructions conflict, this manual and the version-matched Forge skill are authoritative over stale local copies.
 
