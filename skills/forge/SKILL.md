@@ -225,6 +225,7 @@ Create the approved decision-bot profile (outside the package count). It must ha
 - An unambiguous one-line description.
 - Its decision-source policy recorded: human (customer) by default; Jev when the installed Hermes exposes it and the customer approves the switch.
 - Compression/context hygiene, MOA off, economical model, low reasoning effort.
+- A boundary rule that **human-source decision cards are never auto-spawned by the dispatcher**: cards are created dispatcher-exempt (e.g. `blocked`) and resolved in the customer's live channel.
 
 ### 3.4 Autonomy wiring
 
