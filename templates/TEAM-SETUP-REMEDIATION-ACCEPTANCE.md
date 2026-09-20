@@ -33,6 +33,7 @@
 | `team_record` path in receipts differs from the resolved `$HERMES_HOME` | Reject; receipts must carry the resolved actual path |
 | Human-source decision card created `ready` / auto-spawned headless by the dispatcher | Reject; must be dispatcher-exempt (`blocked`) and resolved in the customer's live channel |
 | `sdlc-review` disabled on a profile that owns `review`-state cards | Reject; the dispatcher's review lane requires it — spawn crashes with `Unknown skill(s): sdlc-review` |
+| Team larger than the desktop pool default with no pool-capacity receipt | Reject; `maxBackends`/`idleMs` must be recorded with the config receipts (or `SKIPPED` with reason for headless deploys) |
 
 ## File Preservation Report
 

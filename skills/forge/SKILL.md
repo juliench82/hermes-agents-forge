@@ -232,6 +232,7 @@ Create the approved decision-bot profile (outside the package count). It must ha
 1. Confirm every worker's SOUL.md and the team contract include the next-stage card-creation rule.
 2. Confirm the decision bot is the assigned `review`-state consumer for decision cards.
 3. Record the 9-to-5 pulse (cron) as disabled — no cron jobs during Team Setup.
+4. **Desktop bot-pool capacity.** The desktop app holds spawned bot backends in a pool (one app-global pool, all profiles share it): `maxBackends` = how many backends stay spawned, `idleMs` = how long an idle one survives before shutdown. For a team this size, raise it so bots actually wake: `maxBackends` ≥ team size + margin (workers + decision bot + coordinator headroom) and `idleMs` ≥ 30 min (prefer ~60) so idle bots stay warm. Mechanism: the app's Settings → Advanced pool-limits row, or the persisted `pool-limits.json` in the desktop app's data dir (write with builtin file tools: read → write → verify). Record the applied values verbatim in the config receipts. Context for the customer: the message *"Too many bots are running at once for this computer's limit"* is a **slot-wait timeout, not a hardware limit**, and slow bot "waking up" is a short `idleMs` — neither means the machine can't run the team. If no desktop app is present (headless gateway deployment), record `SKIPPED` — the pool is desktop-only.
 
 ## Step 4 — Skills and capability resolution
 
