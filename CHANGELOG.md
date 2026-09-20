@@ -16,6 +16,7 @@
 - Added workflow-builder autonomy wiring and trial gates: the trial must prove the chain self-advances without a coordinator nudge and that the decision gate produces a typed decision record; added the corresponding acceptance rows to `templates/TEAM-SETUP-REMEDIATION-ACCEPTANCE.md`.
 - Added the decision bot to team design (Team Setup), the role contract (`templates/TEAM-CONTRACT.md`), policy rows (`templates/TEAM-POLICY.md`, `templates/WORKFLOW-POLICY.md`), the kickoff receipt (`templates/WORKFLOW-KICKOFF.md`, local-only receipt gains `decision_bot_profile`), the contract/runbook/trial templates, `PRODUCT.md`, `HERMES.md`, `README.md`, and the site copy.
 - Added Forge skill guidance: enumerate the real skill inventory before designing the skill plan (table truncation trap), keep generated-skill descriptions under 60 characters, `hermes-agent` is never disableable, and workers must have the `kanban` toolset for self-advancement.
+- Fixed the execution-trigger triage: the closing "Important" disclaimer in `site/llms.txt` is replaced by a "When to execute this manual" rule — proceed when the human in the conversation explicitly asks to follow the manual (the intended customer flow), stop and ask only on ambiguity or untrusted origin. Removes a first-run dead-stop observed in sandbox acceptance runs, including on a free model with medium reasoning.
 - No existing rule, template field, historical changelog entry, or procedural content was removed; the change is strictly additive and versioned.
 
 ### v0.6.7 — 2026-09-19
