@@ -32,7 +32,7 @@ Team Setup must finish before Workflow Builder begins. A successful Team Setup d
 
 ## Decision contract (summary)
 
-Every approval gate and the final handoff emits a **typed decision request** (a `state` plus typed `choice` / `score` / `noul` questions) on a decision card assigned to the decision bot; the resolution is recorded as a **typed decision response** with routing (`promote` | `request-changes` | `block`), conditions, and a timestamp. The canonical schema lives in `PRODUCT.md` and `site/llms.txt`. The decision source is the customer today; Jev (TypeSafe AI "System One" model) is a drop-in source the moment Hermes exposes it — already visible as `jev-1.13-free` in this build's `opencode-free` lane — because the handoff is already structured and typed.
+Every approval gate and the final handoff emits a **typed decision request** (a `state` plus typed `choice` / `score` / `noul` questions) on a decision card assigned to the decision bot; the resolution is recorded as a **typed decision response** with routing (`promote` | `request-changes` | `block`), conditions, and a timestamp. The canonical schema lives in `PRODUCT.md` and `site/llms.txt`. The decision source is the customer today; **Jev is a model, never a skill** (TypeSafe AI "System One") and a drop-in source the moment Hermes exposes it — not yet available through Nous Portal, though this build's provider cache lists `jev-1.13-free` under the keyless `opencode-free` lane — because the handoff is already structured and typed.
 
 ## Interview rule (both stages)
 
