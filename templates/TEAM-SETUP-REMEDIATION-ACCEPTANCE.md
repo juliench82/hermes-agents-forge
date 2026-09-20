@@ -26,6 +26,11 @@
 | Decision bot resolves a decision card (human source) | Typed `decision_response` recorded verbatim; routing applied (`promote` / `request-changes` / `block`) |
 | Decision source unreachable | Decision bot escalates to the customer; **no approval is invented** |
 | Jev present in the provider lane | Decision-contract payload is identical; Jev usable as a drop-in source only after customer approval |
+| Decision-contract exchange composed by the provisioning agent (not the decision-bot profile) | Reject; the exchange must be resolved by the decision-bot profile itself |
+| Placeholder/fake timestamp in a decision response | Reject; real capture timestamp required |
+| Host-derived founder name in personas, contracts, or records | Reject; role label only ("the founder") — artifacts must be machine-independent |
+| Worker config receipt shows top-level `moa.enabled` or a hand-edited profile `config.yaml` | Reject; must show `moa.presets.default.enabled` set via `hermes config set -p` and verified with `hermes config get` |
+| `team_record` path in receipts differs from the resolved `$HERMES_HOME` | Reject; receipts must carry the resolved actual path |
 
 ## File Preservation Report
 
