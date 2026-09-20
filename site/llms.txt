@@ -92,6 +92,8 @@ Jev primitives: **choice** — pick from a fixed set, returns winning key + per-
 
 The decision bot's controller task: take the decision card → resolve the questions against the configured source (human chat now; Jev when available) → record the typed response + conditions + routing verbatim on the card and in `~/.hermes/TEAM.md` / the workflow record → apply routing (`promote` → the receiving stage proceeds or the handoff completes; `request-changes` → back to the producing stage with conditions; `block` → stop and escalate). If no decision source is reachable, **escalate to the customer — never invent an approval**.
 
+**Jev is a model, not a skill or integration to install.** It is a TypeSafe AI "System One" model like any chat model — its availability is checked in the model catalog / provider lanes, never the skills list or Hub. It is not yet available through Nous Portal at time of writing (this build's provider cache lists `jev-1.13-free` under the keyless `opencode-free` lane); the decision bot uses the human source until Hermes exposes it, at which point the same decision contract works unchanged.
+
 ## Interview rule (both stages)
 
 Customers are non-technical. For the Team Setup interview **and** the Workflow Builder interview:
@@ -189,7 +191,7 @@ Before the Team Setup interview:
 4. Confirm compression, memory, delegation, and other auxiliary lanes use stable providers.
 5. Inspect the Hermes version and supported configuration keys before setting anything.
 6. Resolve the main/default profile and record its stable coordinator identity.
-7. Check whether the installed Hermes exposes the Jev model (e.g. `jev-*` under the `opencode-free` lane): if yes, record it as the candidate decision source for the decision bot; if no, the decision bot uses the human decision source.
+7. Check whether the installed Hermes exposes the Jev model in the **model catalog / provider lanes** (e.g. `hermes model list` or `jev-*` in the provider lanes) — Jev is a model, never a skill, so never search the skills list or Hub for it. Not yet available through Nous Portal at time of writing; record "human decision source" until Hermes exposes it.
 
 These steps prevent token bloat and mid-flow stalls. Provider failures, unsupported keys, and skipped setup capabilities must be recorded explicitly.
 

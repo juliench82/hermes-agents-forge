@@ -45,7 +45,7 @@ Every team receives exactly one **decision bot** — a dedicated profile **outsi
 | Source | Mode | When |
 |---|---|---|
 | Human (customer) | The decision bot renders the typed questions as a short plain-language form in chat; the customer answers; answers are mapped back into the contract | Default, always available |
-| Jev (TypeSafe AI "System One" model) | The same typed decision request is sent as a Jev API call (`state` + typed `choice` / `score` / `noul` questions); typed answers return in 70–500 ms with calibrated probabilities | When Hermes exposes Jev as a provider/model — already visible as `jev-1.13-free` in this build's `opencode-free` lane — or via the TypeSafe AI API/SDK |
+| Jev (TypeSafe AI "System One" model — a **model**, never a skill) | The same typed decision request is sent as a Jev API call (`state` + typed `choice` / `score` / `noul` questions); typed answers return in 70–500 ms with calibrated probabilities | When Hermes exposes Jev as a provider/model. Not yet available through Nous Portal at time of writing; this build's provider cache lists `jev-1.13-free` under the keyless `opencode-free` lane, and the TypeSafe AI API/SDK is the direct alternative. Until then the human source is active |
 
 The decision request is **identical in both modes** — the human path is a rendering of the same schema. That is what makes Jev a drop-in decision source: the work force already emits structured, typed handoffs; it never writes prose and asks Jev to parse it.
 
