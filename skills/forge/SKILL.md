@@ -36,9 +36,9 @@ Team Setup runs on Hermes builtin tools. Use them directly instead of raw shell 
 | Tool | Use in this flow |
 |------|------------------|
 | `todo` | Track every provisioning step as a nested checklist; call with no parameters to read it; the Step 5 "Zero-open-items checklist" receipt is read from it |
-| `read_file` | Read `SOUL.md` files, templates, and `~/.hermes/TEAM.md` |
+| `read_file` | Read `SOUL.md` files, templates, and the team record (`$HERMES_HOME/TEAM.md`) |
 | `write_file` | Write new `SOUL.md` files, generated skills, contracts, and policy artifacts |
-| `patch` | Targeted edits to existing files — append handoff receipts to `~/.hermes/TEAM.md` without overwriting prior receipts |
+| `patch` | Targeted edits to existing files — append handoff receipts to the team record without overwriting prior receipts |
 | `search_files` | Locate files or search content during recovery and verification |
 | `skills_list` / `skill_view` | Inspect enabled builtins and load full skill content before creating anything |
 | `skill_manage` | Create generated skills for genuine uncovered team capabilities |
@@ -47,6 +47,8 @@ Team Setup runs on Hermes builtin tools. Use them directly instead of raw shell 
 | `clarify` | Batch follow-up questions with selectable choices when interview answers are ambiguous (2–5 questions per call) |
 | `delegate_task` | Optional parallel provisioning of worker profiles in isolated subagent contexts; only final summaries return — for 5- and 7-specialist packages |
 | `execute_code` | Batch repeated CLI checks with filtering logic when many profiles require identical verification |
+
+The team record lives at `$HERMES_HOME/TEAM.md` (default `~/.hermes/TEAM.md`). Resolve the actual path at runtime and record it **verbatim** in every receipt — never copy the default path when `HERMES_HOME` points elsewhere.
 
 Rules:
 
@@ -185,6 +187,8 @@ The design must include the decision bot: profile name, decision-source policy (
 
 After approval, execute autonomously to completion without additional provisioning approvals:
 
+**Founder-name neutrality.** Personas, contracts, policy, and records refer to the customer only by role — "the founder". Never write a personal name into any artifact, and never derive one from the host account, home directory, or filesystem names. The same manual on any machine must produce identical artifacts.
+
 ### 3.1 Coordinator first
 
 1. Back up the main `SOUL.md` to `SOUL.md.backup-forge` before changing it.
@@ -204,7 +208,7 @@ Create only the approved profiles, never duplicates, using official Hermes CLI c
 - A rich schema-grounded `SOUL.md` with identity, mission, principles, working style, capabilities, collaboration, boundaries, escalation, and success metrics — including the worker's **next-stage card-creation rule** (`hermes kanban create --parent <card> --assignee <next>` on completion, with artifact + acceptance criteria attached).
 - A distinct one-line description that makes routing unambiguous.
 - Compression and context hygiene.
-- MOA disabled using the supported key.
+- MOA disabled using the supported key, applied **per profile via the CLI**: `hermes config set -p <profile> moa.presets.default.enabled false`, then verified with `hermes config get` — never by hand-editing a profile's `config.yaml` (the top-level `moa.enabled: false` file shape is not a recognized runtime key and must never appear in receipts as one).
 - An economical model unless the user explicitly pinned one.
 - Low reasoning effort unless the role requires otherwise and the user approves.
 - Browser mode and tool access limited to the approved team capability.
@@ -276,7 +280,7 @@ Do not claim Team Setup is complete until all required receipts exist:
 4. Coordinator, worker, and decision-bot configuration receipts.
 5. Persona paths and coordinator backup confirmation.
 6. Team contract and policy paths.
-7. One role-identity/boundary/capability smoke test per profile; no business workflow execution. The decision bot's smoke test must include one **decision-contract exchange**: a sample `decision_request` resolved against the human source and recorded as a typed `decision_response`.
+7. One role-identity/boundary/capability smoke test per profile; no business workflow execution. The decision bot's smoke test must include one **decision-contract exchange**: a sample `decision_request` resolved against the human source and recorded as a typed `decision_response`. The exchange must be resolved **by the decision-bot profile itself** (invoke the profile and capture its response) — a response composed by the provisioning agent on its behalf is not a valid exchange, and placeholder timestamps are prohibited.
 8. Zero-open-items checklist.
 9. No workflow assets or external workflow actions were created.
 
@@ -328,6 +332,7 @@ Apply this specifically:
 - `skills.disabled` — treat as runtime-supported/CLI-unregistered only if the active skill loader reads it. Verify the actual enabled skill inventory after the change.
 - `delegation.fanout` — never modify it merely because it exists in YAML. Modify only if both the current schema and runtime reader confirm it; otherwise record `SKIPPED`.
 - `moa.enabled` — do not use this field as evidence that MoA is active or inactive unless the installed version's runtime actually uses it. Verify the active supported MoA selector/preset state instead.
+- `moa.presets.default.enabled` — the recognized MoA switch in current builds (v0.21.x); set and verify it **per profile** via `hermes config set -p <profile>` / `hermes config get`, never by hand-editing a profile `config.yaml`.
 
 ## Coordinator handoff
 
@@ -348,7 +353,7 @@ DECISION BOT ROLE: decision-bot
 workflow-builder-kickoff:first-workflow:v1
 ```
 
-3. Search `~/.hermes/TEAM.md` and the active Kanban board for the key.
+3. Search the team record (`$HERMES_HOME/TEAM.md`, default `~/.hermes/TEAM.md`) and the active Kanban board for the key.
 4. If exactly one active matching card exists, reuse it and append a receipt.
 5. Record the two distinct handoff concepts that follow, never mixing them:
    - `handoff_state` — the semantic handoff state (e.g. `READY_FOR_WORKFLOW_BUILDER`); never a physical Kanban status.
@@ -368,7 +373,7 @@ workflow-builder-kickoff:first-workflow:v1
 
    Do not create a Kanban kickoff card.
 
-   Instead, append one local-only handoff receipt to `~/.hermes/TEAM.md` using the first-workflow idempotency key.
+   Instead, append one local-only handoff receipt to the team record (`$HERMES_HOME/TEAM.md`, default `~/.hermes/TEAM.md`) using the first-workflow idempotency key.
 
    Set:
 
@@ -394,7 +399,7 @@ dispatcher_enforcement: VERIFIED
 board_state: <actual Kanban state>
 ```
 
-Required local-only handoff receipt in `~/.hermes/TEAM.md`:
+Required local-only handoff receipt in the team record (`$HERMES_HOME/TEAM.md`, default `~/.hermes/TEAM.md`):
 
 ```yaml
 handoff_state: READY_FOR_WORKFLOW_BUILDER
@@ -403,7 +408,7 @@ dispatcher_enforcement: UNSUPPORTED
 idempotency_key: workflow-builder-kickoff:first-workflow:v1
 coordinator_profile: <stable coordinator>
 decision_bot_profile: <decision bot>
-team_record: ~/.hermes/TEAM.md
+team_record: $HERMES_HOME/TEAM.md  # resolved actual path, recorded verbatim
 workflow_execution_allowed: false
 next_required_action: explicit founder instruction to start Workflow Builder
 timestamp: <ISO-8601>
@@ -415,7 +420,7 @@ Append a receipt containing card ID (or local-handoff ID), metadata, assignee, s
 
 ## Step 6 — Durable handoff
 
-Write/refresh `~/.hermes/TEAM.md` without overwriting prior receipts. Set the state according to the delivery mode recorded in the handoff:
+Write/refresh the team record at `$HERMES_HOME/TEAM.md` (default `~/.hermes/TEAM.md`) without overwriting prior receipts; record the resolved path verbatim. Set the state according to the delivery mode recorded in the handoff:
 
 For an enforced control-plane card (`dispatcher_enforcement: VERIFIED`):
 

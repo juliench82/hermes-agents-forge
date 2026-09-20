@@ -40,7 +40,7 @@ A provisioned team is a small 9-to-5 company, not a prompt queue:
 
 - **Manual request in, decision out.** The customer starts work with one manual request — a card (repos + ideas + goal) or a message to the coordinator. After that the chain runs itself.
 - **Workers own the pipeline.** Every stage's completion contract includes *creating the next stage's card* with `hermes kanban create --parent <this card> --assignee <next profile>` plus artifact paths and acceptance criteria. The coordinator never bottlenecks card creation after intake.
-- **The dispatcher is the engine.** `hermes kanban daemon` (60-second ticks) spawns assigned workers automatically. A completed stage creates the next card; the daemon picks it up; the chain advances with no human in between.
+- **The dispatcher is the engine.** The installed dispatcher spawns assigned workers automatically; a completed stage creates the next card, the dispatcher picks it up, and the chain advances with no human in between. Run `hermes kanban dispatch` for a manual pass and `hermes kanban diagnostics` to see what the installed build enforces — never assert a daemon, tick cadence, or enforcement capability before verifying it against the installed build.
 - **The decision bot is the only approval layer.** Every approval gate and the final handoff produce a **decision card** assigned to the decision bot. Nothing proceeds past it without a recorded decision. Workers never approve each other and the coordinator never substitutes its judgment for a decision.
 - **9-to-5 pulse (optional, post-trial).** A cron hygiene job on the coordinator can sweep intake, run `hermes kanban dispatch`, and surface stalled cards on a schedule. Never enabled before the supervised trial passes and activation is approved.
 
@@ -90,7 +90,7 @@ decision_response:
 
 Jev primitives: **choice** — pick from a fixed set, returns winning key + per-option probabilities + confidence; **score** — rate against ordered labels, returns continuous score + distribution + confidence; **noul** — a yes/no question, returns the probability of "yes" (caller picks the threshold).
 
-The decision bot's controller task: take the decision card → resolve the questions against the configured source (human chat now; Jev when available) → record the typed response + conditions + routing verbatim on the card and in `~/.hermes/TEAM.md` / the workflow record → apply routing (`promote` → the receiving stage proceeds or the handoff completes; `request-changes` → back to the producing stage with conditions; `block` → stop and escalate). If no decision source is reachable, **escalate to the customer — never invent an approval**.
+The decision bot's controller task: take the decision card → resolve the questions against the configured source (human chat now; Jev when available) → record the typed response + conditions + routing verbatim on the card and in the team record (`$HERMES_HOME/TEAM.md`, default `~/.hermes/TEAM.md`) / the workflow record → apply routing (`promote` → the receiving stage proceeds or the handoff completes; `request-changes` → back to the producing stage with conditions; `block` → stop and escalate). If no decision source is reachable, **escalate to the customer — never invent an approval**.
 
 **Jev is a model, not a skill or integration to install.** It is a TypeSafe AI "System One" model like any chat model — its availability is checked in the model catalog / provider lanes, never the skills list or Hub. It is not yet available through Nous Portal at time of writing (this build's provider cache lists `jev-1.13-free` under the keyless `opencode-free` lane); the decision bot uses the human source until Hermes exposes it, at which point the same decision contract works unchanged.
 
@@ -109,7 +109,7 @@ Never present defaults as a menu of trade-offs. Ground personas in the customer'
 Team Setup and Workflow Builder run on Hermes builtin tools. The procedures reference the `hermes` CLI surface for receipts; the agent-facing tool surface that implements the same operations is these toolsets (see the official Built-in Tools Reference):
 
 - `todo` — session task checklist with nested subtasks. The zero-open-items verification gate is read from it (call with no parameters).
-- `read_file` / `write_file` / `patch` / `search_files` — all file operations: `SOUL.md` writes, generated-skill authoring, template population, and `~/.hermes/TEAM.md` refreshes. Hermes explicitly directs agents to use these instead of `cat`, `head`, `tail`, `echo`, `sed`, `awk`, `grep`, `rg`, and `find`. Use `patch` for targeted edits so prior receipts in TEAM.md are never overwritten.
+- `read_file` / `write_file` / `patch` / `search_files` — all file operations: `SOUL.md` writes, generated-skill authoring, template population, and team-record (`$HERMES_HOME/TEAM.md`, default `~/.hermes/TEAM.md`) refreshes. Hermes explicitly directs agents to use these instead of `cat`, `head`, `tail`, `echo`, `sed`, `awk`, `grep`, `rg`, and `find`. Use `patch` for targeted edits so prior receipts in TEAM.md are never overwritten.
 - `skills_list` / `skill_view` / `skill_manage` — skills inventory receipts, loading full skill content, and generated-skill creation.
 - `memory` — persistent cross-session facts: stable coordinator identity, decision bot identity, team record path, and rejected-configuration history.
 - `session_search` — interruption recovery; locate the last completed step in past sessions before re-provisioning anything.
@@ -252,10 +252,11 @@ After the single team approval, run autonomously through Team Setup without aski
 2. Rewrite it as a rich schema-grounded coordinator persona for routing, control-plane operations, receipts, memory, contracts, reconciliation, and handoffs; never implementation.
 3. Apply supported settings: compression enabled, threshold 0.50 unless evidence requires another value, MOA disabled using the actual Hermes key, supported browser/model/reasoning settings, and delegation fanout changes only when the installed version exposes the unsafe per-turn setting.
 4. Record every accepted, rejected, and skipped key verbatim.
+5. Personas and records name the customer only by role — "the founder". Never write a personal name into any artifact and never derive one from the host account, home directory, or username.
 
 #### 4.2 Isolated workers
 
-Create only approved profiles with official Hermes CLI commands; never recreate existing profiles after interruption. Each worker receives a rich schema-grounded persona, an unambiguous description, compression/context hygiene, MOA off using the supported key, an economical model unless pinned, low reasoning effort unless justified, only approved team-capability tools, and a SOUL.md that includes its next-stage card-creation rule (`hermes kanban create --parent <card> --assignee <next>` on completion, with artifact + acceptance criteria attached).
+Create only approved profiles with official Hermes CLI commands; never recreate existing profiles after interruption. Each worker receives a rich schema-grounded persona, an unambiguous description, compression/context hygiene, MOA off using the supported key — per profile via `hermes config set -p <profile> moa.presets.default.enabled false` plus a `hermes config get` receipt, never a hand-edited `config.yaml` (its top-level `moa.enabled` shape is not a recognized runtime key) — an economical model unless pinned, low reasoning effort unless justified, only approved team-capability tools, and a SOUL.md that includes its next-stage card-creation rule (`hermes kanban create --parent <card> --assignee <next>` on completion, with artifact + acceptance criteria attached).
 
 If interrupted, inspect `hermes profile list`, compare it with the approved roster/checklist, and provision only missing assets.
 
@@ -370,7 +371,7 @@ Do not claim success until all applicable receipts exist:
 4. Coordinator, worker, and decision-bot configuration receipts.
 5. Persona paths and coordinator backup confirmation.
 6. Team contract and policy paths.
-7. One role-identity/boundary/capability smoke test per profile; smoke tests must not execute a business workflow. The decision bot's smoke test must include one **decision-contract exchange** (a sample `decision_request` resolved against the human source and recorded as a typed `decision_response`).
+7. One role-identity/boundary/capability smoke test per profile; smoke tests must not execute a business workflow. The decision bot's smoke test must include one **decision-contract exchange** (a sample `decision_request` resolved against the human source and recorded as a typed `decision_response`). The exchange must be resolved **by the decision-bot profile itself**, never composed by the provisioning agent on its behalf; placeholder timestamps are prohibited.
 8. Zero-open-items checklist.
 9. Explicit record that no workflow assets or external workflow actions were created.
 
@@ -395,7 +396,7 @@ DECISION BOT ROLE: decision-bot
 workflow-builder-kickoff:first-workflow:v1
 ```
 
-3. Search `~/.hermes/TEAM.md` and the active Kanban board for that exact key.
+3. Search the team record (`$HERMES_HOME/TEAM.md`, default `~/.hermes/TEAM.md`) and the active Kanban board for that exact key.
 4. Reuse exactly one active matching handoff; never create a duplicate.
 5. Record the two distinct handoff concepts that follow, never mixing them:
    - `handoff_state` — the semantic handoff state (e.g. `READY_FOR_WORKFLOW_BUILDER`); never a physical Kanban status.
@@ -415,7 +416,7 @@ workflow-builder-kickoff:first-workflow:v1
 
    Do not create a Kanban kickoff card.
 
-   Instead, append one local-only handoff receipt to `~/.hermes/TEAM.md` using the first-workflow idempotency key.
+   Instead, append one local-only handoff receipt to the team record (`$HERMES_HOME/TEAM.md`, default `~/.hermes/TEAM.md`) using the first-workflow idempotency key.
 
    Set:
 
@@ -442,7 +443,7 @@ dispatcher_enforcement: VERIFIED
 board_state: <actual Kanban state>
 ```
 
-Required local-only handoff receipt in `~/.hermes/TEAM.md`:
+Required local-only handoff receipt in the team record (`$HERMES_HOME/TEAM.md`, default `~/.hermes/TEAM.md`):
 
 ```yaml
 handoff_state: READY_FOR_WORKFLOW_BUILDER
@@ -451,7 +452,7 @@ dispatcher_enforcement: UNSUPPORTED
 idempotency_key: workflow-builder-kickoff:first-workflow:v1
 coordinator_profile: <stable coordinator>
 decision_bot_profile: <decision bot>
-team_record: ~/.hermes/TEAM.md
+team_record: $HERMES_HOME/TEAM.md  # resolved actual path, recorded verbatim
 workflow_execution_allowed: false
 next_required_action: explicit founder instruction to start Workflow Builder
 timestamp: <ISO-8601>
@@ -461,7 +462,7 @@ The dispatcher must route this card only to the coordinator, never spawn a speci
 
 ### Step 8 — Durable Team Setup handoff
 
-Write/refresh `~/.hermes/TEAM.md` without overwriting prior receipts and report exactly:
+Write/refresh the team record (`$HERMES_HOME/TEAM.md`, default `~/.hermes/TEAM.md`) without overwriting prior receipts, recording the resolved path verbatim, and report exactly:
 
 ```text
 TEAM STATUS: PROVISIONED
