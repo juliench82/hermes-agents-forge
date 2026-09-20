@@ -243,6 +243,8 @@ Resolve skills per profile in this order:
 
 A Hub or external skill may be installed only when its exact identifier, target profile, capability gap, and scan verdict were included in the approved skill plan.
 
+**Never disable `sdlc-review`** on any profile that owns or may carry `review`-state cards (the decision bot and all workers): the dispatcher's review lane auto-attaches it when it spawns a `review`-state card (`kanban.review_dispatch: true`), and a disabled skill makes the spawn fail with `Unknown skill(s): sdlc-review` — observed live in trial 1, where the founder go-ahead gate crashed exactly this way (`exit_code 1`). The review lane skill is infrastructure, not a role capability; keep it enabled regardless of per-role keep-sets.
+
 If a new capability gap appears after team approval:
 
 1. Re-check enabled builtins.

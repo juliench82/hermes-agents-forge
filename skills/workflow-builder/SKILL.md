@@ -178,7 +178,7 @@ The contract must define trigger, outcome, stages, owners, inputs, outputs, hand
 
 ### Decision contract
 
-Every decision card carries the typed decision contract from `site/llms.txt` (schema v1): a `decision_request` (state + typed `choice`/`score`/`noul` questions) and, once resolved, a typed `decision_response` with routing (`promote` | `request-changes` | `block`), conditions, approver, and timestamp. The decision source is the customer by default; Jev (TypeSafe AI "System One" model) is a drop-in source when Hermes exposes it and the customer approves the switch — the payload is identical in both modes.
+Every decision card carries the typed decision contract from `site/llms.txt` (schema v1): a `decision_request` (state + typed `choice`/`score`/`noul` questions) and, once resolved, a typed `decision_response` with routing (`promote` | `request-changes` | `block`), conditions, approver, and timestamp. The decision source is the customer by default; Jev (TypeSafe AI "System One" model) is a drop-in source when Hermes exposes it and the customer approves the switch — the payload is identical in both modes. The decision-bot profile must keep the bundled `sdlc-review` skill **enabled**: the dispatcher's review lane auto-attaches it to `review`-state cards, and disabling it crashes the spawn with `Unknown skill(s): sdlc-review` (observed live in trial 1).
 
 The decision bot's protocol on each decision card:
 
