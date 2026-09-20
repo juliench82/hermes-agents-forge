@@ -512,6 +512,7 @@ Never let a general "unblock card" action itself become authorization to perform
 - Preserve all Team Setup quality; remove only workflow creation/execution from Team Setup.
 - Never create 4 or 6 specialists.
 - Never duplicate profiles or enabled builtins.
+- Never read, modify, derive context from, or route work through profiles outside the approved roster — including pre-existing customer profiles. `HERMES_HOME` isolates Hermes state, not the filesystem: an agent's terminal still runs as the real user, so the real home must be treated as off-limits except the approved team paths.
 - Never invent skills, tools, models, integrations, or configuration keys.
 - Never force a dangerous security verdict.
 - Never let the coordinator implement worker-owned tasks.

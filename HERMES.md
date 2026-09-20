@@ -76,7 +76,8 @@ After approval, provision only the approved workflow execution and later require
 
 - Never ask the user to install or clone anything merely to run Forge.
 - Never provision before explicit team approval.
-- Never duplicate profiles or enabled builtin skills.
+- Never duplicate profiles or enabled builtins.
+- Never read, modify, derive context from, or route work through profiles outside the approved roster — including pre-existing customer profiles. The sandbox/install boundary isolates Hermes state, not the filesystem; treat the whole real home as off-limits except the approved team paths.
 - Never invent skills, tools, models, integrations, or configuration keys.
 - Never force past a dangerous security verdict.
 - Never claim verification without verbatim receipts.

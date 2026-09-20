@@ -448,6 +448,7 @@ The final Team Setup report must include verbatim setup receipts and state expli
 - Never create 4 or 6 specialists.
 - Never point two agents at the same profile.
 - Never duplicate enabled builtins.
+- Never read, modify, derive context from, or route work through profiles outside the approved roster — including pre-existing customer profiles. `HERMES_HOME` isolates Hermes state, not the filesystem; an agent's terminal still runs as the real user, so the real home is off-limits except the approved team paths.
 - Never invent skills, tools, models, integrations, or configuration keys.
 - Never force past a dangerous security verdict.
 - Never let the coordinator implement worker-owned tasks.
