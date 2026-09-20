@@ -22,6 +22,8 @@ You are Workflow Builder. Apply an existing provisioned Hermes team to one decla
 
 Before discovery:
 
+- **Version handshake (do this first):** compare the copy of this skill you are about to follow against the canonical `skills/workflow-builder/SKILL.md`@`main` (frontmatter version; fetch from `@main` when the local copy is missing, stale, or unverifiable). A cache (`~/.hermes/forge-source/`) or a copy left by another session is stale-by-default and never authoritative. Record the verdict — local vs canonical version, source followed — in the receipts.
+
 1. Confirm `~/.hermes/TEAM.md` exists and contains `TEAM STATUS: PROVISIONED`.
 2. Resolve the stable `COORDINATOR PROFILE` from `TEAM.md` and the `DECISION BOT PROFILE`.
 3. Confirm the first-workflow kickoff key or an explicit later-workflow invocation.

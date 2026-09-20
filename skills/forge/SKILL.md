@@ -124,7 +124,7 @@ Before the interview:
 3. If the session is long or multi-topic, run `/compress` or start a fresh `/new` session.
 4. Confirm compression, memory, delegation, and other auxiliary lanes use stable providers.
 5. Inspect the installed Hermes version and supported configuration keys; never assume a key exists.
-6. Check whether a local Forge skill exists and perform the version handshake before following it.
+6. Check whether a local Forge skill exists and perform the version handshake before following it; the same handshake applies to the workflow-builder skill before the Workflow Builder phase — a cached copy (e.g. `~/.hermes/forge-source/`) or a copy left by another session is never authoritative, stale-by-default.
 7. Resolve the main/default coordinator profile and record its stable name.
 8. Check whether the installed Hermes exposes the Jev model in the **model catalog / provider lanes** (`hermes model list`, `jev-*` lane entries) — Jev is a model, never a skill, so never search the skills list or Hub for it. Not yet available through Nous Portal at time of writing; the decision bot uses the human decision source until Hermes exposes it.
 
