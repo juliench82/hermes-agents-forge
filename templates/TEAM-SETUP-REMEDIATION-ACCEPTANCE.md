@@ -32,6 +32,7 @@
 | Worker config receipt shows top-level `moa.enabled` or a hand-edited profile `config.yaml` | Reject; must show `moa.presets.default.enabled` set via `hermes config set -p` and verified with `hermes config get` |
 | `team_record` path in receipts differs from the resolved `$HERMES_HOME` | Reject; receipts must carry the resolved actual path |
 | Human-source decision card created `ready` / auto-spawned headless by the dispatcher | Reject; must be dispatcher-exempt (`blocked`) and resolved in the customer's live channel |
+| `sdlc-review` disabled on a profile that owns `review`-state cards | Reject; the dispatcher's review lane requires it — spawn crashes with `Unknown skill(s): sdlc-review` |
 
 ## File Preservation Report
 
