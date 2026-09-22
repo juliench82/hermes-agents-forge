@@ -1,10 +1,10 @@
 ---
 name: workflow-builder
-version: 1.6.2
+version: 1.6.3
 description: Design, test, and activate a workflow as an autonomous self-advancing chain with a decision-bot approval layer, using an existing provisioned Hermes team.
 metadata:
   author: juliench82
-  version: 1.6.2
+  version: 1.6.3
   tags: [workflow, orchestration, kickoff, trial, activation, idempotency, control-plane, governance, decision-bot, autonomy]
 ---
 
@@ -179,6 +179,8 @@ Create drafts only:
 - `TRIAL.md`.
 
 The contract must define trigger, outcome, stages, owners, inputs, outputs, handoffs, **the worker card-creation rules (which profile creates the next card, with what --parent link and artifact)**, the decision-gate map (which gates produce decision cards for the decision bot), the decision contract, source of truth, acceptance criteria, exceptions, approvals, runtime controls, and status transitions. The workflow policy must be at least as restrictive as the team policy.
+
+**Reconcile inside, escalate only what is the customer's call.** The contract must include an internal-reconciliation rule: technical specification/behavior tensions (e.g. an acceptance criterion that conflicts with the intent or a mandate) resolve inside the team — the owner of the produced artifact (the verifier) routes the question to the owning role (e.g. the architect) for interpretation and adopts that answer unless clearly wrong. No specialist escalates a technical specification question to the customer by default. The customer is the escalation target only for (a) scope/budget/trade-off decisions, (b) external or irreversible actions, or (c) a genuine deadlock after the owning role has been consulted. This keeps the pipeline autonomous for non-technical users: design decisions stay in the team, and only truly customer-owned decisions surface.
 
 ### Decision contract
 
