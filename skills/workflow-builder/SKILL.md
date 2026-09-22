@@ -1,10 +1,10 @@
 ---
 name: workflow-builder
-version: 1.6.5
+version: 1.6.6
 description: Design, test, and activate a workflow as an autonomous self-advancing chain with a decision-bot approval layer, using an existing provisioned Hermes team.
 metadata:
   author: juliench82
-  version: 1.6.5
+  version: 1.6.6
   tags: [workflow, orchestration, kickoff, trial, activation, idempotency, control-plane, governance, decision-bot, autonomy]
 ---
 
@@ -138,7 +138,7 @@ Apply the **Interview rule** (defaults first, one non-default question). Present
 2. **Trigger and outcome:** the customer starts one manual request (a card with repos + ideas + goal, or a message to the coordinator); success is defined by the workflow's approval-gated outcome (e.g. a verified runnable artifact or a decision-ready recommendation).
 3. **Goal shape — must be elicited before designing stages:** ask what the customer is starting from — **(a) a new idea to build, (b) an existing project to improve/complete to a working state, or (c) both.** The stage chain must be designed around the actual goal shape, never assumed:
    - New idea → challenge → evidence → (re-challenge) → build.
-   - **Existing project** → challenge must assess the **working-state gap** (tests/CI, LICENSE, known defect, missing feature, published results) and must **never kill because the code already exists** — existence is the trigger, not a kill reason; if a kill would otherwise rest on existence, the challenge routes to a founder scope-confirm that names a concrete working-state slice, then that slice proceeds through design → build → verification.
+   - **Existing project** → runs an **audit-and-fix loop**, not a single named slice. Existence is the trigger, never a kill reason. The chain: independent audit (`quality-guardian`: full-clone, run the real build/tests, probe the money paths, produce a prioritized findings report Critical/Major/Minor/hygiene with command/line receipts) → remediation design (`product-architect`: an ordered series of branches/commits, critical-first, each PR-sized with its own acceptance criteria) → **fix loop** (the builder fixes one batch via branch → PR → CI → merge; the verifier re-checks each landed fix; loop to the next batch) → report. **Default stop line:** fix all Critical + Major findings autonomously, then report and ask the customer before tackling Minor/hygiene; the customer can raise or lower it any time. Every fix is a proper branch→PR→merge, never a direct-to-main push.
    - Where the customer's goals span both, encode a lane split in the contract (commercial/new-idea vs personal/existing-project) rather than forcing one shape.
 4. **Inputs/outputs:** customer-provided repos/ideas as inputs; artifacts under `~/.hermes/workflows/<workflow-id>/` as outputs; `~/.hermes/TEAM.md` and the `default` board as source of truth.
 5. **Stages:** the approved specialist chain from Team Setup; each stage owns its next-stage card creation; every approval gate and the final handoff is a decision card for the decision bot. Stage order follows the goal shape (new-idea vs existing-project), not a one-size template.
