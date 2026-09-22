@@ -6,6 +6,12 @@
 
 ## [Unreleased]
 
+### v0.7.1 — 2026-09-22
+- feat: make **goal clarification** a first-class Team Setup interview step and ground the coordinator Mission in the founder's declared goals (`site/llms.txt` v0.7.1, Forge Team Setup v1.26.0, Workflow Builder 1.6.1). The interview must elicit the outcome the founder wants the team to help them achieve over the next 30 days, in their own words, whatever the domain (business, creative, promotion, research, personal, etc.) — and must not assume a specific use case. The team design and the coordinator's generated Mission must be grounded in those goals, not in a template.
+- fix: root cause of a live trial — a team was designed around an assumed use case (a founder throwing business ideas) and the coordinator Mission defaulted to all-commercial, so a personal project (Meteoracle, a Meteora LP bot) was killed on commercial viability alone. The interview now clarifies the founder's actual goals up front so the team is designed around them, whatever they are.
+- fix: removed a use-case leak in the Workflow Builder acceptance metric ("no MVP reaches the customer" → "no deliverable reaches the customer") so the product stays goal-agnostic across both phases.
+- No existing rule, template field, historical changelog entry, or procedural content was removed; the change is strictly additive and versioned.
+
 ### v0.7.0 — 2026-09-19
 - feat: redefine the team as an **autonomous work force** with a mandatory **decision bot** (`site/llms.txt` v0.7.0, Forge Team Setup v1.25.0, Workflow Builder v1.6.0).
 - Added the autonomous work-force operating model: the customer's manual request (one card or one message) starts the pipeline; every stage's completion contract includes creating the next stage's card (`hermes kanban create --parent <card> --assignee <next>`); the dispatcher drives execution; workers never approve each other.
