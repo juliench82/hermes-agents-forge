@@ -1,10 +1,10 @@
 ---
 name: workflow-builder
-version: 1.6.1
+version: 1.6.2
 description: Design, test, and activate a workflow as an autonomous self-advancing chain with a decision-bot approval layer, using an existing provisioned Hermes team.
 metadata:
   author: juliench82
-  version: 1.6.1
+  version: 1.6.2
   tags: [workflow, orchestration, kickoff, trial, activation, idempotency, control-plane, governance, decision-bot, autonomy]
 ---
 
@@ -136,12 +136,16 @@ Apply the **Interview rule** (defaults first, one non-default question). Present
 
 1. **Team:** the existing provisioned team (coordinator + all specialists + decision bot).
 2. **Trigger and outcome:** the customer starts one manual request (a card with repos + ideas + goal, or a message to the coordinator); success is defined by the workflow's approval-gated outcome (e.g. a verified runnable artifact or a decision-ready recommendation).
-3. **Inputs/outputs:** customer-provided repos/ideas as inputs; artifacts under `~/.hermes/workflows/<workflow-id>/` as outputs; `~/.hermes/TEAM.md` and the `default` board as source of truth.
-4. **Stages:** the approved specialist chain from Team Setup; each stage owns its next-stage card creation; every approval gate and the final handoff is a decision card for the decision bot.
-5. **Approvals:** the decision bot is the only approval layer; spend, publishing, deploys, credentials, legal/financial actions, and anything external or irreversible are always customer-approved (`promote`/`block` routing).
-6. **Runtime:** no schedule; one workflow instance at a time; 2h per-stage timeout; 2 retries then escalate; the 9-to-5 pulse (cron) starts disabled.
-7. **Trial scope:** dry-run with synthetic data; the trial must prove self-advancement without a coordinator nudge and one typed decision-gate record.
-8. **Metrics/acceptance:** every stage produces its named artifact with a receipt; the chain self-advances; no deliverable reaches the customer without a typed decision record; zero approval-gate breaches and zero personal-data incidents.
+3. **Goal shape — must be elicited before designing stages:** ask what the customer is starting from — **(a) a new idea to build, (b) an existing project to improve/complete to a working state, or (c) both.** The stage chain must be designed around the actual goal shape, never assumed:
+   - New idea → challenge → evidence → (re-challenge) → build.
+   - **Existing project** → challenge must assess the **working-state gap** (tests/CI, LICENSE, known defect, missing feature, published results) and must **never kill because the code already exists** — existence is the trigger, not a kill reason; if a kill would otherwise rest on existence, the challenge routes to a founder scope-confirm that names a concrete working-state slice, then that slice proceeds through design → build → verification.
+   - Where the customer's goals span both, encode a lane split in the contract (commercial/new-idea vs personal/existing-project) rather than forcing one shape.
+4. **Inputs/outputs:** customer-provided repos/ideas as inputs; artifacts under `~/.hermes/workflows/<workflow-id>/` as outputs; `~/.hermes/TEAM.md` and the `default` board as source of truth.
+5. **Stages:** the approved specialist chain from Team Setup; each stage owns its next-stage card creation; every approval gate and the final handoff is a decision card for the decision bot. Stage order follows the goal shape (new-idea vs existing-project), not a one-size template.
+6. **Approvals:** the decision bot is the only approval layer; spend, publishing, deploys, credentials, legal/financial actions, and anything external or irreversible are always customer-approved (`promote`/`block` routing).
+7. **Runtime:** no schedule; one workflow instance at a time; 2h per-stage timeout; 2 retries then escalate; the 9-to-5 pulse (cron) starts disabled.
+8. **Trial scope:** dry-run with synthetic data; the trial must prove self-advancement without a coordinator nudge and one typed decision-gate record.
+9. **Metrics/acceptance:** every stage produces its named artifact with a receipt; the chain self-advances; no deliverable reaches the customer without a typed decision record; zero approval-gate breaches and zero personal-data incidents.
 
 Do not provision a team or silently broaden permissions. If a required capability is missing, document the gap and stop for approval rather than changing the team implicitly.
 
