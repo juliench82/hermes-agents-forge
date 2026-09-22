@@ -6,14 +6,16 @@ Forge then interviews the customer, designs a custom governed team, provisions i
 
 ## What you get
 
-- **Custom team design** — 3, 5, or 7 specialists generated from broad capability needs, not a fixed industry catalog.
+- **Custom team design** — 3, 5, or 7 specialists generated from the customer's actual goals, not a fixed industry catalog. The interview clarifies the goals up front and never assumes a use case — a founder, an artist, a researcher, and a hobbyist each get a team designed around *their* outcome.
 - **Rich personas** — every profile receives a schema-grounded `SOUL.md` based on the customer's actual requirements and words.
 - **Real skills** — builtin skills first, bespoke generated skills for genuine gaps, and inspected/security-scanned external skills only where necessary.
 - **Governance** — explicit ownership, tool boundaries, data boundaries, approval gates, cost/model policy, and escalation rules.
 - **Autonomous work force** — given your repos and ideas, the team picks work up itself: each stage creates the next card, the dispatcher runs the chain, and only a single **decision bot** approves. Like a small 9-to-5 team that reports to you.
 - **Receipts, not assertions** — profile, skill, configuration, smoke-test, decision, handoff, and durable `TEAM.md` evidence.
-- **Optimization** — compression/context hygiene, economical worker models, reasoning policy, browser policy, concurrency, and MOA settings supported by the installed Hermes version.
+- **Optimization** — compression/context hygiene, role-tiered worker models (for Nous Portal subscribers), a fallback provider chain for resilience, reasoning policy, browser policy, concurrency, and MOA settings supported by the installed Hermes version.
 - **Coordination surface** — a coordinator-owned control-plane handoff; Workflow Builder owns workflow-specific execution boards, routines, integrations, and trials.
+- **Founder surface** — you don't read the board. Every gate emits one short digest (DONE / VERDICT / WAITING ON YOU) to your channel, one coordinator talks to you, and your replies are transcribed onto the decision card — never executed blind.
+- **Reconcile inside** — technical questions resolve within the team (the verifier routes to the architect), so only genuinely yours to decide — scope, external actions, deadlock — reach you.
 
 ## Two-stage lifecycle
 
@@ -57,6 +59,7 @@ The coordinator is separate from the package count, and every team also gets one
 - One explicit approval gates Team Setup provisioning.
 - A workflow-design approval gates all workflow execution assets.
 - External and irreversible actions remain approval-gated.
+- **Every external delivery follows branch → PR → CI → merge** — never a direct push to `main`; a "push" approval authorizes the change, not a bypass of the review method.
 - Skills are inspected and security-scanned; dangerous verdicts are never forced.
 - Rejected settings, unavailable capabilities, and provider failures are reported explicitly.
 - Interrupted setup resumes from receipts and provisions only missing assets.
