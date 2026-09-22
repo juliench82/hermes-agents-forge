@@ -248,6 +248,10 @@ The goal is to stop paying for "one model + high reasoning everywhere" and inste
 
 Record the full matrix (profile → model → reasoning → rationale) and the per-profile `config get` / resolver receipts verbatim. This is a cost/quality lever; the team runs correctly on the default tier, so the optimization is optional and must never block provisioning.
 
+### 3.6 Fallback provider chain (resilience)
+
+Configure a **fallback provider** so a rate-limit (429), overload (529), service error (503), or connection failure on the primary provider fails over to a second lane instead of stranding cards. Use `hermes fallback add` (or the `fallback_model` config block) and record the chain verbatim. This is the resilience counterpart to the model optimization: a free/cheap lane (e.g. an opencode-free or openrouter tier) as fallback keeps the pipeline moving when the paid primary is throttled. Observed live: a free-tier quota wall requeued a card repeatedly because no fallback existed. Optional; a team runs without it, but it prevents the "stranded ready card" failure class.
+
 ## Step 4 — Skills and capability resolution
 
 Resolve skills per profile in this order:

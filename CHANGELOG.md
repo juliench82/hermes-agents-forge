@@ -8,6 +8,7 @@
 
 ### v0.7.2 — 2026-09-22
 - feat: **role-tiered model optimization for Nous Portal subscribers** (`site/llms.txt` v0.7.2, Forge Team Setup v1.27.0). The Team Setup interview now asks whether the customer has a Nous Portal subscription (Step 1, default 7); if yes, after provisioning the team runs **Step 3.5** — assign each profile a model + reasoning tier matched to its role (cheap flash + low/medium for high-volume mechanical roles; mid-tier flash + high for quality-critical reasoning roles; the strongest model + high for the verifier), enumerated from the live Nous endpoint, applied via CLI, verified through the runtime resolver. If no subscription, record `SKIPPED` and keep the economical default tier. Optional cost/quality lever, never blocks provisioning.
+- feat: **fallback provider chain** (Step 3.6) — configure a fallback provider (`hermes fallback add` / `fallback_model`) so rate-limit/overload/service failures fail over to a second lane instead of stranding cards. Observed live: a free-tier quota wall requeued a card repeatedly because no fallback existed. Optional resilience lever.
 - No existing rule, template field, historical changelog entry, or procedural content was removed; the change is strictly additive and versioned.
 
 ### v0.7.1 — 2026-09-22
