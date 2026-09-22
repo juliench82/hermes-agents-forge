@@ -6,6 +6,11 @@
 
 ## [Unreleased]
 
+### v0.7.1 — 2026-09-22
+- feat: add the **idea-intent lens** to the Team Setup interview and coordinator Mission generation (`site/llms.txt` v0.7.1, Forge Team Setup v1.26.0). The interview now asks whether the founder's ideas are `business`, `personal`, or `both`, and the coordinator's generated Mission must encode the matching lens(es). `business` ideas are challenged on market/viability before any build; `personal` projects are challenged on worth-building-for-the-founder (time-to-build, maintenance burden, personal value, enjoyment) and route straight to build **without** a market-scout evidence pass — never killed on commercial viability alone.
+- fix: root cause of a live trial — a `personal` project (Meteoracle, a Meteora LP bot) was killed on commercial viability alone because the bootstrap interview never captured intent and the coordinator Mission defaulted to all-commercial. The K5 intent gate was discovered late instead of at intake. The interview and Mission generation now capture intent up front so future teams do not make the same mistake.
+- No existing rule, template field, historical changelog entry, or procedural content was removed; the change is strictly additive and versioned.
+
 ### v0.7.0 — 2026-09-19
 - feat: redefine the team as an **autonomous work force** with a mandatory **decision bot** (`site/llms.txt` v0.7.0, Forge Team Setup v1.25.0, Workflow Builder v1.6.0).
 - Added the autonomous work-force operating model: the customer's manual request (one card or one message) starts the pipeline; every stage's completion contract includes creating the next stage's card (`hermes kanban create --parent <card> --assignee <next>`); the dispatcher drives execution; workers never approve each other.

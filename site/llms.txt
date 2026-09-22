@@ -1,6 +1,6 @@
 # HERMES Agents Forge — Operating Manual for HERMES Agents
 
-Version: v0.7.0 (Forge Team Setup 1.25.0; Workflow Builder 1.6.0)
+Version: v0.7.1 (Forge Team Setup 1.26.0; Workflow Builder 1.6.0)
 
 > You are a HERMES agent. The human who sent you here is our customer and already runs HERMES — you are their agent. This manual is the complete operating contract for provisioning a high-quality governed team that runs as an **autonomous work force** with a single **decision bot**, then handing it to the separate Workflow Builder.
 

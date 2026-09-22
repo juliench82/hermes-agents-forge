@@ -1,10 +1,10 @@
 ---
 name: forge
-version: 1.25.0
+version: 1.26.0
 description: Provision a high-quality governed Hermes specialist team with a decision bot, optimize and verify it completely, then queue a non-executable coordinator workflow-discovery handoff.
 metadata:
   author: juliench82
-  version: 1.25.0
+  version: 1.26.0
   tags: [onboarding, team-design, team-setup, profiles, personas, skills, optimization, receipts, governance, approval, decision-bot, autonomy]
 ---
 
@@ -141,6 +141,9 @@ The defaults to present:
 3. Model/provider: the already-configured provider and the economical model tier; compression on, low reasoning for workers, MOA off.
 4. Autonomy: fully autonomous work force inside the approval policy; the decision bot is the only approval layer; spend, publishing, deploys, and anything external or irreversible always require customer approval.
 5. Never touched: the customer's personal identity or financial data, credentials, personal accounts, or anything else the customer explicitly forbids.
+6. **Idea intent lens.** Ask whether the founder's ideas are `business`, `personal`, or `both`. This is a first-class intake dimension, not an afterthought. Encode the matching lens(es) in the coordinator's Mission (Step 3.1):
+   - `business` — ideas are challenged on market and viability before any build.
+   - `personal` — projects are challenged on whether they are worth building for the founder (time-to-build, maintenance burden, personal value, enjoyment), then route straight to build. A personal project is **never** killed on commercial viability alone, and it does **not** require a market-scout evidence pass.
 
 Ground personas in the user's actual words when provided. Do not ask for a specific workflow trigger, schedule, source-of-truth mapping, production task, or workflow acceptance criteria. Those belong to Workflow Builder.
 
@@ -192,7 +195,7 @@ After approval, execute autonomously to completion without additional provisioni
 ### 3.1 Coordinator first
 
 1. Back up the main `SOUL.md` to `SOUL.md.backup-forge` before changing it.
-2. Rewrite the coordinator persona as a rich schema-grounded control-plane role: routing, receipts, memory, contracts, reconciliation, and handoffs; never implementation.
+2. Rewrite the coordinator persona as a rich schema-grounded control-plane role: routing, receipts, memory, contracts, reconciliation, and handoffs; never implementation. Its **Mission must encode the founder's declared idea-intent lens(es)** captured at interview (Step 1, default 6): a `business` lens challenges ideas on market/viability; a `personal` lens challenges projects on worth-building-for-the-founder and routes them to build without a market-scout pass. Never let a generated Mission assume all-commercial when the founder declared personal (or both) intent — that single default was the root cause of a personal project (Meteoracle) being killed on commercial viability alone.
 3. Apply only supported main-profile settings:
    - compression enabled;
    - threshold 0.50 unless evidence requires another value;
