@@ -1,10 +1,10 @@
 ---
 name: workflow-builder
-version: 1.6.0
+version: 1.6.1
 description: Design, test, and activate a workflow as an autonomous self-advancing chain with a decision-bot approval layer, using an existing provisioned Hermes team.
 metadata:
   author: juliench82
-  version: 1.6.0
+  version: 1.6.1
   tags: [workflow, orchestration, kickoff, trial, activation, idempotency, control-plane, governance, decision-bot, autonomy]
 ---
 
@@ -141,7 +141,7 @@ Apply the **Interview rule** (defaults first, one non-default question). Present
 5. **Approvals:** the decision bot is the only approval layer; spend, publishing, deploys, credentials, legal/financial actions, and anything external or irreversible are always customer-approved (`promote`/`block` routing).
 6. **Runtime:** no schedule; one workflow instance at a time; 2h per-stage timeout; 2 retries then escalate; the 9-to-5 pulse (cron) starts disabled.
 7. **Trial scope:** dry-run with synthetic data; the trial must prove self-advancement without a coordinator nudge and one typed decision-gate record.
-8. **Metrics/acceptance:** every stage produces its named artifact with a receipt; the chain self-advances; no MVP reaches the customer without a typed decision record; zero approval-gate breaches and zero personal-data incidents.
+8. **Metrics/acceptance:** every stage produces its named artifact with a receipt; the chain self-advances; no deliverable reaches the customer without a typed decision record; zero approval-gate breaches and zero personal-data incidents.
 
 Do not provision a team or silently broaden permissions. If a required capability is missing, document the gap and stop for approval rather than changing the team implicitly.
 
