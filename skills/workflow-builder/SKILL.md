@@ -1,10 +1,10 @@
 ---
 name: workflow-builder
-version: 1.6.3
+version: 1.6.4
 description: Design, test, and activate a workflow as an autonomous self-advancing chain with a decision-bot approval layer, using an existing provisioned Hermes team.
 metadata:
   author: juliench82
-  version: 1.6.3
+  version: 1.6.4
   tags: [workflow, orchestration, kickoff, trial, activation, idempotency, control-plane, governance, decision-bot, autonomy]
 ---
 
@@ -181,6 +181,22 @@ Create drafts only:
 The contract must define trigger, outcome, stages, owners, inputs, outputs, handoffs, **the worker card-creation rules (which profile creates the next card, with what --parent link and artifact)**, the decision-gate map (which gates produce decision cards for the decision bot), the decision contract, source of truth, acceptance criteria, exceptions, approvals, runtime controls, and status transitions. The workflow policy must be at least as restrictive as the team policy.
 
 **Reconcile inside, escalate only what is the customer's call.** The contract must include an internal-reconciliation rule: technical specification/behavior tensions (e.g. an acceptance criterion that conflicts with the intent or a mandate) resolve inside the team — the owner of the produced artifact (the verifier) routes the question to the owning role (e.g. the architect) for interpretation and adopts that answer unless clearly wrong. No specialist escalates a technical specification question to the customer by default. The customer is the escalation target only for (a) scope/budget/trade-off decisions, (b) external or irreversible actions, or (c) a genuine deadlock after the owning role has been consulted. This keeps the pipeline autonomous for non-technical users: design decisions stay in the team, and only truly customer-owned decisions surface.
+
+**Founder surface (human interface protocol).** The contract must define how the customer experiences the pipeline, because the board is a bot-to-bot system of record and is not the customer's primary interface. Every gate and every stage end emits ONE short digest to the customer's channel (chat, or a configured messaging platform like Discord/Telegram served by the gateway), fixed format:
+
+```
+DONE      <one line: stage + artifact, no details>
+VERDICT   <one line: bot conclusion — PASS / KILLED / needs decision>
+WAITING ON YOU  <the single decision + exact reply verbs, e.g. "reply: approve | hold">
+```
+
+Rules that must be encoded:
+1. **One profile talks to the customer: the coordinator only.** Workers never message the customer directly; their output lands on cards and the coordinator digests it.
+2. **One digest per gate.** No walls of text or card dumps; details stay on the card.
+3. **Reply verbs are explicit.** Every "WAITING ON YOU" names the exact acceptable replies (`approve` / `hold` / `name a slice` / `accept` / `refresh`).
+4. **Gate-card existence rule.** A routing promise ("promote → founder gate R3") is not complete until the gate card EXISTS (created, assigned, `blocked`/`ready`). The coordinator creates gate cards from routing output in the same action; never assume a later stage will create its own gate. Observed live: an R3 push gate was never created after a promote, so a founder's approval comment landed on a dead `done` card.
+5. **Customer replies are transcribed, never executed blind.** The coordinator reads the customer's reply (chat or messaging platform) and records it verbatim on the gate card for the decision bot; the decision bot resolves; the coordinator or worker executes only what the typed `decision_response` routes.
+6. The kanban remains the only source of truth; the channel is a shorthand human interface, never a second record.
 
 ### Decision contract
 
