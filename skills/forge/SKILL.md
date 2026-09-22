@@ -1,10 +1,10 @@
 ---
 name: forge
-version: 1.26.0
+version: 1.27.0
 description: Provision a high-quality governed Hermes specialist team with a decision bot, optimize and verify it completely, then queue a non-executable coordinator workflow-discovery handoff.
 metadata:
   author: juliench82
-  version: 1.26.0
+  version: 1.27.0
   tags: [onboarding, team-design, team-setup, profiles, personas, skills, optimization, receipts, governance, approval, decision-bot, autonomy]
 ---
 
@@ -142,6 +142,7 @@ The defaults to present:
 4. Autonomy: fully autonomous work force inside the approval policy; the decision bot is the only approval layer; spend, publishing, deploys, and anything external or irreversible always require customer approval.
 5. Never touched: the customer's personal identity or financial data, credentials, personal accounts, or anything else the customer explicitly forbids.
 6. **Clarify the goals — do not assume a use case.** The interview must elicit the founder's actual goals: the outcome they want the team to help them achieve over the next 30 days, in their own words, whatever the domain (business, creative, promotion, research, personal, etc.). This is a first-class intake dimension, not an afterthought. Do not assume a specific idea type or a fixed use case (e.g. a founder throwing business ideas) — the team design (Step 2) and the coordinator's Mission (Step 3.1) must be grounded in the goals the founder actually names.
+7. **Nous Portal subscription (model optimization).** Ask whether the customer has a **Nous Portal subscription** (paid inference access). If yes, record it and, after the team is provisioned, run the **role-tiered model optimization** (Step 3.5): assign each profile a model and reasoning tier matched to its role instead of one model + high reasoning everywhere. If no, keep the economical default tier and record `SKIPPED` for the optimization. This is a cost/quality lever, not a requirement — a team runs fine on the default tier.
 
 Ground personas in the user's actual words when provided. Do not ask for a specific workflow trigger, schedule, source-of-truth mapping, production task, or workflow acceptance criteria. Those belong to Workflow Builder.
 
@@ -234,6 +235,22 @@ Create the approved decision-bot profile (outside the package count). It must ha
 2. Confirm the decision bot is the assigned `review`-state consumer for decision cards.
 3. Record the 9-to-5 pulse (cron) as disabled — no cron jobs during Team Setup.
 4. **Desktop bot-pool capacity.** The desktop app holds spawned bot backends in a pool (one app-global pool, all profiles share it): `maxBackends` = how many backends stay spawned, `idleMs` = how long an idle one survives before shutdown. For a team this size, raise it so bots actually wake: `maxBackends` ≥ team size + margin (workers + decision bot + coordinator headroom) and `idleMs` ≥ 30 min (prefer ~60) so idle bots stay warm. Mechanism: the app's Settings → Advanced pool-limits row, or the persisted `pool-limits.json` in the desktop app's data dir (write with builtin file tools: read → write → verify). Record the applied values verbatim in the config receipts. Context for the customer: the message *"Too many bots are running at once for this computer's limit"* is a **slot-wait timeout, not a hardware limit**, and slow bot "waking up" is a short `idleMs` — neither means the machine can't run the team. If no desktop app is present (headless gateway deployment), record `SKIPPED` — the pool is desktop-only.
+
+### 3.5 Role-tiered model optimization (Nous Portal subscription)
+
+Run only when the customer confirmed a **Nous Portal subscription** at interview (Step 1, default 7). Otherwise record `SKIPPED` and keep the economical default tier.
+
+The goal is to stop paying for "one model + high reasoning everywhere" and instead match each profile's model and reasoning tier to its role. Enumerate the actual model catalog from the live Nous inference endpoint (`hermes model` picker cache or the endpoint `/v1/models` metadata) — never guess model names or prices. Then assign per role, using the CLI (`hermes config set -p <profile> model.default <model>` and `hermes config set -p <profile> --force agent.reasoning_effort <level>`, verified through the runtime resolver — see the config-key-classification reference):
+
+- **High-volume / mechanical roles** (decision bot, market-scout, coordinator): the cheapest flash model + `low`/`medium` reasoning. These burn the most tokens; deliberation is not their value.
+- **Quality-critical reasoning roles** (idea-challenger, product-architect, mvp-builder): a mid-tier flash model + `high` reasoning. The step-up is cheap and buys real quality where it matters.
+- **The verifier** (quality-guardian): the strongest model the subscription affords + `high` reasoning. It runs once per build, not per card, so its higher cost is amortized — a missed bug costs more than the model.
+
+Record the full matrix (profile → model → reasoning → rationale) and the per-profile `config get` / resolver receipts verbatim. This is a cost/quality lever; the team runs correctly on the default tier, so the optimization is optional and must never block provisioning.
+
+### 3.6 Fallback provider chain (resilience)
+
+Configure a **fallback provider** so a rate-limit (429), overload (529), service error (503), or connection failure on the primary provider fails over to a second lane instead of stranding cards. Use `hermes fallback add` (or the `fallback_model` config block) and record the chain verbatim. This is the resilience counterpart to the model optimization: a free/cheap lane (e.g. an opencode-free or openrouter tier) as fallback keeps the pipeline moving when the paid primary is throttled. Observed live: a free-tier quota wall requeued a card repeatedly because no fallback existed. Optional; a team runs without it, but it prevents the "stranded ready card" failure class.
 
 ## Step 4 — Skills and capability resolution
 

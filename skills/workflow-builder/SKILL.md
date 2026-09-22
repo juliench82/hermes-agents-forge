@@ -1,10 +1,10 @@
 ---
 name: workflow-builder
-version: 1.6.4
+version: 1.6.5
 description: Design, test, and activate a workflow as an autonomous self-advancing chain with a decision-bot approval layer, using an existing provisioned Hermes team.
 metadata:
   author: juliench82
-  version: 1.6.4
+  version: 1.6.5
   tags: [workflow, orchestration, kickoff, trial, activation, idempotency, control-plane, governance, decision-bot, autonomy]
 ---
 
@@ -197,6 +197,8 @@ Rules that must be encoded:
 4. **Gate-card existence rule.** A routing promise ("promote → founder gate R3") is not complete until the gate card EXISTS (created, assigned, `blocked`/`ready`). The coordinator creates gate cards from routing output in the same action; never assume a later stage will create its own gate. Observed live: an R3 push gate was never created after a promote, so a founder's approval comment landed on a dead `done` card.
 5. **Customer replies are transcribed, never executed blind.** The coordinator reads the customer's reply (chat or messaging platform) and records it verbatim on the gate card for the decision bot; the decision bot resolves; the coordinator or worker executes only what the typed `decision_response` routes.
 6. The kanban remains the only source of truth; the channel is a shorthand human interface, never a second record.
+
+**External delivery method (mandatory).** The contract must require that any push to a remote follows the `github-pr-workflow` skill: cut a feature branch off the latest `origin/main` (zero-drift check first), commit, push the **branch**, open a PR, wait for CI green, then merge (squash) and delete the branch. **Never push directly to `main`/`master`.** A customer "push" approval authorizes the change, not a bypass of the branch→PR→merge method; a direct push requires an explicit recorded exception. Observed live: a verified build was pushed straight to `main` because the contract said only "approval required before pushing" without mandating the method.
 
 ### Decision contract
 
