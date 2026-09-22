@@ -6,6 +6,10 @@
 
 ## [Unreleased]
 
+### v0.7.2 — 2026-09-22
+- feat: **role-tiered model optimization for Nous Portal subscribers** (`site/llms.txt` v0.7.2, Forge Team Setup v1.27.0). The Team Setup interview now asks whether the customer has a Nous Portal subscription (Step 1, default 7); if yes, after provisioning the team runs **Step 3.5** — assign each profile a model + reasoning tier matched to its role (cheap flash + low/medium for high-volume mechanical roles; mid-tier flash + high for quality-critical reasoning roles; the strongest model + high for the verifier), enumerated from the live Nous endpoint, applied via CLI, verified through the runtime resolver. If no subscription, record `SKIPPED` and keep the economical default tier. Optional cost/quality lever, never blocks provisioning.
+- No existing rule, template field, historical changelog entry, or procedural content was removed; the change is strictly additive and versioned.
+
 ### v0.7.1 — 2026-09-22
 - feat: make **goal clarification** a first-class Team Setup interview step and ground the coordinator Mission in the founder's declared goals (`site/llms.txt` v0.7.1, Forge Team Setup v1.26.0, Workflow Builder 1.6.5). The interview must elicit the outcome the founder wants the team to help them achieve over the next 30 days, in their own words, whatever the domain (business, creative, promotion, research, personal, etc.) — and must not assume a specific use case. The team design and the coordinator's generated Mission must be grounded in those goals, not in a template.
 - feat: the Workflow Builder interview now elicits the **goal shape** before designing stages — (a) a new idea to build, (b) an existing project to improve/complete to a working state, or (c) both — and designs the stage chain around it. An **existing project** must never be killed because the code already exists: the challenge assesses the working-state gap (tests/CI, LICENSE, known defect, missing feature, published results) and, where a kill would otherwise rest on existence, routes to a founder scope-confirm that names a concrete working-state slice which then proceeds through design → build → verification.
