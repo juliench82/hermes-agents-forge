@@ -6,6 +6,12 @@
 
 ## [Unreleased]
 
+### v0.7.4 — 2026-09-22
+- feat: **reporting frugality in every persona** (`site/llms.txt` v0.7.4, Forge Team Setup v1.28.0). Every generated `SOUL.md` Working Style must include a token-discipline rule: write the minimum that carries the decision (verdict line + artifact path + smallest evidence receipt); full detail lives in the artifact file, never the card comment; a comment over ~10 lines belongs in a file. Output tokens are a real cost — verbose card comments are the largest avoidable spend in an autonomous team (observed live: an 800-word verdict comment when 3 lines + a path sufficed).
+- feat: **next-card skill rule** — when a worker creates the next stage's card, any `--skill` must come from the receiving profile's enabled inventory or be omitted; a forced skill the assignee lacks crashes the spawn with `Unknown skill(s)` and auto-blocks the card (observed live: the architect stamped its own `mvp-slice-design` on the builder's fix cards, blocking the loop).
+- feat: **gateway persistence** — Team Setup must verify the gateway is supervised and survives reboot (the dispatcher lives there); a down gateway strands every `ready` card silently (observed live twice). Check the gateway before assuming a worker problem.
+- No existing rule, template field, historical changelog entry, or procedural content was removed; the change is strictly additive and versioned.
+
 ### v0.7.3 — 2026-09-22
 - feat: **audit-and-fix loop for existing projects** (`site/llms.txt` v0.7.3, Workflow Builder 1.6.6). The existing-project goal shape no longer produces a single named slice; it runs an autonomous loop — an independent `quality-guardian` audit (full-clone, run the real build/tests, probe the money paths, prioritized Critical/Major/Minor/hygiene findings with command/line receipts) → a `product-architect` remediation plan (ordered branch/commit series, critical-first, each PR-sized) → a fix loop (builder fixes a batch via branch → PR → CI → merge; verifier re-checks each landing; loop to the next), with a **default stop line** of fix-all-Critical+Major-then-ask. Every fix is branch→PR→merge, never direct-to-main. Observed live: a founder had to separately ask the builder to audit an existing repo because the lane had no audit or loop step.
 - No existing rule, template field, historical changelog entry, or procedural content was removed; the change is strictly additive and versioned.

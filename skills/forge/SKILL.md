@@ -1,10 +1,10 @@
 ---
 name: forge
-version: 1.27.0
+version: 1.28.0
 description: Provision a high-quality governed Hermes specialist team with a decision bot, optimize and verify it completely, then queue a non-executable coordinator workflow-discovery handoff.
 metadata:
   author: juliench82
-  version: 1.27.0
+  version: 1.28.0
   tags: [onboarding, team-design, team-setup, profiles, personas, skills, optimization, receipts, governance, approval, decision-bot, autonomy]
 ---
 
@@ -208,6 +208,8 @@ After approval, execute autonomously to completion without additional provisioni
 Create only the approved profiles, never duplicates, using official Hermes CLI commands. Each profile must have:
 
 - A rich schema-grounded `SOUL.md` with identity, mission, principles, working style, capabilities, collaboration, boundaries, escalation, and success metrics — including the worker's **next-stage card-creation rule** (`hermes kanban create --parent <card> --assignee <next>` on completion, with artifact + acceptance criteria attached).
+- **Reporting frugality in every persona.** Every `SOUL.md` Working Style must include a token-discipline rule: write the minimum that carries the decision (verdict line + artifact path + smallest evidence receipt); full investigation and detail live in the artifact file, never in the card comment; no narration of process; a comment over ~10 lines belongs in a file. Output tokens are a real cost — verbose card comments and handoffs are the single largest avoidable spend in an autonomous team. Observed live: a quality-guardian wrote an 800-word verdict comment when 3 lines + a file path sufficed.
+- **Next-card skill rule (assignee's skill, never the creator's).** When a worker creates the next stage's card, any `--skill` must come from the **receiving profile's enabled inventory** (verify before stamping) or be omitted entirely — a forced skill the assignee lacks crashes the spawn with `Unknown skill(s)` and auto-blocks the card after two tries. Observed live: the architect stamped its own `mvp-slice-design` on the builder's fix cards, blocking the whole loop. When in doubt, omit `--skill`; the receiving profile's defaults suffice.
 - A distinct one-line description that makes routing unambiguous.
 - Compression and context hygiene.
 - MOA disabled using the supported key, applied **per profile via the CLI**: `hermes config set -p <profile> moa.presets.default.enabled false`, then verified with `hermes config get` — never by hand-editing a profile's `config.yaml` (the top-level `moa.enabled: false` file shape is not a recognized runtime key and must never appear in receipts as one).
@@ -235,6 +237,7 @@ Create the approved decision-bot profile (outside the package count). It must ha
 2. Confirm the decision bot is the assigned `review`-state consumer for decision cards.
 3. Record the 9-to-5 pulse (cron) as disabled — no cron jobs during Team Setup.
 4. **Desktop bot-pool capacity.** The desktop app holds spawned bot backends in a pool (one app-global pool, all profiles share it): `maxBackends` = how many backends stay spawned, `idleMs` = how long an idle one survives before shutdown. For a team this size, raise it so bots actually wake: `maxBackends` ≥ team size + margin (workers + decision bot + coordinator headroom) and `idleMs` ≥ 30 min (prefer ~60) so idle bots stay warm. Mechanism: the app's Settings → Advanced pool-limits row, or the persisted `pool-limits.json` in the desktop app's data dir (write with builtin file tools: read → write → verify). Record the applied values verbatim in the config receipts. Context for the customer: the message *"Too many bots are running at once for this computer's limit"* is a **slot-wait timeout, not a hardware limit**, and slow bot "waking up" is a short `idleMs` — neither means the machine can't run the team. If no desktop app is present (headless gateway deployment), record `SKIPPED` — the pool is desktop-only.
+5. **Gateway persistence (the dispatcher must stay up).** The kanban dispatcher lives in the gateway; if the gateway is down, every `ready` card strands silently. Verify the gateway is supervised and survives reboot (`hermes gateway status` → supervised by launchd/systemd; `RunAtLoad`/`KeepAlive` set), and record the verdict. Observed live twice: the gateway was found "service not loaded" after a restart, stranding all ready cards until manually started. A down gateway is the first thing to check when cards sit `ready` with no worker — before assuming a worker problem.
 
 ### 3.5 Role-tiered model optimization (Nous Portal subscription)
 
