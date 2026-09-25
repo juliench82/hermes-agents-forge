@@ -6,6 +6,12 @@
 
 ## [Unreleased]
 
+### v0.7.5 — 2026-09-22
+- feat: **batch-root state transition + active stalled-pipeline notifier** (`site/llms.txt` v0.7.5, Workflow Builder 1.6.7). Two lessons from the Meteoracle audit-and-fix loop:
+  - **Batch-root state transition:** when a fix-loop batch's build is complete and its PR is open, the batch-root card must be advanced to `done` and routed to the verifier's QA card — never left `ready`. A `ready` card with its own open PR is held by the dispatcher's `active_pr` guard (refuses duplicate PR), so a forgotten batch-root strands the whole serial train (observed live ~1h stall).
+  - **Active stalled-pipeline notifier:** reactive digests aren't enough — the customer must be told when a `ready`/`review` card strands, a dispatcher warning fires, the gateway drops, or a guard holds the queue. The 9-to-5 pulse's stalled-card sweep (post-trial) plus a coordinator/worker one-line notifier on a held-back dispatch or stranded diagnostic. Observed live: a down gateway and a `ready` batch-root each stalled ~an hour with zero Discord/chat message; a quiet pipeline must never be the failure signal.
+- No existing rule, template field, historical changelog entry, or procedural content was removed; the change is strictly additive and versioned.
+
 ### v0.7.4 — 2026-09-22
 - feat: **reporting frugality in every persona** (`site/llms.txt` v0.7.4, Forge Team Setup v1.28.0). Every generated `SOUL.md` Working Style must include a token-discipline rule: write the minimum that carries the decision (verdict line + artifact path + smallest evidence receipt); full detail lives in the artifact file, never the card comment; a comment over ~10 lines belongs in a file. Output tokens are a real cost — verbose card comments are the largest avoidable spend in an autonomous team (observed live: an 800-word verdict comment when 3 lines + a path sufficed).
 - feat: **next-card skill rule** — when a worker creates the next stage's card, any `--skill` must come from the receiving profile's enabled inventory or be omitted; a forced skill the assignee lacks crashes the spawn with `Unknown skill(s)` and auto-blocks the card (observed live: the architect stamped its own `mvp-slice-design` on the builder's fix cards, blocking the loop).
