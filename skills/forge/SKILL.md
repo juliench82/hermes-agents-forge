@@ -1,10 +1,10 @@
 ---
 name: forge
-version: 1.28.0
+version: 1.29.0
 description: Provision a high-quality governed Hermes specialist team with a decision bot, optimize and verify it completely, then queue a non-executable coordinator workflow-discovery handoff.
 metadata:
   author: juliench82
-  version: 1.28.0
+  version: 1.29.0
   tags: [onboarding, team-design, team-setup, profiles, personas, skills, optimization, receipts, governance, approval, decision-bot, autonomy]
 ---
 
@@ -164,6 +164,7 @@ For every proposed profile, provide:
 - Generic approval boundary and forbidden actions.
 - Browser mode and model policy.
 - For each worker: its next-stage card-creation rule in the approved chain (which profile it hands off to, with what artifact).
+- **Supported card shapes.** The team must support at least three card shapes in the workflow: **(a) intake** (idea to be challenged), **(b) audit-and-fix** (existing project, iterative batches), and **(c) bounded task** (a specific spec with exact acceptance criteria and a stop line). A bounded-task card skips the challenge/evidence loop and routes: spec review (`product-architect`) → implement (`mvp-builder`) → verify (`quality-guardian`). The founder approves the spec up front; the team executes to the spec and stops. **Stop line is mandatory:** do exactly what the spec says, nothing more. If the builder finds something related but outside the spec, they flag it to the founder — they do not add it. Observed live: PR #102 (Forge) was a bounded task that could have used this card shape, but the spec was executed ad-hoc instead of through a bounded card with explicit acceptance criteria and a stop line.
 
 Resolve profile-name validity before creation. Never guess names, skills, tools, models, or configuration keys. **Enumerate the actual skill inventory (filesystem frontmatter or `--enabled-only` full output) before designing the skill plan** — the `skills list` table truncates long names, and `hermes-agent` is an essential skill that can never be disabled.
 
