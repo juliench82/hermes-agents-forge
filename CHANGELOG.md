@@ -6,6 +6,13 @@
 
 ## [Unreleased]
 
+### v0.7.6 — 2026-09-22
+- feat: **auto-merge on QA PASS + re-base-and-re-verify on main-advance** (Workflow Builder v1.6.8). Two rules productized from the Meteoracle merge-conflict incident (PR #13 vs #11):
+  - **Merge-then-re-verify:** once quality-guardian verdicts PASS and CI is green against **current** `origin/main`, the batch auto-merges via the GitHub method — no per-batch founder gate (the R3 gate covered the whole loop).
+  - **Re-base-and-re-verify on main-advance:** if `origin/main` advanced since the batch's original verification, the builder must re-base, re-run CI, re-confirm QA PASS before merging. A batch verified against a stale base is NOT safe to merge (PR #13 passed CI against `601e1d2` but conflicted with #11's `open.ts` changes).
+  - **Closed-base recovery:** if a batch's base branch is merged and deleted (auto-closing its PR, as with PR #15 when `fix/h1-fee-tvl-units` was merged), the batch must be re-based on `origin/main` and reopened/merged, not silently lost.
+- Retains all v0.7.5 rules (batch-root state transition, active stalled-pipeline notifier).
+
 ### v0.7.5 — 2026-09-22
 - feat: **batch-root state transition + active stalled-pipeline notifier** (`site/llms.txt` v0.7.5, Workflow Builder 1.6.7). Two lessons from the Meteoracle audit-and-fix loop:
   - **Batch-root state transition:** when a fix-loop batch's build is complete and its PR is open, the batch-root card must be advanced to `done` and routed to the verifier's QA card — never left `ready`. A `ready` card with its own open PR is held by the dispatcher's `active_pr` guard (refuses duplicate PR), so a forgotten batch-root strands the whole serial train (observed live ~1h stall).

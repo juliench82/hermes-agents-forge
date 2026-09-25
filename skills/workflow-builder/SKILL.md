@@ -1,10 +1,10 @@
 ---
 name: workflow-builder
-version: 1.6.7
+version: 1.6.8
 description: Design, test, and activate a workflow as an autonomous self-advancing chain with a decision-bot approval layer, using an existing provisioned Hermes team.
 metadata:
   author: juliench82
-  version: 1.6.7
+  version: 1.6.8
   tags: [workflow, orchestration, kickoff, trial, activation, idempotency, control-plane, governance, decision-bot, autonomy]
 ---
 
@@ -139,6 +139,9 @@ Apply the **Interview rule** (defaults first, one non-default question). Present
 3. **Goal shape — must be elicited before designing stages:** ask what the customer is starting from — **(a) a new idea to build, (b) an existing project to improve/complete to a working state, or (c) both.** The stage chain must be designed around the actual goal shape, never assumed:
    - New idea → challenge → evidence → (re-challenge) → build.
    - **Existing project** → runs an **audit-and-fix loop**, not a single named slice. Existence is the trigger, never a kill reason. The chain: independent audit (`quality-guardian`: full-clone, run the real build/tests, probe the money paths, produce a prioritized findings report Critical/Major/Minor/hygiene with command/line receipts) → remediation design (`product-architect`: an ordered series of branches/commits, critical-first, each PR-sized with its own acceptance criteria) → **fix loop** (the builder fixes one batch via branch → PR → CI → merge; the verifier re-checks each landed fix; loop to the next batch) → report. **Default stop line:** fix all Critical + Major findings autonomously, then report and ask the customer before tackling Minor/hygiene; the customer can raise or lower it any time. Every fix is a proper branch→PR→merge, never a direct-to-main push. **Batch-root state transition (mandatory):** when a batch's build is complete and its PR is open, the batch-root card must be **advanced to `done` and routed to the verifier's QA card** — it must NOT be left in `ready`. A `ready` card whose own commit/PR already exists is correctly held by the dispatcher's `active_pr` guard (it refuses to re-spawn and create a duplicate PR), so a forgotten batch-root will strand the whole serial train. Observed live: the Meteoracle H3 batch completed (3/3 slices done, PR #15 CI-green) but its root card stayed `ready`, silently stalling the loop for ~1h while the dispatcher warned the queue was held back by `active_pr=1`.
+
+   **Merge-then-re-verify rule (mandatory).** Once quality-guardian verdicts PASS and CI is green against **current** `origin/main` (verified at merge-time, not at original-base time), the batch auto-merges via the GitHub method — the mvp-builder (as PR author) executes the squash merge. **No per-batch founder gate is needed**, because the R3 gate already approved the whole fix loop. **Re-base-and-re-verify on main-advance (mandatory):** if `origin/main` has advanced since the batch's original verification (e.g., a prior batch merged and changed the same files), the builder must first re-base onto the new main, re-run CI, and re-confirm QA PASS before merging. A batch verified against a stale base is NOT safe to merge — observed live: PR #13 passed CI against `601e1d2` but conflicted with #11's already-merged changes to `bot/executor/open.ts` (the conflict would have been caught by a re-base-then-re-verify step). Additionally: if a batch's base branch is merged and deleted (auto-closing its PR, as happened with PR #15 when `fix/h1-fee-tvl-units` was merged), the batch must be re-based on `origin/main` and reopened/merged, not silently lost.
+
    - Where the customer's goals span both, encode a lane split in the contract (commercial/new-idea vs personal/existing-project) rather than forcing one shape.
 4. **Inputs/outputs:** customer-provided repos/ideas as inputs; artifacts under `~/.hermes/workflows/<workflow-id>/` as outputs; `~/.hermes/TEAM.md` and the `default` board as source of truth.
 5. **Stages:** the approved specialist chain from Team Setup; each stage owns its next-stage card creation; every approval gate and the final handoff is a decision card for the decision bot. Stage order follows the goal shape (new-idea vs existing-project), not a one-size template.
