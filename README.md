@@ -1,3 +1,5 @@
+![hero](site/public/hero2.png)
+
 A customer points Hermes to the canonical instructions at:
 
 `https://hermes-agents-forge.vercel.app/llms.txt`
