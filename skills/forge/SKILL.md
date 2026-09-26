@@ -1,10 +1,10 @@
 ---
 name: forge
-version: 1.29.0
+version: 1.30.0
 description: Provision a high-quality governed Hermes specialist team with a decision bot, optimize and verify it completely, then queue a non-executable coordinator workflow-discovery handoff.
 metadata:
   author: juliench82
-  version: 1.29.0
+  version: 1.30.0
   tags: [onboarding, team-design, team-setup, profiles, personas, skills, optimization, receipts, governance, approval, decision-bot, autonomy]
 ---
 
