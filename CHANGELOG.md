@@ -7,6 +7,11 @@
 ## [Unreleased]
 
 ### Forge v1.30.0
+- feat: add push before done rule (mvp-builder MUST push branch before marking card done)
+- feat: add worker health check protocol (python3 ~/.hermes/scripts/worker-health-check.py --fix) to prevent stalled cards
+- feat: add single-card-at-a-time serial dispatch rule with verification clause to Forge SKILL.md v1.30.0 and workflow-builder SKILL.md
+
+### Forge v1.30.0
 - feat: add single-card-at-a-time serial dispatch rule with verification clause to Forge SKILL.md and workflow-builder SKILL.md (PR #111)
 
 ### v0.7.7 — 2026-09-22
