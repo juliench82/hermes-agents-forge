@@ -1,10 +1,10 @@
 ---
 name: forge
-version: 1.29.0
+version: 1.30.0
 description: Provision a high-quality governed Hermes specialist team with a decision bot, optimize and verify it completely, then queue a non-executable coordinator workflow-discovery handoff.
 metadata:
   author: juliench82
-  version: 1.29.0
+  version: 1.30.0
   tags: [onboarding, team-design, team-setup, profiles, personas, skills, optimization, receipts, governance, approval, decision-bot, autonomy]
 ---
 
@@ -169,6 +169,8 @@ For every proposed profile, provide:
    **Pull before working (non-negotiable):** before starting ANY work on a local clone, `git fetch origin` then `git checkout <branch>` and `git pull origin <branch>` to ensure the local tree matches the remote. Working on an outdated local clone produces phantom commits, stale merges, and lost upstream changes. If the local clone is missing or uninitialized, the worker must clone from remote first.
    **GitHub method (non-negotiable):** never push directly to `main`/`master`. Every external change follows the `github-pr-workflow` skill — cut a feature branch off latest `origin/main` (zero-drift check), commit, push the **branch**, open a PR, wait for CI green, then merge (squash). A scratch workspace must be a proper git clone with `origin` configured before dispatch. If the workspace is empty or uninitialized, clone the repo first.
    **Single-card-at-a-time (non-negotiable):** the dispatcher's `active_pr` guard is team-wide, not per-bot. If ANY bot has an active PR, ALL queues are held. No new card is dispatched until the active card completes and its PR is merged. This prevents concurrent branch creation and conflicting merges.
+
+   **Verification:** the dispatcher's `active_pr` guard must check ALL bot profiles for active PRs, not just the current one. To verify: while any bot has an active PR (card status `running` with an open branch/PR), dispatch a new card — it must be held in `ready` until the active card completes and its PR is merged. If the guard is scoped per-bot instead of team-wide, multiple cards can run simultaneously, causing conflicting branches and merge deadlocks. Observed live: the `active_pr` guard held the queue for ~56 ticks because it was scoped per-bot instead of team-wide (Receipt 49), and multiple cards ran concurrently in violation of this rule (Receipt 57).
 
 Resolve profile-name validity before creation. Never guess names, skills, tools, models, or configuration keys. **Enumerate the actual skill inventory (filesystem frontmatter or `--enabled-only` full output) before designing the skill plan** — the `skills list` table truncates long names, and `hermes-agent` is an essential skill that can never be disabled.
 
