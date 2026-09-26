@@ -248,6 +248,8 @@ Set `WORKFLOW STATUS: TRIAL-PASSED` only when every acceptance criterion passes.
 
 
 **Worker health check (non-negotiable):** before every dispatch cycle, the coordinator MUST verify all worker daemons are running via `python3 ~/.hermes/scripts/worker-health-check.py --fix`. Any down worker is automatically started.
+
+**Push before done (non-negotiable):** the mvp-builder MUST push the branch to the remote and verify it exists on GitHub before the card is marked done. A commit that exists only locally is not done. The QA must also verify the commit is on the remote before certifying.
 ## Receipts and runtime rules
 
 Report team status, stable coordinator, decision bot, card metadata, idempotency key, state transitions, handoff/claim receipt, workflow artifacts, approval receipt, execution assets, decision records, trial evidence, activation approval, and skipped/failed items verbatim.

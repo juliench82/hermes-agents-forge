@@ -244,6 +244,8 @@ Create the approved decision-bot profile (outside the package count). It must ha
 
 7. **Worker health check (non-negotiable):** before every dispatch cycle, the coordinator MUST verify all worker daemons are running via `python3 ~/.hermes/scripts/worker-health-check.py --fix`. Any down worker is automatically started. If a worker cannot be started, the coordinator reports to the founder and does not dispatch cards assigned to that worker. Observed live: `t_4560929e` stalled for 1.6h because the mvp-builder daemon was not running.
 
+8. **Push before done (non-negotiable):** the mvp-builder MUST push the branch to the remote and verify it exists on GitHub before the card is marked done. A commit that exists only locally is not done — it is not a PR, it is not reviewed, it is not verified. The QA must also verify the commit is on the remote before certifying. Observed live: commit 4e88bca (PR #20) was verified locally but never pushed; commit 368e1ff (PR #19) was committed in scratch worktree and never pushed. Both violated the GitHub method rule.
+
 ### 3.5 Role-tiered model optimization (Nous Portal subscription)
 
 Run only when the customer confirmed a **Nous Portal subscription** at interview (Step 1, default 7). Otherwise record `SKIPPED` and keep the economical default tier.
