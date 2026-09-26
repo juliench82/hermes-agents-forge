@@ -6,6 +6,9 @@
 
 ## [Unreleased]
 
+### Forge v1.30.0
+- feat: add single-card-at-a-time serial dispatch rule with verification clause to Forge SKILL.md and workflow-builder SKILL.md (PR #110)
+
 ### v0.7.7 — 2026-09-22
 - feat: **bounded-task card shape** (`site/llms.txt` v0.7.7, Forge v1.29.0, Workflow Builder v1.6.8). A third lane alongside the intake (new idea) and audit-and-fix lanes — a specific, spec-driven task with explicit acceptance criteria and a mandatory stop line. Stage chain: spec review (`product-architect`) → implement (`mvp-builder`) → verify (`quality-guardian`), skipping challenge/evidence/re-challenge. The founder approves the spec up front; the team executes to the spec and stops. **Stop line (mandatory):** do exactly what the spec says, nothing more. If the builder finds something related but outside the spec, they flag it to the founder — they do not add it. **Spec-bounded state transition:** when implementation is complete and the PR is open, the task card advances to `done` and routes to the verifier's QA card — never left `ready`. Observed live: PR #102 (Forge) was a bounded task executed ad-hoc instead of through a bounded card with explicit ACs and a stop line.
 - Retains all v0.7.6 rules (auto-merge on QA PASS, re-base-and-re-verify, closed-base recovery, batch-root state transition, active stalled-pipeline notifier).
