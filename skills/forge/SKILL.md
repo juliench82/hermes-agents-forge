@@ -246,6 +246,8 @@ Create the approved decision-bot profile (outside the package count). It must ha
 
 8. **Push before done (non-negotiable):** the mvp-builder MUST push the branch to the remote and verify it exists on GitHub before the card is marked done. A commit that exists only locally is not done — it is not a PR, it is not reviewed, it is not verified. The QA must also verify the commit is on the remote before certifying. Observed live: commit 4e88bca (PR #20) was verified locally but never pushed; commit 368e1ff (PR #19) was committed in scratch worktree and never pushed. Both violated the GitHub method rule.
 
+9. **QA must verify commit is on remote (non-negotiable):** before certifying any fix, the quality-guardian MUST verify the commit exists on a remote branch (e.g., `git branch -r --contains <commit>` or `git log origin/main --oneline | grep <commit>`). A locally-only commit is not verified — it's not a PR, not reviewed, not deployable. If the commit is not on the remote, the QA must reject the card and request the builder push first. Observed live: commit 4e88bca (PR #20) was verified locally by QA but never pushed to GitHub; the QA did not check the remote.
+
 ### 3.5 Role-tiered model optimization (Nous Portal subscription)
 
 Run only when the customer confirmed a **Nous Portal subscription** at interview (Step 1, default 7). Otherwise record `SKIPPED` and keep the economical default tier.
