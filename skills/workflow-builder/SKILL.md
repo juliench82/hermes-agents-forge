@@ -246,6 +246,8 @@ Set `WORKFLOW STATUS: TRIAL-PASSED` only when every acceptance criterion passes.
 
 **Single-card-at-a-time (non-negotiable):** the dispatcher's `active_pr` guard is team-wide, not per-bot. If ANY bot has an active PR, ALL queues are held. No new card is dispatched until the active card completes and its PR is merged. This prevents concurrent branch creation and conflicting merges. **Verification:** the dispatcher's `active_pr` guard MUST check ALL bot profiles for active PRs, not just the current one. To verify: while any bot has an active PR, dispatch a new card — it must be held in `ready` until the active card completes and its PR is merged.
 
+
+**Worker health check (non-negotiable):** before every dispatch cycle, the coordinator MUST verify all worker daemons are running via `python3 ~/.hermes/scripts/worker-health-check.py --fix`. Any down worker is automatically started.
 ## Receipts and runtime rules
 
 Report team status, stable coordinator, decision bot, card metadata, idempotency key, state transitions, handoff/claim receipt, workflow artifacts, approval receipt, execution assets, decision records, trial evidence, activation approval, and skipped/failed items verbatim.
