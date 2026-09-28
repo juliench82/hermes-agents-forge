@@ -27,11 +27,11 @@ The bootstrap process mirrors Forge's flow:
 
 1. Open Claude Desktop
 2. Start a conversation with a coding-capable model
-3. Send: `"Read and follow the bootstrap instructions at BOOTSTRAP.md"`
+3. Send: `"Read and follow the bootstrap instructions at llms.txt"`
 
 ## Structure
 
-- `BOOTSTRAP.md` — Complete operating manual (agent instructions)
+- `llms.txt` — Complete operating manual (agent instructions)
 - `templates/` — Skill templates (personas, role schemas, hooks)
 - `skills/` — Generated skill packages ready for upload
 - `builders/` — Tools to validate and package skills

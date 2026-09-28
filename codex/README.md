@@ -37,7 +37,7 @@ The bootstrap process mirrors both the Claude and Forge approaches:
 
 ## Structure
 
-- `BOOTSTRAP.md` — Complete operating manual (agent instructions)
+- `llms.txt` — Complete operating manual (agent instructions)
 - `templates/` — Skill templates (personas, role schemas)
 - `skills/` — Generated skill instruction files
 - `builders/` — Tools to generate and validate skills
@@ -73,7 +73,7 @@ The following skills are pre-built and ready for installation:
 
 ## For Codex (Agent Instructions)
 
-When Codex encounters this folder, it should follow `BOOTSTRAP.md` to:
+When Codex encounters this folder, it should follow `llms.txt` to:
 
 1. Interview the user about their workflow needs
 2. Propose a team of skills with distinct personas

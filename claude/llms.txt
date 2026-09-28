@@ -1,19 +1,19 @@
-# Codex Skill Bootstrap — Operating Manual
+# Claude Skill Bootstrap — Operating Manual
 
 **Version**: v1.0  
-**Purpose**: Agent-directed onboarding for autonomous Codex skill teams
+**Purpose**: Agent-directed onboarding for autonomous Claude Chat skill teams
 
 ## How This Works
 
-This manual is the complete operating contract for bootstrapping custom skills in OpenAI Codex. Follow these instructions in order:
+This manual is the complete operating contract for bootstrapping custom skills in Claude Chat. Follow these instructions in order:
 
-1. **`codex/BOOTSTRAP.md`** — Mission brief and Codex skill mapping
-2. **`codex/templates/role-schema.md`** — Universal persona schema for every generated skill
+1. **`claude/llms.txt`** — Mission brief and Claude skill mapping
+2. **`claude/templates/role-schema.md`** — Universal persona schema for every generated skill
 3. **This file** — Interview process, design rules, generation steps, verification
 
 ## Phase 1: Interview
 
-### The 5 Questions (Same as Forge/Claude)
+### The 5 Questions (Adapted from Forge)
 
 Ask these ONE at a time, waiting for each answer:
 
@@ -48,28 +48,26 @@ Present a table with for each skill:
 
 | Name | Role | Responsibilities | Primary Tools | Dependencies |
 |------|------|-----------------|----------------|--------------|
-| market-scout | Research | Market analysis, competitive research | web, filesystem | None |
-| idea-challenger | Validation | Challenges assumptions, identifies risks | web, filesystem | market-scout |
-| decision-bot | Decision | Facilitates structured decision-making | filesystem | idea-challenger |
-| product-manager | Planning | Creates specs, roadmaps, requirements | filesystem, web | decision-bot |
-| product-architect | Design | Technical architecture, system design | filesystem, terminal | product-manager |
+| market-scout | Research | Market analysis, competitor research | browser, web_search | None |
+| idea-challenger | Validation | Challenges assumptions, identifies risks | browser, web_search | market-scout |
+| product-manager | Planning | Creates specs, roadmaps, requirements | docs, terminal | idea-challenger |
+| product-architect | Design | Technical architecture, system design | terminal, docs | product-manager |
 | mvp-builder | Development | Builds working code incrementally | terminal, github | product-architect |
-| quality-guardian | Testing | Validates quality, catches regressions | terminal | mvp-builder |
+| qa-engineer | Testing | Validates quality, catches regressions | terminal | mvp-builder |
 
-Ask: **"Shall I generate these skills? This will create .clmd files for installation in ~/.codex/skills/"**
+Ask: **"Shall I generate these skills? This will create SKILL.md files and package them as ZIPs ready for upload."**
 
 ## Phase 3: Generation
 
 ### For Each Skill
 
-1. Create file: `skills/<name>.clmd`
-2. Use the template from `templates/standard-skill.md`
+1. Create directory: `skills/<name>/`
+2. Create `SKILL.md` using the `templates/standard-skill.md` template
 3. Add persona from `templates/role-schema.md`
-4. Include integration points with other skills
+4. Add hooks if needed (before_user_prompt, after_tool_result)
+5. Add code files if needed (JavaScript/Python for executable logic)
 
-### CLMD File Format
-
-Codex skills use a markdown format with YAML frontmatter:
+### SKILL.md Format
 
 ```yaml
 ---
@@ -86,66 +84,58 @@ persona:
 
 # <Skill Name>
 
-[Detailed instructions for Codex]
+[Detailed instructions for Claude]
 ```
 
-## Phase 4: Installation
+## Phase 4: Packaging
 
-### Install to Local Skills Directory
-
-```bash
-# Create the skills directory if it doesn't exist
-mkdir -p ~/.codex/skills/
-
-# Copy the generated .clmd files
-cp skills/*.clmd ~/.codex/skills/
-```
-
-### Per-Project Installation
+### Package as ZIP
 
 ```bash
-# In your project directory
-mkdir -p .codex/skills/
-cp /path/to/skills/*.clmd .codex/skills/
+# From the skills directory
+cd skills/<name>
+zip -r ../packages/<name>.zip .
 ```
 
 ## Phase 5: Verification
 
 ### Validate Each Skill
 
-Basic checks:
-- ✅ `.clmd` file exists with valid frontmatter
-- ✅ `name` field is present
+Run basic checks:
+- ✅ SKILL.md exists and starts with `---`
+- ✅ `name` field is present and valid
 - ✅ `description` field is present
-- ✅ Persona fields are complete
+- ✅ No duplicate skill names
 
-## Phase 6: Usage
+## Phase 6: Handoff
 
-### Using Skills in Codex
+### Upload Instructions
 
-Skills can be invoked by mentioning them or using structured prompts:
+For each generated ZIP:
 
-```
-Use the market-scout persona to research AI fitness tools
-```
+1. Open Claude Desktop
+2. Go to `Settings > Capabilities > Skills > Add Skill`
+3. Upload the ZIP file
+4. Enable the skill in your profile
 
-Or by loading multiple skills:
+### First Task
 
-```
-I have 7 skills loaded: market-scout, idea-challenger, decision-bot, product-manager, product-architect, mvp-builder, quality-guardian. Act as market-scout and research this idea.
-```
+After upload, provide a concrete first task to verify the skills work together:
+
+> "Use market-scout to analyze the market for [idea], then use idea-challenger to validate the key assumptions, then use product-manager to create a specification."
 
 ## Hard Rules
 
 - Never create skills with duplicate names
-- Never skip validation before installation
+- Never skip validation before packaging
 - Never claim completion without showing verification
 - Each skill must have a clear, non-overlapping responsibility
 - Pre-built skills in `skills/` are already validated and ready
 
 ## Templates
 
-- `templates/standard-skill.md` — Base skill structure (`.clmd` format)
+- `templates/standard-skill.md` — Base skill structure
+- `templates/hooks-skill.md` — Skill with before/after hooks
 - `templates/role-schema.md` — Persona schema for skill personalities
 
 This manual is the authoritative source. If any local copy conflicts, follow this version.
