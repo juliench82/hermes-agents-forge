@@ -1,0 +1,151 @@
+# Codex Skill Bootstrap — Operating Manual
+
+**Version**: v1.0  
+**Purpose**: Agent-directed onboarding for autonomous Codex skill teams
+
+## How This Works
+
+This manual is the complete operating contract for bootstrapping custom skills in OpenAI Codex. Follow these instructions in order:
+
+1. **`codex/BOOTSTRAP.md`** — Mission brief and Codex skill mapping
+2. **`codex/templates/role-schema.md`** — Universal persona schema for every generated skill
+3. **This file** — Interview process, design rules, generation steps, verification
+
+## Phase 1: Interview
+
+### The 5 Questions (Same as Forge/Claude)
+
+Ask these ONE at a time, waiting for each answer:
+
+1. **What should your skill team do for you?**
+   - *Example*: "Create a set of skills that research markets, validate ideas, write product specs, and build MVPs"
+
+2. **Which tools, sites, and accounts will your skills need access to?**
+   - *Example*: "GitHub, web browser for research, Gmail"
+
+3. **What's your quality bar before a skill is 'done'?**
+   - *Example*: "Each skill must have tests, clear documentation, and handle errors gracefully"
+
+4. **How complex is your workflow? (single skill or coordinated team? how many roles?)**
+   - *Example*: "I need market research, idea validation, product planning, architecture, development, and QA — 6 roles"
+
+5. **Is there anything you do NOT want automated?**
+   - *Example*: "Don't automate final decisions — I want to review everything first"
+
+### Package Selection
+
+Based on answers, select a package tier:
+
+- **Package 3 — Basic**: Single-skill, simple workflows
+- **Package 5 — Intermediate**: Coordinated team, 3-5 roles
+- **Package 7 — Complex**: Multi-project, coordination-heavy
+
+## Phase 2: Design
+
+### Team Proposal
+
+Present a table with for each skill:
+
+| Name | Role | Responsibilities | Primary Tools | Dependencies |
+|------|------|-----------------|----------------|--------------|
+| market-scout | Research | Market analysis, competitive research | web, filesystem | None |
+| idea-challenger | Validation | Challenges assumptions, identifies risks | web, filesystem | market-scout |
+| decision-bot | Decision | Facilitates structured decision-making | filesystem | idea-challenger |
+| product-manager | Planning | Creates specs, roadmaps, requirements | filesystem, web | decision-bot |
+| product-architect | Design | Technical architecture, system design | filesystem, terminal | product-manager |
+| mvp-builder | Development | Builds working code incrementally | terminal, github | product-architect |
+| quality-guardian | Testing | Validates quality, catches regressions | terminal | mvp-builder |
+
+Ask: **"Shall I generate these skills? This will create .clmd files for installation in ~/.codex/skills/"**
+
+## Phase 3: Generation
+
+### For Each Skill
+
+1. Create file: `skills/<name>.clmd`
+2. Use the template from `templates/standard-skill.md`
+3. Add persona from `templates/role-schema.md`
+4. Include integration points with other skills
+
+### CLMD File Format
+
+Codex skills use a markdown format with YAML frontmatter:
+
+```yaml
+---
+name: <skill-name>
+description: <short description>
+persona:
+  name: <persona-name>
+  archetype: <role-type>
+  voice: <communication style>
+  strengths: [<key strengths>]
+  blind_spots: [<limitations>]
+  communication_patterns: [<interaction patterns>]
+---
+
+# <Skill Name>
+
+[Detailed instructions for Codex]
+```
+
+## Phase 4: Installation
+
+### Install to Local Skills Directory
+
+```bash
+# Create the skills directory if it doesn't exist
+mkdir -p ~/.codex/skills/
+
+# Copy the generated .clmd files
+cp skills/*.clmd ~/.codex/skills/
+```
+
+### Per-Project Installation
+
+```bash
+# In your project directory
+mkdir -p .codex/skills/
+cp /path/to/skills/*.clmd .codex/skills/
+```
+
+## Phase 5: Verification
+
+### Validate Each Skill
+
+Basic checks:
+- ✅ `.clmd` file exists with valid frontmatter
+- ✅ `name` field is present
+- ✅ `description` field is present
+- ✅ Persona fields are complete
+
+## Phase 6: Usage
+
+### Using Skills in Codex
+
+Skills can be invoked by mentioning them or using structured prompts:
+
+```
+Use the market-scout persona to research AI fitness tools
+```
+
+Or by loading multiple skills:
+
+```
+I have 7 skills loaded: market-scout, idea-challenger, decision-bot, product-manager, product-architect, mvp-builder, quality-guardian. Act as market-scout and research this idea.
+```
+
+## Hard Rules
+
+- Never create skills with duplicate names
+- Never skip validation before installation
+- Never claim completion without showing verification
+- Each skill must have a clear, non-overlapping responsibility
+- Pre-built skills in `skills/` are already validated and ready
+
+## Templates
+
+- `templates/standard-skill.md` — Base skill structure (`.clmd` format)
+- `templates/role-schema.md` — Persona schema for skill personalities
+
+This manual is the authoritative source. If any local copy conflicts, follow this version.
