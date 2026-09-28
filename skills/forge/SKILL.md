@@ -550,3 +550,5 @@ The card completion notifier is NOT a separate script. It is built into the Herm
 - **Do not bundle `.env` or auth files.** The bundle is distributed; tokens must be configured by the recipient.
 - **The kanban.db is the board state.** It reflects the current team's card positions. A new team would have an empty kanban.db. Include it for reference but do not assume it matches the recipient's needs.
 - **The bundle is NOT a `forge setup` command.** It is a configuration export, not an automated provisioning script. The `bot-mode-team-provisioning` skill handles interactive team setup; the bundle handles cold deployment.
+
+
