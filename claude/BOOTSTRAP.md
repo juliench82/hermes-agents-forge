@@ -1,0 +1,141 @@
+# Claude Skill Bootstrap — Operating Manual
+
+**Version**: v1.0  
+**Purpose**: Agent-directed onboarding for autonomous Claude Chat skill teams
+
+## How This Works
+
+This manual is the complete operating contract for bootstrapping custom skills in Claude Chat. Follow these instructions in order:
+
+1. **`claude/BOOTSTRAP.md`** — Mission brief and Claude skill mapping
+2. **`claude/templates/role-schema.md`** — Universal persona schema for every generated skill
+3. **This file** — Interview process, design rules, generation steps, verification
+
+## Phase 1: Interview
+
+### The 5 Questions (Adapted from Forge)
+
+Ask these ONE at a time, waiting for each answer:
+
+1. **What should your skill team do for you?**
+   - *Example*: "Create a set of skills that research markets, validate ideas, write product specs, and build MVPs"
+
+2. **Which tools, sites, and accounts will your skills need access to?**
+   - *Example*: "GitHub, web browser for research, Gmail"
+
+3. **What's your quality bar before a skill is 'done'?**
+   - *Example*: "Each skill must have tests, clear documentation, and handle errors gracefully"
+
+4. **How complex is your workflow? (single skill or coordinated team? how many roles?)**
+   - *Example*: "I need market research, idea validation, product planning, architecture, development, and QA — 6 roles"
+
+5. **Is there anything you do NOT want automated?**
+   - *Example*: "Don't automate final decisions — I want to review everything first"
+
+### Package Selection
+
+Based on answers, select a package tier:
+
+- **Package 3 — Basic**: Single-skill, simple workflows
+- **Package 5 — Intermediate**: Coordinated team, 3-5 roles
+- **Package 7 — Complex**: Multi-project, coordination-heavy
+
+## Phase 2: Design
+
+### Team Proposal
+
+Present a table with for each skill:
+
+| Name | Role | Responsibilities | Primary Tools | Dependencies |
+|------|------|-----------------|----------------|--------------|
+| market-scout | Research | Market analysis, competitor research | browser, web_search | None |
+| idea-challenger | Validation | Challenges assumptions, identifies risks | browser, web_search | market-scout |
+| product-manager | Planning | Creates specs, roadmaps, requirements | docs, terminal | idea-challenger |
+| product-architect | Design | Technical architecture, system design | terminal, docs | product-manager |
+| mvp-builder | Development | Builds working code incrementally | terminal, github | product-architect |
+| qa-engineer | Testing | Validates quality, catches regressions | terminal | mvp-builder |
+
+Ask: **"Shall I generate these skills? This will create SKILL.md files and package them as ZIPs ready for upload."**
+
+## Phase 3: Generation
+
+### For Each Skill
+
+1. Create directory: `skills/<name>/`
+2. Create `SKILL.md` using the `templates/standard-skill.md` template
+3. Add persona from `templates/role-schema.md`
+4. Add hooks if needed (before_user_prompt, after_tool_result)
+5. Add code files if needed (JavaScript/Python for executable logic)
+
+### SKILL.md Format
+
+```yaml
+---
+name: <skill-name>
+description: <short description>
+persona:
+  name: <persona-name>
+  archetype: <role-type>
+  voice: <communication style>
+  strengths: [<key strengths>]
+  blind_spots: [<limitations>]
+  communication_patterns: [<interaction patterns>]
+---
+
+# <Skill Name>
+
+[Detailed instructions for Claude]
+```
+
+## Phase 4: Packaging
+
+### Package as ZIP
+
+```bash
+# From the skills directory
+cd skills/<name>
+zip -r ../packages/<name>.zip .
+```
+
+## Phase 5: Verification
+
+### Validate Each Skill
+
+Run basic checks:
+- ✅ SKILL.md exists and starts with `---`
+- ✅ `name` field is present and valid
+- ✅ `description` field is present
+- ✅ No duplicate skill names
+
+## Phase 6: Handoff
+
+### Upload Instructions
+
+For each generated ZIP:
+
+1. Open Claude Desktop
+2. Go to `Settings > Capabilities > Skills > Add Skill`
+3. Upload the ZIP file
+4. Enable the skill in your profile
+
+### First Task
+
+After upload, provide a concrete first task to verify the skills work together:
+
+> "Use market-scout to analyze the market for [idea], then use idea-challenger to validate the key assumptions, then use product-manager to create a specification."
+
+## Hard Rules
+
+- Never create skills with duplicate names
+- Never skip validation before packaging
+- Never claim completion without showing verification
+- Each skill must have a clear, non-overlapping responsibility
+- Pre-built skills in `skills/` are already validated and ready
+
+## Templates
+
+- `templates/standard-skill.md` — Base skill structure
+- `templates/hooks-skill.md` — Skill with before/after hooks
+- `templates/role-schema.md` — Persona schema for skill personalities
+
+This manual is the authoritative source. If any local copy conflicts, follow this version.
