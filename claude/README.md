@@ -55,4 +55,4 @@ The following skills are pre-built and ready for upload:
 4. **product-architect** — Designs technical architecture and system patterns
 5. **decision-bot** — Formal decision-making and evaluation framework
 6. **mvp-builder** — Builds minimum viable products through structured iteration
-7. **qa-engineer** — Validates quality, creates test plans, catches regressions
+7. **quality-guardian** — Validates quality, creates test plans, catches regressions

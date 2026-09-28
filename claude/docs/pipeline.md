@@ -5,7 +5,7 @@ This document describes how the 7 pre-built skills work together as a coordinate
 ## Pipeline Overview
 
 ```
-[Idea] → market-scout → idea-challenger → decision-bot → product-manager → product-architect → mvp-builder → qa-engineer → [Demo]
+[Idea] → market-scout → idea-challenger → decision-bot → product-manager → product-architect → mvp-builder → quality-guardian → [Demo]
 ```
 
 ## Stage 1: Discovery & Research
@@ -48,11 +48,11 @@ This document describes how the 7 pre-built skills work together as a coordinate
 **Purpose**: Build minimum viable product through iterations
 **Input**: Architecture from product-architect
 **Output**: Built MVP with working code, tests, file paths documented
-**Handoff to**: qa-engineer (with built MVP + test scenarios)
+**Handoff to**: quality-guardian (with built MVP + test scenarios)
 
 ## Stage 4: Validation
 
-### qa-engineer
+### quality-guardian
 **Purpose**: Validate quality through systematic testing
 **Input**: Built features from mvp-builder
 **Output**: QA report with test results, bugs found, readiness verdict
@@ -91,4 +91,4 @@ For Claude (or any LLM) to run this pipeline autonomously:
 | product-manager | product-manager.zip | Product Manager (Coordinator) |
 | product-architect | product-architect.zip | Product Architect (Specialist) |
 | mvp-builder | mvp-builder.zip | MVP Builder (Builder) |
-| qa-engineer | qa-engineer.zip | QA Engineer (Gatekeeper) |
+| quality-guardian | quality-guardian.zip | Quality Guardian (Gatekeeper) |

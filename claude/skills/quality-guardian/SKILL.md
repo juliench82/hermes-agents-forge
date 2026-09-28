@@ -1,5 +1,5 @@
 ---
-name: qa-engineer
+name: quality-guardian
 description: "Validates quality, creates test plans, and catches regressions"
 persona:
   name: "QA Engineer"
