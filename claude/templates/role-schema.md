@@ -14,7 +14,14 @@ persona:
   communication_patterns:
     - <pattern 1>
     - <pattern 2>
+  team_role: <this skill's short slug, e.g. "market-scout">
+  team_members:
+    - name: <teammate skill slug>
+      handoff_when: <one-line trigger for handing off to this teammate>
 ```
+
+`team_role` and `team_members` are omitted entirely for Package 1 (single-skill)
+generations — a skill with no teammates should not carry an empty list.
 
 ## Archetype Definitions
 
@@ -83,5 +90,9 @@ persona:
     - "Always cite sources for claims"
     - "Present 3 options with trade-offs before recommending"
     - "Flag uncertainty explicitly"
+  team_role: "market-scout"
+  team_members:
+    - name: idea-challenger
+      handoff_when: "research is synthesized and ready for assumption-testing"
 ---
 ```

@@ -34,17 +34,46 @@ Ask these ONE at a time, waiting for each answer:
 
 ### Package Selection
 
-Based on answers, select a package tier:
+Package tiers are not inferred silently — they are confirmed with the user
+in Phase 1.5 before any design table is presented.
 
-- **Package 3 — Basic**: Single-skill, simple workflows
-- **Package 5 — Intermediate**: Coordinated team, 3-5 roles
-- **Package 7 — Complex**: Multi-project, coordination-heavy
+- **Package 1 — Basic**: Single skill, one clear job, no handoffs
+- **Package 3 — Intermediate**: Short pipeline, 3 roles, one handoff point
+- **Package 5 — Complex**: Multi-stage pipeline, 5 roles, branching or
+  review/gatekeeping stages
+
+## Phase 1.5: Tier Selection
+
+Based on the Question 1 and Question 4 answers, state the inferred tier and
+ask the user to confirm or override before designing the team:
+
+> "Based on what you've described, this looks like a [Package 1 / 3 / 5]
+> job. Here's why: [one-line reasoning]. Want me to proceed at this tier,
+> or would you prefer a different one?"
+
+### Tier Definitions (concrete, not vibes)
+
+- **Package 1 — Basic (1 skill)**: One clear job, one voice, no natural
+  handoff points. Signal: the Q1 answer names a single outcome or role
+  ("a mentor for X", "something that reviews Y").
+- **Package 3 — Intermediate (3 skills)**: A short pipeline with 2-3
+  natural stages and at most one handoff decision point. Signal: Q1 names
+  2-3 sequential verbs ("research, then validate, then draft").
+- **Package 5 — Complex (5 skills)**: A multi-stage pipeline with
+  branching or review/gatekeeping stages. Signal: Q1 names 4+ sequential
+  verbs, or Q4 explicitly asks for review/QA/coordination roles.
+
+If the user's answer is ambiguous between tiers, default to presenting the
+SMALLER tier's team table plus one line: "I could also expand this to a
+[N]-skill team with [what it'd add] — want that instead?" Never silently
+expand scope beyond what Q1 stated.
 
 ## Phase 2: Design
 
 ### Team Proposal
 
-Present a table with for each skill:
+Present a table for each skill at the CONFIRMED tier, with a one-line
+rationale per role tying it back to the user's Q1/Q4 answers:
 
 | Name | Role | Responsibilities | Primary Tools | Dependencies |
 |------|------|-----------------|----------------|--------------|
@@ -66,6 +95,12 @@ Ask: **"Shall I generate these skills? This will create SKILL.md files and packa
 3. Add persona from `templates/role-schema.md`
 4. Add hooks if needed (before_user_prompt, after_tool_result)
 5. Add code files if needed (JavaScript/Python for executable logic)
+6. Add a `team_role` and `team_members` block to the persona frontmatter,
+   listing every other skill generated in this same bootstrap run
+7. Append the standard "Team Awareness" section from
+   `templates/team-awareness.md` to the skill body
+8. Update the shared `skills/TEAM.md` roster with this skill's name,
+   team_role, and one-line responsibility
 
 ### SKILL.md Format
 
@@ -124,6 +159,15 @@ After upload, provide a concrete first task to verify the skills work together:
 
 > "Use market-scout to analyze the market for [idea], then use idea-challenger to validate the key assumptions, then use product-manager to create a specification."
 
+### Note on Runtime Behavior
+
+Claude Chat runs one persona at a time within a conversation — there is no
+concurrent multi-agent execution. "Team" behavior is simulated: Claude
+switches voice and responsibility sequentially based on the Team Awareness
+instructions embedded in each skill, and on `skills/TEAM.md`. For genuinely
+parallel or autonomously-triggered agents, this bootstrap process is not
+sufficient.
+
 ## Hard Rules
 
 - Never create skills with duplicate names
@@ -137,5 +181,6 @@ After upload, provide a concrete first task to verify the skills work together:
 - `templates/standard-skill.md` — Base skill structure
 - `templates/hooks-skill.md` — Skill with before/after hooks
 - `templates/role-schema.md` — Persona schema for skill personalities
+- `templates/team-awareness.md` — Shared cross-skill switching instructions
 
 This manual is the authoritative source. If any local copy conflicts, follow this version.
