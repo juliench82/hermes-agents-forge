@@ -541,7 +541,6 @@ Never let a general "unblock card" action itself become authorization to perform
 - `hermes/catalog/roles/soul-schema.md`
 - `hermes/catalog/skills.json`
 - `hermes/skills/workflow-builder/SKILL.md`
-- `templates/WORKFLOW-KICKOFF.md`
 - Official HERMES docs: [https://hermes-agent.nousresearch.com/docs/](https://hermes-agent.nousresearch.com/docs/)
 - Built-in Tools Reference: [https://hermes-agent.nousresearch.com/docs/reference/tools-reference](https://hermes-agent.nousresearch.com/docs/reference/tools-reference)
 
