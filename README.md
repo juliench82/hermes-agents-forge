@@ -1,263 +1,166 @@
 # HERMES Forge
 
-**Agent-directed onboarding for autonomous HERMES teams**
+**Agent-directed onboarding for autonomous AI teams**
 
-Repo: https://github.com/juliench82/hermes-agents-forge  
+Repo: https://github.com/juliench82/hermes-agents-forge
 Live instructions: https://hermes-agents-forge.vercel.app/llms.txt
 
 ---
 
-## What HERMES Forge is
+## What this repo is
 
-HERMES Forge is a self‑contained, agent‑directed onboarding system for HERMES. A customer with HERMES already installed visits the Forge site, clicks **Read agent instructions**, and their HERMES agent reads `llms.txt`. From there, the agent:
+HERMES Forge is a self-contained, agent-directed onboarding system. The
+methodology is the same everywhere: your agent reads one plain-text operating
+manual, interviews you, designs a team of specialists, asks for one explicit
+approval, provisions it, verifies it, and hands off a first task.
 
-1. Interviews the user (5–6 questions).
-2. Selects a package tier (3 / 5 / 7 specialists).
-3. Proposes a team of bot‑mode profiles.
-4. Waits for explicit confirmation.
-5. Provisions isolated profiles with real skills and SOUL.md personas.
-6. Verifies the team and hands off a first task.
+**No installation. No cloning. No configuration. The agent is the installer.**
 
-This quickstart shows you exactly how to run that flow end‑to‑end and verify it worked.
+This repository now ships that methodology for three platforms. Each one is
+self-contained — read only its own `llms.txt`, and ignore the others.
 
----
-
-## Prerequisites
-
-- HERMES Desktop or CLI installed and working.
-- A GitHub account (for code workflows).
-- A browser (Chrome/Brave) for research and docs.
-- Optional but recommended: Gmail and Google Docs access.
-
-You do **not** need to clone any repo or run manual install scripts. The agent will fetch what it needs from `llms.txt`.
+| Platform | Entry point | What you get |
+|---|---|---|
+| **HERMES** | `hermes/llms.txt` | Isolated bot-mode profiles with `SOUL.md` personas, wired as an autonomous work force |
+| **Claude** | `claude/llms.txt` | Claude Desktop Chat skills, packaged as ready-to-upload ZIPs |
+| **Codex** | `codex/llms.txt` | Codex `.clmd` skills installed to `~/.codex/skills/` |
 
 ---
 
-## Step 1 — Start the flow
+## The shared methodology
 
-In your HERMES session, use this exact prompt:
+Every platform follows the same six steps:
+
+1. **Interview** — 5 questions: goals, tools, quality bar, complexity, exclusions.
+2. **Select a tier** — 3 / 5 / 7 specialists, by complexity. Never 4 or 6.
+3. **Propose the team** — names, roles, responsibilities, tools, boundaries.
+4. **One approval** — a single explicit yes covers the whole plan.
+5. **Provision** — create real personas and real skills on that platform.
+6. **Verify** — receipts before any "done" claim. Never a false completion.
+
+---
+
+## HERMES
+
+Full documentation: **[`hermes/README.md`](hermes/README.md)**
+Operating manual: **[`hermes/llms.txt`](hermes/llms.txt)** (also served live at the URL above)
 
 ```text
 Read and follow the agent instructions at https://hermes-agents-forge.vercel.app/llms.txt
 ```
 
-If your HERMES agent supports browser automation, it may open the URL. If not, it should fetch the plain‑text file directly. Either way, the content it reads is the same operating manual.
+Provisions isolated Hermes profiles, rich `SOUL.md` personas against the 10-section
+schema, real installed skills, an autonomy chain, and typed decision cards routed
+through a single decision bot.
 
-**Success signal:** The agent begins an interview with you, one question at a time.
-
----
-
-## Step 2 — The interview (5–6 questions)
-
-The agent will ask about your goals, tools, quality bar, complexity, and constraints. Answer in plain language. Example answers for a solo founder who wants "idea → app":
-
-1. **What should your agent team do for you?**  
-   "Take a random business idea for an app and build it end‑to‑end: research, spec, code, test, deploy."
-
-2. **Which tools, sites, and accounts are involved?**  
-   "GitHub, browser for research, Gmail, Google Docs. I'm open to suggestions for project tracking and deployment."
-
-3. **What's your quality bar before something is 'done'?**  
-   "Code must run, pass basic tests, and be demonstrable. I want human‑readable summaries before any public release."
-
-4. **How complex is your work? (single project or several? how many moving parts?)**  
-   "One project at a time, but each project spans research, product, design, frontend, backend, QA, and release."
-
-5. **Is there anything you do NOT want automated?**  
-   "No — I want the team to iterate on code until it's reliably working and demo‑ready."
-
-The agent uses your answers to pick a package tier.
-
----
-
-## Step 3 — Package selection (3 / 5 / 7)
-
-Forge defines three tiers:
-
-- **Package 3 — Basic:** Single‑domain, simple workflows.
-- **Package 5 — Intermediate:** Multi‑domain, needs analysis and review.
-- **Package 7 — Complex:** Multi‑project, coordination‑heavy.
-
-For "idea → app" with research, product, design, frontend, backend, QA, and release, the correct tier is **Package 7 (Complex)**.
-
-**Success signal:** The agent explicitly states "Package 7 (Complex)" and lists 7 specialist roles.
-
----
-
-## Step 4 — Team proposal
-
-The agent must present a table or list with, for each specialist:
-
-- Name (e.g., `market-researcher`, `product-manager`, `lead-architect`, `frontend-developer`, `backend-developer`, `qa-engineer`, `release-manager`).
-- Role and responsibilities.
-- Primary tools (browser, GitHub, terminal, docs).
-- Browser mode: **"Use My Real Browser Profile"** presented as the default.
-
-It must then ask:
-
-> "Shall I provision this team as isolated bot‑mode profiles? This will create separate HERMES profiles under `~/.hermes/profiles/<name>/`."
-
-**Do not confirm yet.** First, test the confirmation gate.
-
-### Test the confirmation gate
-
-Reply with a change request, for example:
-
-> "Wait — swap the researcher for an editor focused on landing‑page copy."
-
-The agent must:
-
-- Adjust the proposal accordingly.
-- Re‑present the updated team.
-- Ask for confirmation again.
-
-Only when you are happy with the proposal, reply:
-
-> "Yes — provision this team as isolated bot‑mode profiles."
-
----
-
-## Step 5 — Provisioning
-
-After your explicit "yes", the agent must provision each profile using HERMES CLI commands of the form:
-
-```bash
-hermes profile create <name> --description "<role>"
-hermes -p <name> config set model.default <model>
-# Write SOUL.md to ~/.hermes/profiles/<name>/SOUL.md
-hermes -p <name> skills install <skill> --yes
+```text
+hermes/
+├── llms.txt              # operating manual (agent-facing)
+├── README.md             # end-user quickstart
+├── HERMES.md             # Forge concepts → Hermes primitives mapping
+├── skills/
+│   ├── forge/            # Team Setup procedure
+│   └── workflow-builder/ # separate workflow phase
+└── catalog/
+    ├── skills.json
+    └── roles/
+        ├── soul-schema.md
+        └── examples/
 ```
 
-Key points:
-
-- Each specialist gets its own isolated profile under `~/.hermes/profiles/`.
-- `--yes` skips only the confirmation prompt; the security scanner still runs on every skill install.
-- The agent should install skills in four tiers:
-  1. **Builtins first** — `hermes -p <name> skills list` — never duplicate an enabled builtin.
-  2. **Forge library** — direct URL installs from the repo's `skills/library/` (with `--category` and `--yes`).
-  3. **Generative** — bespoke skills authored with `skill_manage` for uncovered roles.
-  4. **Hub** — `hermes skills search` → `inspect` → `install <skill> --yes` for genuine gaps.
-
-If the agent is interrupted mid‑provisioning, it must resume by:
-
-1. Running `hermes profile list`.
-2. Comparing to the proposed checklist.
-3. Creating only the missing profiles.
-
 ---
 
-## Step 6 — Verification
+## Claude
 
-Before claiming "team ready", the agent must verify:
+Full documentation: **[`claude/README.md`](claude/README.md)**
+Operating manual: **[`claude/llms.txt`](claude/llms.txt)**
 
-```bash
-hermes profile list
+```text
+Read and follow the agent instructions at claude/llms.txt
 ```
 
-and confirm that all proposed profiles exist. For each profile, it should optionally run:
+Generates Claude Desktop Chat skills. Each skill is a `SKILL.md` with a persona
+block in its frontmatter — the Claude equivalent of a Hermes `SOUL.md` — packaged
+as a ZIP for upload via `Settings → Capabilities → Skills → Add Skill`.
 
-```bash
-hermes -p <name> doctor
-hermes -p <name> skills list
+```text
+claude/
+├── llms.txt              # operating manual (agent-facing)
+├── templates/            # persona schema + standard SKILL.md template
+├── skills/<name>/        # 7 pre-built skills
+├── packages/*.zip        # ready to upload
+├── builders/             # validate + package + registry
+└── docs/pipeline.md      # how the 7 skills chain together
 ```
 
-**Success signals:**
-
-- The number of profiles matches the package tier (e.g., 7 for Package 7).
-- Each profile responds to `doctor` without errors.
-- Skills are listed and match the four‑tier plan (no duplicates of builtins).
-
-Only then should the agent say the team is ready and propose a first task.
+**Pre-built skills:** `market-scout`, `idea-challenger`, `decision-bot`,
+`product-manager`, `product-architect`, `mvp-builder`, `quality-guardian`.
 
 ---
 
-## Troubleshooting top 5 failures
+## Codex
 
-### 1. Browser CDP / remote debugging errors
+Full documentation: **[`codex/README.md`](codex/README.md)**
+Operating manual: **[`codex/llms.txt`](codex/llms.txt)**
 
-Symptoms: `browser_exec` fails, "Allow remote debugging?" popup loops, or connection timeouts.
+```text
+Read and follow the agent instructions at codex/llms.txt
+```
 
-Fix:
+Generates Codex skills as `.clmd` files — markdown with the same persona
+frontmatter — installed into `~/.codex/skills/`.
 
-- Quit Chrome fully (⌘Q, check Activity Monitor).
-- Launch Chrome with debugging enabled:
+```text
+codex/
+├── llms.txt              # operating manual (agent-facing)
+├── templates/            # persona schema + standard .clmd template
+├── skills/*.clmd         # 7 pre-built skills
+├── builders/             # generate + install
+└── docs/development.md   # create, test, install
+```
 
-  ```bash
-  /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \
-    --remote-debugging-port=9222 \
-    --user-data-dir="$HOME/.hermes/chrome-debug-profile" &
-  ```
+**Install the pre-built skills:**
 
-- In HERMES: `/browser connect ws://localhost:9222`  
-  Or set `BROWSER_CDP_URL="http://localhost:9222"` in `~/.hermes/.env`.
-
-Use browser automation only when needed; the Forge bootstrap itself does not require it.
-
----
-
-### 2. Partial team creation
-
-Symptoms: Agent claims "team ready" but `hermes profile list` shows fewer profiles than promised.
-
-Fix:
-
-- Run `hermes profile list`.
-- Compare to the proposed checklist.
-- Ask the agent to create only the missing profiles.
-- Require `hermes profile list` again before accepting "done".
+```bash
+python3 codex/builders/install_skills.py
+```
 
 ---
 
-### 3. Skill install prompts breaking autonomy
+## Why one repo
 
-Symptoms: Agent stops at "Confirm skill install? [y/N]" and waits.
+The methodology is platform-agnostic. What changes per platform is only the
+delivery mechanism:
 
-Fix:
+| | Hermes | Claude | Codex |
+|---|---|---|---|
+| Persona container | `SOUL.md` per profile | `persona:` block in `SKILL.md` | `persona:` block in `.clmd` |
+| Distribution | Hermes CLI | ZIP upload via UI | filesystem copy |
+| Team shape | autonomous work force + dispatcher | sequential skill chain | sequential skill chain |
 
-- Ensure the agent uses `--yes` on all `skills install` commands.
-- For Forge library skills, the single approval to run the flow covers all installs; `--yes` skips only the prompt, not the security scan.
-
----
-
-### 4. Model drift / language switching / hallucination
-
-Symptoms: Agent switches languages, invents commands, or claims impossible actions.
-
-Fix:
-
-- Use a medium or high reasoning model if available.
-- Keep the initial prompt minimal and unchanged:  
-  `Read and follow the agent instructions at https://hermes-agents-forge.vercel.app/llms.txt`
-- If drift occurs, restart with a fresh session and the same prompt.
+Keeping them together makes the shared methodology reviewable in one place and
+lets each platform's instructions be diffed against the others.
 
 ---
 
-### 5. False "done" claims
+## Repository layout
 
-Symptoms: Agent says "team is ready" without running `hermes profile list` or verifying skills.
-
-Fix:
-
-- Require the agent to run and show `hermes profile list`.
-- Require at least one `hermes -p <name> doctor` and `skills list` per profile.
-- Do not accept "done" until verification commands are shown.
-
----
-
-## Next steps
-
-Once your team is verified:
-
-1. Give it a concrete first project brief (one paragraph: idea, target users, must‑have features).
-2. Let the team run through research → spec → code → test → deploy.
-3. Observe how the QA loop forces iteration until the app is demo‑ready.
-
-For deeper playbooks (interview scripts, role SOUL.md templates, skills engineering), see the paid HERMES Forge guides.
+```text
+/
+├── README.md        # this file — multi-platform front door
+├── PRODUCT.md       # product requirements
+├── CHANGELOG.md
+├── LICENSE
+├── site/            # deployed to Vercel (site + live llms.txt)
+├── hermes/          # Hermes platform instructions
+├── claude/          # Claude platform instructions
+└── codex/           # Codex platform instructions
+```
 
 ---
 
 ## Links
 
 - Repo: https://github.com/juliench82/hermes-agents-forge
-- Live instructions: https://hermes-agents-forge.vercel.app/llms.txt
+- Live HERMES instructions: https://hermes-agents-forge.vercel.app/llms.txt
 - HERMES docs: https://hermes-agent.nousresearch.com/docs

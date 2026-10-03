@@ -39,5 +39,5 @@ the same sections. Depth comes from grounding, never from templates.
 
 ## Examples
 
-`catalog/roles/examples/` — a system architect and a social media manager,
+`hermes/catalog/roles/examples/` — a system architect and a social media manager,
 both built on this schema, to calibrate expected depth.
