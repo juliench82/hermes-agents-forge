@@ -28,3 +28,7 @@ a:focus-visible{outline:2px solid var(--yellow);outline-offset:3px;border-radius
 .skill-chips li::before{content:"◆ ";color:var(--orange);font-size:8px;vertical-align:2px}
 @media(max-width:800px){.platform-grid,.steps{grid-template-columns:1fr}.platforms,.method,.skills{padding-bottom:95px}.platform:hover{transform:none}.method-note{font-size:17px}}
 @media(prefers-reduced-motion:reduce){.platform{transition:none}}
+
+/* Overflow fix — decorative clip layer (revert = delete this block + unwrap .decor-clip in index.html) */
+.decor-clip{position:fixed;inset:0;overflow:hidden;pointer-events:none}
+.decor-clip .grid{position:absolute}
