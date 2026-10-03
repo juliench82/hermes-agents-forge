@@ -1,4 +1,6 @@
-# HERMES Forge
+![hero](site/public/hero2.png)
+
+# Hermes Agents Forge
 
 **Agent-directed onboarding for autonomous AI teams**
 
@@ -9,7 +11,7 @@ Live instructions: https://hermes-agents-forge.vercel.app/llms.txt
 
 ## What this repo is
 
-HERMES Forge is a self-contained, agent-directed onboarding system. The
+Hermes Agents Forge is a self-contained, agent-directed onboarding system. The
 methodology is the same everywhere: your agent reads one plain-text operating
 manual, interviews you, designs a team of specialists, asks for one explicit
 approval, provisions it, verifies it, and hands off a first task.
