@@ -32,3 +32,6 @@ a:focus-visible{outline:2px solid var(--yellow);outline-offset:3px;border-radius
 /* Overflow fix — decorative clip layer (revert = delete this block + unwrap .decor-clip in index.html) */
 .decor-clip{position:fixed;inset:0;overflow:hidden;pointer-events:none}
 .decor-clip .grid{position:absolute}
+
+/* Overflow fix v2 — real-device horizontal scroll: iOS Safari ignores body-only overflow-x, apply to html as well */
+html{overflow-x:hidden}
