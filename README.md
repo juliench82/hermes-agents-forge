@@ -33,7 +33,11 @@ self-contained — read only its own `llms.txt`, and ignore the others.
 
 Every platform follows the same six steps:
 
-1. **Interview** — 5 questions: goals, tools, quality bar, complexity, exclusions.
+1. **Interview** — defaults first, then one question. On **HERMES** the agent presents the
+   default design in one short plain-language summary and asks a single question — *"Is there
+   any specific non-default case for you?"* The **Claude** and **Codex** packages use a
+   5-question interview instead (goals, tools, quality bar, complexity, exclusions). Check the
+   `llms.txt` you are pointing your agent at before assuming which one applies.
 2. **Select a tier** — 3 / 5 / 7 specialists, by complexity. Never 4 or 6.
 3. **Propose the team** — names, roles, responsibilities, tools, boundaries.
 4. **One approval** — a single explicit yes covers the whole plan.
