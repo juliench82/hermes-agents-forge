@@ -31,9 +31,13 @@ No installation, no cloning, no configuration. The agent is the installer.
 
 ## The Flow (what the agent executes)
 
-1. Read, in order: `site/llms.txt` → this file → `hermes/skills/forge/SKILL.md` →
-   `hermes/catalog/roles/soul-schema.md` → `hermes/catalog/skills.json`
-2. Interview the user — one question at a time, keeping their exact words
+1. Read, in order: this file → `hermes/skills/forge/SKILL.md` →
+   `hermes/catalog/roles/soul-schema.md` → `hermes/catalog/skills.json` →
+   `site/llms.txt`. The manual wins on any conflict; the read order here is
+   the order you resolve against it, not an override.
+2. Interview the user — present the defaults in one short plain-language
+   summary, then ask exactly one question: "Is there any specific non-default
+   case for you?" — keeping their exact words
 3. Propose the team (names, roles, tools, browser mode) and ask exactly:
    "Shall I provision this team as isolated bot-mode profiles?"
 4. After one explicit yes: create the profiles, write each persona against

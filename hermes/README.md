@@ -11,7 +11,7 @@ Live instructions: https://hermes-agents-forge.vercel.app/llms.txt
 
 HERMES Forge is a self‑contained, agent‑directed onboarding system for HERMES. A customer with HERMES already installed visits the Forge site, clicks **Read agent instructions**, and their HERMES agent reads `llms.txt`. From there, the agent:
 
-1. Interviews the user (5–6 questions).
+1. Interviews the user — defaults first, then one question.
 2. Selects a package tier (3 / 5 / 7 specialists).
 3. Proposes a team of bot‑mode profiles.
 4. Waits for explicit confirmation.
@@ -43,30 +43,18 @@ Read and follow the agent instructions at https://hermes-agents-forge.vercel.app
 
 If your HERMES agent supports browser automation, it may open the URL. If not, it should fetch the plain‑text file directly. Either way, the content it reads is the same operating manual.
 
-**Success signal:** The agent begins an interview with you, one question at a time.
+**Success signal:** The agent presents the default design in one short summary and asks one
+question — *"Is there any specific non-default case for you?"*
 
 ---
 
-## Step 2 — The interview (5–6 questions)
+## Step 2 — The interview (defaults first, then one question)
 
-The agent will ask about your goals, tools, quality bar, complexity, and constraints. Answer in plain language. Example answers for a solo founder who wants "idea → app":
+The agent presents the default team and governance model in one short plain-language
+summary, then asks **one** question: *"Is there any specific non-default case for you?"*
 
-1. **What should your agent team do for you?**  
-   "Take a random business idea for an app and build it end‑to‑end: research, spec, code, test, deploy."
-
-2. **Which tools, sites, and accounts are involved?**  
-   "GitHub, browser for research, Gmail, Google Docs. I'm open to suggestions for project tracking and deployment."
-
-3. **What's your quality bar before something is 'done'?**  
-   "Code must run, pass basic tests, and be demonstrable. I want human‑readable summaries before any public release."
-
-4. **How complex is your work? (single project or several? how many moving parts?)**  
-   "One project at a time, but each project spans research, product, design, frontend, backend, QA, and release."
-
-5. **Is there anything you do NOT want automated?**  
-   "No — I want the team to iterate on code until it's reliably working and demo‑ready."
-
-The agent uses your answers to pick a package tier.
+Answer "no" to proceed with the defaults, or name the specific cases and the agent adapts
+only those dimensions. Ground the personas in your own words. Answer in plain language.
 
 ---
 

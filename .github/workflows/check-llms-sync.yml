@@ -1,0 +1,39 @@
+name: check llms.txt sync
+
+# site/llms.txt is the deployed manual and hermes/llms.txt is the repo copy.
+# They are committed as two byte-identical files with no build step keeping
+# them in sync, so a manual edit that skips one silently forks them and the
+# agents that read the two copies provision differently.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  llms-in-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fail if the deployed manual and the repo copy differ
+        run: |
+          if ! diff -u hermes/llms.txt site/llms.txt; then
+            echo ""
+            echo "::error::hermes/llms.txt and site/llms.txt have diverged."
+            echo "site/llms.txt is what agents actually fetch from the live URL."
+            echo "Make the same edit in both files, or copy one over the other:"
+            echo "  cp hermes/llms.txt site/llms.txt"
+            exit 1
+          fi
+
+      - name: Fail if site/llms.txt does not match the deployed manual
+        run: |
+          curl -fsSL --max-time 30 https://hermes-agents-forge.vercel.app/llms.txt \
+            > /tmp/deployed-llms.txt
+          if ! diff -u site/llms.txt /tmp/deployed-llms.txt; then
+            echo ""
+            echo "::error::The live URL serves a different manual than site/llms.txt."
+            echo "Redeploy the site before merging an llms.txt change."
+            exit 1
+          fi
