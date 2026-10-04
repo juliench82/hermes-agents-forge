@@ -52,8 +52,11 @@ Full documentation: **[`hermes/README.md`](hermes/README.md)**
 Operating manual: **[`hermes/llms.txt`](hermes/llms.txt)** (also served live at the URL above)
 
 ```text
-Read and follow the agent instructions at https://hermes-agents-forge.vercel.app/llms.txt
+https://hermes-agents-forge.vercel.app/llms.txt
 ```
+
+Sharing the link is the request to run it — the agent starts the interview immediately, no
+extra prompt needed.
 
 Provisions isolated Hermes profiles, rich `SOUL.md` personas against the 10-section
 schema, real installed skills, an autonomy chain, and typed decision cards routed
