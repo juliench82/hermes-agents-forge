@@ -35,13 +35,22 @@ You do **not** need to clone any repo or run manual install scripts. The agent w
 
 ## Step 1 — Start the flow
 
-In your HERMES session, use this exact prompt:
+In your HERMES session, paste the URL — on its own, with no other text:
 
 ```text
-Read and follow the agent instructions at https://hermes-agents-forge.vercel.app/llms.txt
+https://hermes-agents-forge.vercel.app/llms.txt
 ```
 
-If your HERMES agent supports browser automation, it may open the URL. If not, it should fetch the plain‑text file directly. Either way, the content it reads is the same operating manual.
+Sharing that link **is** the request to run the flow. The agent starts Team Setup
+immediately; it will not ask what you want done with it. If your agent does not fetch a bare
+link on its own, prefix it so the content is attached:
+
+```text
+@url:https://hermes-agents-forge.vercel.app/llms.txt
+```
+
+If your HERMES agent supports browser automation, it may open the URL. If not, it should fetch
+the plain‑text file directly. Either way, the content it reads is the same operating manual.
 
 **Success signal:** The agent presents the default design in one short summary and asks one
 question — *"Is there any specific non-default case for you?"*
@@ -215,7 +224,7 @@ Fix:
 
 - Use a medium or high reasoning model if available.
 - Keep the initial prompt minimal and unchanged:  
-  `Read and follow the agent instructions at https://hermes-agents-forge.vercel.app/llms.txt`
+  `https://hermes-agents-forge.vercel.app/llms.txt`
 - If drift occurs, restart with a fresh session and the same prompt.
 
 ---
