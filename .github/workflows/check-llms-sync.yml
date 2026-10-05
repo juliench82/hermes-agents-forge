@@ -1,39 +1,123 @@
 name: check llms.txt sync
 
-# site/llms.txt is the deployed manual and hermes/llms.txt is the repo copy.
-# They are committed as two byte-identical files with no build step keeping
-# them in sync, so a manual edit that skips one silently forks them and the
-# agents that read the two copies provision differently.
+# Two different failure modes, so two different gates.
+#
+# 1. hermes/llms.txt and site/llms.txt are committed byte-identical with no build
+#    step keeping them in sync, so a manual edit that skips one silently forks
+#    the manual and agents reading the two copies provision differently.
+#    This is always blocking, on PRs and on main.
+#
+# 2. site/llms.txt vs the live URL. Vercel deploys from main, so on a PR that
+#    edits llms.txt the live URL is EXPECTED to differ — the deploy cannot
+#    happen before the merge. Blocking there makes such a PR permanently
+#    unmergeable, which is the deadlock this workflow used to have.
+#    So the live check is a warning on a PR that touches the manual, and strict
+#    everywhere else. On a main push it polls while the deploy lands.
 
 on:
   push:
     branches: [main]
   pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
 
 jobs:
   llms-in-sync:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Fail if the deployed manual and the repo copy differ
+      - name: Scope — did this change touch the manual?
+        id: scope
+        run: |
+          set -uo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base="${{ github.base_ref }}"
+            git fetch --no-tags --force origin \
+              "+refs/heads/${base}:refs/remotes/origin/${base}" || true
+            # actions/checkout on pull_request checks out the synthetic merge
+            # commit, whose first parent IS the PR head. Diffing from that is
+            # the reliable path; the remote-tracking ref is only a fallback.
+            head_sha="${{ github.event.pull_request.head.sha }}"
+            if git cat-file -e "${head_sha}^{commit}" 2>/dev/null; then
+              changed="$(git diff --name-only "${head_sha}" HEAD 2>/dev/null || true)"
+            elif git rev-parse --verify "origin/${base}" >/dev/null 2>&1; then
+              changed="$(git diff --name-only "origin/${base}...HEAD" 2>/dev/null || true)"
+            else
+              changed="$(git diff --name-only HEAD^ HEAD 2>/dev/null || true)"
+            fi
+          else
+            changed="$(git diff --name-only HEAD^ HEAD 2>/dev/null || true)"
+          fi
+          printf 'changed files:\n%s\n' "${changed:-<none>}"
+          if printf '%s\n' "${changed}" \
+            | grep -qxE '(hermes|site)/llms\.txt'; then
+            echo "touched=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "touched=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Gate — the two committed copies must be byte-identical
         run: |
           if ! diff -u hermes/llms.txt site/llms.txt; then
             echo ""
             echo "::error::hermes/llms.txt and site/llms.txt have diverged."
             echo "site/llms.txt is what agents actually fetch from the live URL."
-            echo "Make the same edit in both files, or copy one over the other:"
-            echo "  cp hermes/llms.txt site/llms.txt"
+            echo "Fix with: cp hermes/llms.txt site/llms.txt"
             exit 1
+          fi
+          echo "committed copies are byte-identical"
+
+      - name: Check — does the live URL serve this exact manual?
+        env:
+          # A PR that edits the manual cannot be green on this step by design.
+          PR_TOUCHED: ${{ github.event_name == 'pull_request' && steps.scope.outputs.touched == 'true' }}
+        run: |
+          set -uo pipefail
+          url="https://hermes-agents-forge.vercel.app/llms.txt"
+
+          # On main the deploy starts after this workflow, so poll for it.
+          # The site sets Cache-Control: max-age=300, so every attempt carries a
+          # unique query param — without it a cached copy could mask a deploy
+          # for 5 minutes.
+          attempts=1
+          [ "${{ github.event_name }}" = "push" ] && attempts=18
+
+          match=0
+          for i in $(seq 1 "$attempts"); do
+            if curl -fsSL --max-time 30 "${url}?ci=${GITHUB_RUN_ID}-${i}" \
+                 -o /tmp/live.txt 2>/dev/null \
+               && cmp -s site/llms.txt /tmp/live.txt; then
+              match=1
+              echo "live URL matches site/llms.txt (attempt ${i}/${attempts})"
+              break
+            fi
+            [ "$i" -lt "$attempts" ] && sleep 10
+          done
+
+          if [ "$PR_TOUCHED" = "true" ]; then
+            if [ "$match" -eq 1 ]; then
+              echo "live URL already matches — nothing pending."
+            else
+              echo ""
+              echo "::warning::live URL does not match yet. Expected on this PR:"
+              echo "Vercel deploys from main, so the URL only catches up after"
+              echo "merge + deploy. The main-push run is what enforces it."
+            fi
+            exit 0
           fi
 
-      - name: Fail if site/llms.txt does not match the deployed manual
-        run: |
-          curl -fsSL --max-time 30 https://hermes-agents-forge.vercel.app/llms.txt \
-            > /tmp/deployed-llms.txt
-          if ! diff -u site/llms.txt /tmp/deployed-llms.txt; then
-            echo ""
-            echo "::error::The live URL serves a different manual than site/llms.txt."
-            echo "Redeploy the site before merging an llms.txt change."
-            exit 1
+          if [ "$match" -eq 1 ]; then
+            exit 0
           fi
+
+          echo ""
+          echo "::error::The live URL does not serve site/llms.txt."
+          diff -u site/llms.txt /tmp/live.txt 2>/dev/null | head -40 || true
+          echo ""
+          echo "Redeploy the site: vercel --prod  (or trigger a Vercel deploy)."
+          exit 1
