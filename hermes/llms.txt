@@ -1,6 +1,6 @@
 # HERMES Agents Forge — Operating Manual for HERMES Agents
 
-Version: v0.7.8 (Forge Team Setup 1.29.0; Workflow Builder 1.6.8)
+Version: v0.7.9 (Forge Team Setup 1.29.0; Workflow Builder 1.6.8)
 
 > You are a HERMES agent. The human who sent you here is our customer and already runs HERMES — you are their agent. This manual is the complete operating contract for provisioning a high-quality governed team that runs as an **autonomous work force** with a single **decision bot**, then handing it to the separate Workflow Builder.
 
@@ -199,6 +199,18 @@ Before the Team Setup interview:
 
 These steps prevent token bloat and mid-flow stalls. Provider failures, unsupported keys, and skipped setup capabilities must be recorded explicitly.
 
+### Step 1b — Cost verification before gating any live run
+
+Establish what a run actually costs **before** using any balance, quota, or credit signal to decide whether work may proceed. A setup that verifies on a free model must be able to say so with a receipt instead of a guess.
+
+1. **Read the price cache.** `~/.hermes/cache/endpoint_model_metadata.json`, shape `{base_url: {"models": {id: {"pricing": {"prompt": "…", "completion": "…"}}}}}`. A price of `"0.0000000000"` means the model is genuinely free.
+2. **Use the runtime's own test.** `agent/credits_tracker.py::is_free_tier_model()` is the runtime's authority — true for a `:free` suffix, a `stealth/` prefix, the Nous welcome host, or a zero-price cache hit. Quote it rather than re-deriving the rule.
+3. **A credits or quota header is not a per-run meter.** The notice `⚠ You've used $X of your $Y cap` (`agent/credits_tracker.py:200`) reports an **account-level subscription balance** read from response headers. Per-run cost never enters that number, so it cannot be compared across runs, and it does not move when the active model is free.
+4. **The forbidden move — treating that notice as a budget.** If a credit notice is the only reason a live verification, smoke test, or phase is recorded `SKIPPED`, the receipt is missing because the agent did not measure, not because the work was unaffordable. Run it, then report its measured cost. A free model suppresses only `credits.depleted` (`agent/credits_tracker.py:222`); the usage gauge still fires, so its presence proves nothing about the price of the run in hand.
+5. **Measure the run.** `hermes -z "<prompt>" --usage-file <path>` writes `estimated_cost_usd` and `cost_status`. Note that `--usage-file` is a **global** flag — `hermes chat -q "…" --usage-file <path>` fails with `unrecognized arguments`; use the one-shot `-z` form. Or read `state.db` → `session_model_usage.actual_cost_usd` per model and session.
+6. **Two false signals that are not cost evidence.** `hermes insights` reporting "no pricing data" for a zero-priced SKU is a pricing-lookup gap, not a billing failure. `hermes usage` returning "No account usage available" for the active provider is a missing endpoint, not a zero balance. Neither may justify skipping work.
+7. **Record it.** The per-run measured cost, the model, and the provider belong in the config receipts alongside every other setting. A cost claim without a measured figure is not a receipt.
+
 ### Step 2 — Interview the user in one turn
 
 Apply the **Interview rule**: present the default team and governance model in one short summary, then ask one simple question — **"Is there any specific non-default case for you?"**
@@ -207,7 +219,9 @@ Defaults presented in the summary:
 
 1. Team supports the broad outcome/capability the customer names over the next 30 days.
 2. Specialist domains are chosen by the agent from the customer's stated outcome; non-negotiable tools and data sources are honored when named.
-3. Model/provider: the already-configured provider and the economical model tier; compression and low reasoning for workers; MOA off.
+3. Model/provider: the already-configured provider and the **cheapest tier that meets the capability bar**; a model whose price cache reads free is preferred for reasoning-heavy work. Reasoning: workers `low`, creative and verification stages `high` or above; compression stays on a stable cheap lane; MOA off. The chosen model, provider, and its measured price are recorded as a config receipt.
+   - **Resolve the free model from the installed provider's catalog and price cache — never hardcode one in this manual.** The free SKU differs per provider and per build, a preview or `stealth/` SKU can change or disappear, and a customer on another provider lane has never heard of it. Cite the measured price, not the model name, as the evidence that a tier is free.
+   - **Never silently change the customer's configured default model.** Model selection is part of the team-design approval, exactly like the roster: propose the switch, show the price receipt that motivates it, and let the customer accept or decline. An agent that swaps a paid default for a free one without asking has done the thing this manual exists to prevent.
 4. Autonomy: fully autonomous work force inside the approval policy; the decision bot is the only approval layer; spend, publishing, deploys, and anything external or irreversible always require customer approval.
 5. Never touched: the customer's personal identity or financial data, credentials, personal accounts, or anything else the customer explicitly forbids.
 
@@ -379,6 +393,7 @@ Do not claim success until all applicable receipts exist:
 7. One role-identity/boundary/capability smoke test per profile; smoke tests must not execute a business workflow. The decision bot's smoke test must include one **decision-contract exchange** (a sample `decision_request` resolved against the human source and recorded as a typed `decision_response`). The exchange must be resolved **by the decision-bot profile itself**, never composed by the provisioning agent on its behalf; placeholder timestamps are prohibited.
 8. Zero-open-items checklist.
 9. Explicit record that no workflow assets or external workflow actions were created.
+10. Per-run measured cost for the smoke tests: the model, provider, and `estimated_cost_usd` or `actual_cost_usd` per profile (Step 1b items 5 and 7). A `SKIPPED` receipt whose reason is a credit, balance, or quota notice is not acceptable — re-measure and run it.
 
 A rejected setting, unavailable tool, provider failure, or unsupported runtime feature is recorded as `SKIPPED` with the exact reason. Never silently convert partial setup into "complete."
 
@@ -479,7 +494,8 @@ The final report must include verbatim setup receipts and state that no workflow
 
 ### Cost and recovery guidance
 
-- Compare `/usage` before and after setup; evaluate accepted-task cost, not token price alone.
+- Compare `/usage` before and after setup; evaluate accepted-task cost, not token price alone. A `/usage` block that cannot be fetched is not a measurement — see Step 1b item 6.
+- **Never gate work on a credit or quota notice.** `/usage` and any `You've used $X of your $Y cap` banner report an account-level balance, not the cost of the run in hand. If such a notice is the reason a verification is `SKIPPED`, that is a missing measurement, not a budget: measure the run (Step 1b item 5) and execute it.
 - If a model stalls, run `/compress` or start `/new`, then resume from the last receipt.
 - If a command fails, record the exact error, fix only the cause, and rerun the failing step; do not re-provision the whole team.
 - If skills fail, inspect provider/rate-limit/auxiliary settings before retrying.
@@ -522,6 +538,7 @@ Never let a general "unblock card" action itself become authorization to perform
 - Never duplicate profiles or enabled builtins.
 - Never read, modify, derive context from, or route work through profiles outside the approved roster — including pre-existing customer profiles. `HERMES_HOME` isolates Hermes state, not the filesystem: an agent's terminal still runs as the real user, so the real home must be treated as off-limits except the approved team paths.
 - Never invent skills, tools, models, integrations, or configuration keys.
+- **Never gate or skip work on a credit, balance, or quota notice, and never hardcode a specific free model — measure the price from the installed provider's catalog, then let the customer approve the model choice.**
 - Never force a dangerous security verdict.
 - Never let the coordinator implement worker-owned tasks.
 - Never let specialists own workflow discovery or approval.
