@@ -2,6 +2,7 @@
 
 ## [2026-10-05] — v0.7.9: Measure cost, never gate on a balance header
 
+- `hermes/llms.txt` and `site/llms.txt` (v0.7.9, commit 5340102): ship Kanban as `defaultEnabled: true` during Team Setup (Desktop bot-pool capacity switch flip), and add Story 3 — parent-chained six-card kanban pipeline with `request-review`/`request-changes` retry — as the final step after profile creation.
 - A Forge team was verified on a model priced at `0.0000000000`, and six live smoke tests were
   still recorded `SKIPPED` because a `⚠ You've used $X of your $Y cap` banner was read as a
   per-run budget. It is not one: `agent/credits_tracker.py:200` reports an account-level

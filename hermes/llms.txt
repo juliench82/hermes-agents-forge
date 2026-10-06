@@ -288,7 +288,19 @@ Create the approved decision-bot profile (outside the package count). Requiremen
 - Decision-source policy recorded in its SOUL.md: human (customer) by default; Jev when the installed Hermes exposes it and the customer approves the switch.
 - Compression/context hygiene, MOA off, economical model, low reasoning effort.
 
-#### 4.4 Autonomy wiring
+#### 4.4 Desktop bot-pool capacity (Kanban plugin)
+
+The Kanban board is a bundled plugin that ships **off by default** (`defaultEnabled: false` in the built-in plugin bundle). The agent-side `kanban` toolset must be enabled for every profile that carries a decision card, **and** the Desktop panel switch must be flipped so the board is visible in the desktop app and the switch propagates the toolset to the selected profile (`DESKTOP_PLUGIN_TOOLSETS = { kanban: 'kanban' }` — the switch is not UI-only).
+
+After the team is provisioned, on every profile that will carry cards:
+
+1. `hermes tools enable kanban` — enables the agent-side toolset for that profile; verify with `hermes -p <profile> tools list | grep kanban`.
+2. Flip the Desktop switch: **Capabilities → Plugins → Kanban → Desktop → ON**. Verify the sidebar entry appears and `hermes kanban list` reports the board.
+3. If the switch was already on (session `20261005_224524_ba0a44` lesson: the switch moved from Settings to Capabilities when the app relocated the plugin page), confirm the agent-side toolset is on too — the two are coupled but can disagree after an app update.
+
+Record each profile's toolset state in the config receipts; a profile with the toolset off cannot carry a decision card and its review lane spawns will crash with `Unknown skill(s): sdlc-review`.
+
+#### 4.5 Autonomy wiring
 
 1. Confirm every worker's SOUL.md and TEAM contract includes the next-stage card-creation rule.
 2. Confirm the decision bot is assigned as the `review`-state consumer for decision cards.
@@ -448,7 +460,36 @@ workflow-builder-kickoff:first-workflow:v1
 8. If multiple active matching cards exist, stop and report the duplicate.
 9. Append a receipt containing card/local-handoff ID, metadata, assignee, state, timestamp, dispatcher enforcement verdict, and team record path.
 
-Required card metadata for an enforced control-plane card:
+#### Story 3 — Role pipeline with retry
+
+After the handoff, create the six-worker kanban chain as parent-chained cards so the release pipeline advances itself end-to-end. Only the first card starts `ready`; each stage's completion contract creates the next via `hermes kanban create --parent <card> --assignee <next>`, and `quality-guardian` uses `request-changes` instead of approving:
+
+```bash
+hermes kanban create "Research audience + playlist targets" \
+  --assignee release-scout --tenant <slug> --json | jq -r .id
+# → pass that id as --parent to the content-studio card, etc.
+```
+
+The retry path uses the two CLI verbs the agents emit: `hermes kanban request-review` (move to `review` for the decision bot) and `hermes kanban request-changes <task_id> <reason...>` (send back to the producing stage). Both exist in the installed build — the agents call them, you drive them by hand only if needed.
+
+One caveat the tutorial omits: it says to click **Kanban in the left nav** of the *dashboard* (`hermes dashboard`). That's the web admin panel, a different surface from the desktop app — the desktop board is the plugin page you switched on in Step 4.4.
+
+The full pipeline shape (names are the approved chain, not a menu):
+
+```
+release-scout → content-studio → quality-guardian → gatekeeper → press-outreach → channel-operator
+```
+
+- `release-scout` owns audience research, comparables, curator/playlist targets with submission routes.
+- `content-studio` owns release copy, social variants, visual/video briefs.
+- `quality-guardian` verifies claims trace to sources, never edits what it judges, sends `request-changes`.
+- `gatekeeper` owns the only approval layer, routes `promote` / `request-changes` / `block`.
+- `press-outreach` owns the verified target list and pitch drafts; never sends without a gatekeeper decision card.
+- `channel-operator` owns approved content on real channels and the post log.
+
+A card may not be created for any stage that has no agent-side kanban toolset — check `hermes -p <profile> tools list` first; a missing toolset is recorded `SKIPPED` with the exact reason, not absorbed into "done".
+
+### Step 8 — Durable Team Setup handoff
 
 ```yaml
 kind: onboarding
@@ -473,34 +514,12 @@ idempotency_key: workflow-builder-kickoff:first-workflow:v1
 coordinator_profile: <stable coordinator>
 decision_bot_profile: <decision bot>
 team_record: $HERMES_HOME/TEAM.md  # resolved actual path, recorded verbatim
-workflow_execution_allowed: false
-next_required_action: explicit founder instruction to start Workflow Builder
-timestamp: <ISO-8601>
+|workflow_execution_allowed: false
+|next_required_action: explicit founder instruction to start Workflow Builder
+|timestamp: <ISO-8601>
 ```
 
 The dispatcher must route this card only to the coordinator, never spawn a specialist, never execute customer-work tools, and never advance it beyond the control-plane state machine. If enforcement is unsupported, the handoff remains local and non-executable, and a blocked card carrying advisory `status: READY` metadata must never be presented as enforced safety.
-
-### Step 8 — Durable Team Setup handoff
-
-Write/refresh the team record (`$HERMES_HOME/TEAM.md`, default `~/.hermes/TEAM.md`) without overwriting prior receipts, recording the resolved path verbatim, and report exactly:
-
-```text
-TEAM STATUS: PROVISIONED
-WORKFLOW HANDOFF: READY
-WORKFLOW STATUS: NONE
-```
-
-The final report must include verbatim setup receipts and state that no workflow-specific interview, execution card, routine, integration, trial, or external workflow action occurred.
-
-### Cost and recovery guidance
-
-- Compare `/usage` before and after setup; evaluate accepted-task cost, not token price alone. A `/usage` block that cannot be fetched is not a measurement — see Step 1b item 6.
-- **Never gate work on a credit or quota notice.** `/usage` and any `You've used $X of your $Y cap` banner report an account-level balance, not the cost of the run in hand. If such a notice is the reason a verification is `SKIPPED`, that is a missing measurement, not a budget: measure the run (Step 1b item 5) and execute it.
-- If a model stalls, run `/compress` or start `/new`, then resume from the last receipt.
-- If a command fails, record the exact error, fix only the cause, and rerun the failing step; do not re-provision the whole team.
-- If skills fail, inspect provider/rate-limit/auxiliary settings before retrying.
-- If the dispatcher or Kanban surface is unavailable, preserve the local handoff and do not substitute a worker or start workflow work.
-- If the user changes requirements, stop, revise the team plan, and obtain fresh approval.
 
 ## Stage 2 — Workflow Builder entry
 
