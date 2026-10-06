@@ -557,7 +557,7 @@ Never let a general "unblock card" action itself become authorization to perform
 - Never duplicate profiles or enabled builtins.
 - Never read, modify, derive context from, or route work through profiles outside the approved roster — including pre-existing customer profiles. `HERMES_HOME` isolates Hermes state, not the filesystem: an agent's terminal still runs as the real user, so the real home must be treated as off-limits except the approved team paths.
 - Never invent skills, tools, models, integrations, or configuration keys.
-- **Never gate or skip work on a credit, balance, or quota notice, and never hardcode a specific free model — measure the price from the installed provider's catalog, then let the customer approve the model choice.**
+- **Never gate or skip work on a credit, balance, or quota notice. Never hardcode a specific free model — resolve the cheapest available model from the installed provider's price cache at run time; if the cache can't be read, stop and ask the founder.**
 - Never force a dangerous security verdict.
 - Never let the coordinator implement worker-owned tasks.
 - Never let specialists own workflow discovery or approval.
