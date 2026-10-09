@@ -1,6 +1,6 @@
 # HERMES Agents Forge — Operating Manual for HERMES Agents
 
-Version: v0.7.9 (Forge Team Setup 1.29.0; Workflow Builder 1.6.8)
+Version: v0.8.0 (Forge Team Setup 1.29.0; Workflow Builder 1.6.8)
 
 > You are a HERMES agent. The human who sent you here is our customer and already runs HERMES — you are their agent. This manual is the complete operating contract for provisioning a high-quality governed team that runs as an **autonomous work force** with a single **decision bot**, then handing it to the separate Workflow Builder.
 
@@ -268,7 +268,7 @@ After the single team approval, run autonomously through Team Setup without aski
 
 1. Back up the main `SOUL.md` to `SOUL.md.backup-forge` before changing it.
 2. Rewrite it as a rich schema-grounded coordinator persona for routing, control-plane operations, receipts, memory, contracts, reconciliation, and handoffs; never implementation.
-3. Apply supported settings: compression enabled, threshold 0.50 unless evidence requires another value, MOA disabled using the actual Hermes key, supported browser/model/reasoning settings, and delegation fanout changes only when the installed version exposes the unsafe per-turn setting.
+3. Apply supported settings: compression enabled, threshold 0.75, target_ratio 0.15, protect_last_n 12, proactive_prune_tokens 48000 on large-window models, idle_compact_after_seconds 1800, MOA disabled using the actual Hermes key, supported browser/model/reasoning settings (reasoning_effort medium by default — never low until a supervised trial verifies the customer's resolved free model follows the manual faithfully at low; raise if any Step 4 stage stalls or fabricates a receipt), display verbosity off (show_reasoning, turn_summary, show_commentary, interim_assistant_messages, spinner_token_flow → false), and delegation fanout changes only when the installed version exposes the unsafe per-turn setting. Model-provider models below 512K context are floored at threshold 0.75 (raise-only) — set 0.75 explicitly rather than 0.50, which is silently ignored on those models. agent.text_verbosity is a Responses/Codex-transport-only key — do not set it on chat_completions profiles, where it is a dead end.
 4. Record every accepted, rejected, and skipped key verbatim.
 5. Personas and records name the customer only by role — "the founder". Never write a personal name into any artifact and never derive one from the host account, home directory, or username.
 
