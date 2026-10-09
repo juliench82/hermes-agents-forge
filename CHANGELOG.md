@@ -1,5 +1,21 @@
 # Changelog
 
+## [2026-10-09] — v0.8.0: Token-minimization defaults during onboarding
+
+- Step 4.1 provisions token-minimization defaults for the coordinator profile: threshold 0.75
+  (effective floor for models below 512K context; 0.50 is silently ignored on those models),
+  target_ratio 0.15, protect_last_n 12, proactive_prune_tokens 48000 on large-window models,
+  idle_compact_after_seconds 1800, reasoning_effort medium by default with a supervised-trial gate
+  before ever lowering to low, display verbosity off (show_reasoning, turn_summary,
+  show_commentary, interim_assistant_messages, spinner_token_flow → false).
+- Reasoning effort stays at medium by default — never low until a supervised trial verifies the
+  customer's resolved free model follows the manual faithfully at low; raise if any Step 4 stage
+  stalls or fabricates a receipt.
+- Warning: `agent.text_verbosity` is a Responses/Codex-transport-only key — do not set it on
+  `chat_completions` profiles, where it is a dead end.
+- Model-provider models below 512K context are floored at threshold 0.75 (raise-only) — set 0.75
+  explicitly rather than 0.50, which is silently ignored on those models.
+
 ## [2026-10-05] — v0.7.9: Measure cost, never gate on a balance header
 
 - `hermes/llms.txt` and `site/llms.txt` (v0.7.9, commit 5340102): ship Kanban as `defaultEnabled: true` during Team Setup (Desktop bot-pool capacity switch flip), and add Story 3 — parent-chained six-card kanban pipeline with `request-review`/`request-changes` retry — as the final step after profile creation.
