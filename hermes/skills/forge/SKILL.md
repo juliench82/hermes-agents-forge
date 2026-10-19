@@ -219,6 +219,33 @@ Create only the approved profiles, never duplicates, using official Hermes CLI c
 - Browser mode and tool access limited to the approved team capability.
 - The `kanban` toolset enabled (workers create the next stage's card).
 
+#### 4.2.1 Browser mode (anti-regression guard)
+
+`hermes profile create` runs `prompt_enable_tool_gateway()`, which pre-checks "browser" in the Nous tool-gateway checklist; accepting it writes `browser.cloud_provider: 'nous'` into the new profile's config. Runtime browser resolution is CDP override → hybrid local sidecar → cloud (`nous`) → local, so with `cloud_provider: 'nous'` the chain stops at the cloud gateway — a broken or unreachable gateway then silently falls through to the Himalaya/Gmail CLI and produces `.eml` fallback files instead of real browser sessions. After each worker profile is created, explicitly pin the local backend and verify it:
+
+```bash
+hermes config set -p <profile> browser.cloud_provider '' --force
+hermes config set -p <profile> browser.use_real_profile true
+hermes config set -p <profile> browser.backend browser-use
+```
+
+`browser.cloud_provider` is CLI-unregistered, so the first command prints the non-blocking notice `⚠ 'browser.cloud_provider' is not a recognized config key — it was saved anyway, but Hermes may not read it.` — `--force` silences it, and the runtime **does** read the key correctly via `_get_cloud_provider()` (`tools/browser_use_cli.py`), so the value takes effect despite the notice.
+
+Verify each profile's effective state and record the receipt:
+
+```text
+hermes -p <profile> config get browser
+```
+
+Expected receipt:
+
+```yaml
+browser:
+  cloud_provider: ''
+  use_real_profile: true
+  backend: browser-use
+```
+
 If interrupted, inspect `hermes profile list` and continue only with missing assets. Never recreate an existing profile.
 
 ### 3.3 Decision bot
