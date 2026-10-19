@@ -1,5 +1,23 @@
 # Changelog
 
+## [2026-10-11] — v0.8.1: The per-platform toolset gate is verified, never assumed
+
+- `hermes/llms.txt` and `site/llms.txt` (v0.8.1): `hermes tools enable kanban` carries no
+  `--platform` flag, so it reaches **only the default `cli` platform**. Every gateway platform
+  keeps `kanban` disabled independently — it is a member of the installed build's default-off set
+  — even though the platform bundle (`hermes-discord`, `hermes-telegram`, …) looks full in source.
+  A platform bundle that looks complete in source does **not** mean the toolset reaches the surface.
+- New **section 4.5 — Per-platform toolset gate (verify, never assume)**, generic across every
+  gateway platform (Discord, Telegram, Slack, WhatsApp, Signal, QQBot, Teams, Google Chat): verify
+  with `hermes tools list --platform <platform> | grep -E 'kanban|delegation|terminal'`, repair with
+  `hermes tools enable --platform <platform> kanban`, re-verify, then `hermes gateway restart` —
+  tool changes are materialized at gateway warmup, not mid-session. Triggered whenever the customer
+  names a messaging platform for the founder surface at interview (the premise is "manual request
+  in, decision out" — the platform is an inbound request surface, not only an outbound notifier).
+  An unrepaired gate is recorded `SKIPPED` with the exact reason, never reported as provisioned.
+- The line-297 instruction in 4.4 is scoped inline so it can no longer be misread as
+  platform-global, and the matching rule is added to `hermes/skills/forge/SKILL.md` §3.4 as item 6.
+
 ## [2026-10-09] — v0.8.0: Token-minimization defaults during onboarding
 
 - Step 4.1 provisions token-minimization defaults for the coordinator profile: threshold 0.75

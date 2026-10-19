@@ -219,6 +219,33 @@ Create only the approved profiles, never duplicates, using official Hermes CLI c
 - Browser mode and tool access limited to the approved team capability.
 - The `kanban` toolset enabled (workers create the next stage's card).
 
+#### 4.2.1 Browser mode (anti-regression guard)
+
+`hermes profile create` runs `prompt_enable_tool_gateway()`, which pre-checks "browser" in the Nous tool-gateway checklist; accepting it writes `browser.cloud_provider: 'nous'` into the new profile's config. Runtime browser resolution is CDP override → hybrid local sidecar → cloud (`nous`) → local, so with `cloud_provider: 'nous'` the chain stops at the cloud gateway — a broken or unreachable gateway then silently falls through to the Himalaya/Gmail CLI and produces `.eml` fallback files instead of real browser sessions. After each worker profile is created, explicitly pin the local backend and verify it:
+
+```bash
+hermes config set -p <profile> browser.cloud_provider '' --force
+hermes config set -p <profile> browser.use_real_profile true
+hermes config set -p <profile> browser.backend browser-use
+```
+
+`browser.cloud_provider` is CLI-unregistered, so the first command prints the non-blocking notice `⚠ 'browser.cloud_provider' is not a recognized config key — it was saved anyway, but Hermes may not read it.` — `--force` silences it, and the runtime **does** read the key correctly via `_get_cloud_provider()` (`tools/browser_use_cli.py`), so the value takes effect despite the notice.
+
+Verify each profile's effective state and record the receipt:
+
+```text
+hermes -p <profile> config get browser
+```
+
+Expected receipt:
+
+```yaml
+browser:
+  cloud_provider: ''
+  use_real_profile: true
+  backend: browser-use
+```
+
 If interrupted, inspect `hermes profile list` and continue only with missing assets. Never recreate an existing profile.
 
 ### 3.3 Decision bot
@@ -239,6 +266,7 @@ Create the approved decision-bot profile (outside the package count). It must ha
 3. Record the 9-to-5 pulse (cron) as disabled — no cron jobs during Team Setup.
 4. **Desktop bot-pool capacity.** The desktop app holds spawned bot backends in a pool (one app-global pool, all profiles share it): `maxBackends` = how many backends stay spawned, `idleMs` = how long an idle one survives before shutdown. For a team this size, raise it so bots actually wake: `maxBackends` ≥ team size + margin (workers + decision bot + coordinator headroom) and `idleMs` ≥ 30 min (prefer ~60) so idle bots stay warm. Mechanism: the app's Settings → Advanced pool-limits row, or the persisted `pool-limits.json` in the desktop app's data dir (write with builtin file tools: read → write → verify). Record the applied values verbatim in the config receipts. Context for the customer: the message *"Too many bots are running at once for this computer's limit"* is a **slot-wait timeout, not a hardware limit**, and slow bot "waking up" is a short `idleMs` — neither means the machine can't run the team. If no desktop app is present (headless gateway deployment), record `SKIPPED` — the pool is desktop-only.
 5. **Gateway persistence (the dispatcher must stay up).** The kanban dispatcher lives in the gateway; if the gateway is down, every `ready` card strands silently. Verify the gateway is supervised and survives reboot (`hermes gateway status` → supervised by launchd/systemd; `RunAtLoad`/`KeepAlive` set), and record the verdict. Observed live twice: the gateway was found "service not loaded" after a restart, stranding all ready cards until manually started. A down gateway is the first thing to check when cards sit `ready` with no worker — before assuming a worker problem.
+6. **Per-platform toolset gate (verify, never assume).** `hermes tools enable kanban` reaches **only the default `cli` platform** — it carries no `--platform` flag. Every gateway platform keeps `kanban` disabled independently (it is a member of the installed build's default-off set) even though the platform bundle (`hermes-discord`, `hermes-telegram`, …) looks full in source. Whenever the customer names a messaging platform for the founder surface (the premise is "manual request in, decision out" — the platform is an **inbound** request surface, not only an outbound notifier), verify the gate per platform: `hermes tools list --platform <platform> | grep -E 'kanban|delegation|terminal'` (a `✗ disabled kanban` line is the gate). Repair with `hermes tools enable --platform <platform> kanban`, re-verify (expect `✓ enabled kanban`), then `hermes gateway restart` — tool changes are materialized at gateway warmup, not mid-session. Record `platform_toolsets.<platform>` containing `kanban` in the config receipts. Generic across every gateway platform (Discord, Telegram, Slack, WhatsApp, Signal, QQBot, Teams, Google Chat), **not Discord-only**. An unrepaired gate is recorded `SKIPPED` with the exact reason (the `✗ disabled kanban` line and the platform), never reported as provisioned.
 
 ### 3.5 Role-tiered model optimization (Nous Portal subscription)
 

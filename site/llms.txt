@@ -1,6 +1,6 @@
 # HERMES Agents Forge — Operating Manual for HERMES Agents
 
-Version: v0.8.0 (Forge Team Setup 1.29.0; Workflow Builder 1.6.8)
+Version: v0.8.1 (Forge Team Setup 1.29.0; Workflow Builder 1.6.8)
 
 > You are a HERMES agent. The human who sent you here is our customer and already runs HERMES — you are their agent. This manual is the complete operating contract for provisioning a high-quality governed team that runs as an **autonomous work force** with a single **decision bot**, then handing it to the separate Workflow Builder.
 
@@ -276,6 +276,33 @@ After the single team approval, run autonomously through Team Setup without aski
 
 Create only approved profiles with official Hermes CLI commands; never recreate existing profiles after interruption. Each worker receives a rich schema-grounded persona, an unambiguous description, compression/context hygiene, MOA off using the supported key — per profile via `hermes config set -p <profile> moa.presets.default.enabled false` plus a `hermes config get` receipt, never a hand-edited `config.yaml` (its top-level `moa.enabled` shape is not a recognized runtime key) — an economical model unless pinned, low reasoning effort unless justified, only approved team-capability tools, and a SOUL.md that includes its next-stage card-creation rule (`hermes kanban create --parent <card> --assignee <next>` on completion, with artifact + acceptance criteria attached).
 
+#### 4.2.1 Browser mode (anti-regression guard)
+
+`hermes profile create` runs `prompt_enable_tool_gateway()`, which pre-checks "browser" in the Nous tool-gateway checklist; accepting it writes `browser.cloud_provider: 'nous'` into the new profile's config. Runtime browser resolution is CDP override → hybrid local sidecar → cloud (`nous`) → local, so with `cloud_provider: 'nous'` the chain stops at the cloud gateway — a broken or unreachable gateway then silently falls through to the Himalaya/Gmail CLI and produces `.eml` fallback files instead of real browser sessions. After each worker profile is created, explicitly pin the local backend and verify it:
+
+```bash
+hermes config set -p <profile> browser.cloud_provider '' --force
+hermes config set -p <profile> browser.use_real_profile true
+hermes config set -p <profile> browser.backend browser-use
+```
+
+`browser.cloud_provider` is CLI-unregistered, so the first command prints the non-blocking notice `⚠ 'browser.cloud_provider' is not a recognized config key — it was saved anyway, but Hermes may not read it.` — `--force` silences it, and the runtime **does** read the key correctly via `_get_cloud_provider()` (`tools/browser_use_cli.py`), so the value takes effect despite the notice.
+
+Verify each profile's effective state and record the receipt:
+
+```text
+hermes -p <profile> config get browser
+```
+
+Expected receipt:
+
+```yaml
+browser:
+  cloud_provider: ''
+  use_real_profile: true
+  backend: browser-use
+```
+
 If interrupted, inspect `hermes profile list`, compare it with the approved roster/checklist, and provision only missing assets.
 
 #### 4.3 Decision bot
@@ -294,13 +321,46 @@ The Kanban board is a bundled plugin that ships **off by default** (`defaultEnab
 
 After the team is provisioned, on every profile that will carry cards:
 
-1. `hermes tools enable kanban` — enables the agent-side toolset for that profile; verify with `hermes -p <profile> tools list | grep kanban`.
+1. `hermes tools enable kanban` — enables the agent-side toolset for that profile **on the default `cli` platform only**; verify with `hermes -p <profile> tools list | grep kanban`. This command carries no `--platform` flag and does **not** reach a gateway platform — verify and repair each founder-facing platform separately (see 4.5).
 2. Flip the Desktop switch: **Capabilities → Plugins → Kanban → Desktop → ON**. Verify the sidebar entry appears and `hermes kanban list` reports the board.
 3. If the switch was already on (session `20261005_224524_ba0a44` lesson: the switch moved from Settings to Capabilities when the app relocated the plugin page), confirm the agent-side toolset is on too — the two are coupled but can disagree after an app update.
 
 Record each profile's toolset state in the config receipts; a profile with the toolset off cannot carry a decision card and its review lane spawns will crash with `Unknown skill(s): sdlc-review`.
 
-#### 4.5 Autonomy wiring
+#### 4.5 Per-platform toolset gate (verify, never assume)
+
+The `kanban` toolset is a member of the installed build's default-off set, and every gateway platform keeps it disabled — **per platform and independently of the default `cli` platform** — until it is enabled for that platform explicitly. The `hermes tools enable kanban` in 4.4 carries no `--platform` flag, so it only reaches the default `cli` platform; a gateway platform's `kanban` stays gated even though its platform bundle (`hermes-discord`, `hermes-telegram`, …) looks full in source. This is **generic across every gateway platform** (Discord, Telegram, Slack, WhatsApp, Signal, QQBot, Teams, Google Chat, …) — it is not a Discord-only concern.
+
+**Trigger.** Run this whenever the customer names a messaging platform for the founder surface at interview. The manual's own premise is *"manual request in, decision out"* — the founder sends the request **through** the platform, so the platform is an inbound request surface, not only an outbound notifier (`hermes kanban notify-subscribe`).
+
+**Verify (per named platform), before claiming anything is provisioned:**
+
+```text
+hermes tools list --platform <platform> | grep -E 'kanban|delegation|terminal'
+```
+
+A `✗ disabled kanban` line means the toolset is gated off for that platform and the platform cannot create a card. A platform bundle that looks full in source does **not** mean the toolset reaches the surface — verified live: a Discord-connected team provisioned exactly per this manual surfaced 26 tool schemas with no `kanban` toolset, replied to the founder's request as plain chat, and created no card.
+
+**Repair:**
+
+```text
+hermes tools enable --platform <platform> kanban
+```
+
+**Re-verify and restart.** Re-run the `list` command above (expect `✓ enabled kanban`), then restart the gateway — tool changes are materialized at gateway warmup, not mid-session:
+
+```text
+hermes gateway restart
+```
+
+Record `platform_toolsets.<platform>` containing `kanban`, and the post-restart materialized tool count, in the config receipts.
+
+Standing rules:
+
+- **A platform toolset gate is verified, never assumed** — a platform bundle that looks full in source does not mean the toolset reaches the platform surface.
+- **Honest receipt:** an unrepaired platform gate is recorded `SKIPPED` with the exact reason (the `✗ disabled kanban` line and the platform name), never reported as provisioned.
+
+#### 4.6 Autonomy wiring
 
 1. Confirm every worker's SOUL.md and TEAM contract includes the next-stage card-creation rule.
 2. Confirm the decision bot is assigned as the `review`-state consumer for decision cards.
