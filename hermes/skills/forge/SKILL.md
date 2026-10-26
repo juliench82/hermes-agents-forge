@@ -324,6 +324,54 @@ For every profile:
 - Record a Hub/external skill verification receipt for each record: exact identifier, source, target profile, capability gap, scan verdict and findings, approval or amendment receipt reference, and installed / skipped / rejected state.
 - Keep role skill coverage focused; avoid unnecessary skill packs.
 
+#### 4.5 Resolve and install Desktop plugins
+
+Desktop plugins extend the agent tool surface beyond builtins and skills. The Approved Skill Plan (§3.3) may list specific plugin identifiers that the founder needs; if none are listed, install the recommended set below. Every plugin is installed with `hermes plugins install <name> --yes-deps --enable` and must appear as `enabled` in `hermes plugins list --plain --no-bundled` on the receipt.
+
+**Recommended plugin set:**
+
+| Tier | Plugin | Adds |
+|---|---|---|
+| Tier 1 (core) | `kanban-gantt` `needs-you` `office-3d` `file-tray` `provider-status` `quota` `done-bell` `redline` `debug-desk` `hermes-ssh` `hermes-ledgerline` `hermes-newswire` `hermes-rss` | Gantt viz, attention management, cost/provider monitoring, file sharing, audit |
+| Tier 2 (memory/debug) | `hermes-memory-wiki` *(official)* `mnemosyne-dashboard` `hermes-memory-ui` `hermes-honcho-plugin` `hermes-memory-pane` `yantrikdb-hermes-dashboard` | Memory wiki, dashboards, memory management |
+| Tier 3 (optional) | `githermes` `boardstate` `hermes-workbench` `jot` `prompt-enhance` `prompt-enhancer` `telegram-business` `obsidian-memory` | GitHub, board reporting, notes, prompts, Telegram |
+
+**Install procedure:**
+
+Tier 1:
+```bash
+for p in kanban-gantt needs-you office-3d file-tray provider-status quota done-bell redline debug-desk hermes-ssh hermes-ledgerline hermes-newswire hermes-rss; do
+  hermes plugins install "$p" --yes-deps --enable
+done
+```
+
+Tier 2:
+```bash
+for p in hermes-memory-wiki mnemosyne-dashboard hermes-memory-ui hermes-honcho-plugin hermes-memory-pane yantrikdb-hermes-dashboard; do
+  hermes plugins install "$p" --yes-deps --enable
+done
+```
+
+**Skipped plugins (record with reason, §1.3):**
+- `turn-usage` — excluded at founder request.
+- `hermes-routines` — Linux-only, incompatible with macOS.
+- `hermes-cua-spaces` (plugin) — `cua>=0.5.0,<0.8` has no Python 3.14 wheels (the `cua` package ships only as a native binary, not a pip wheel). **Use the MCP server workaround:** register the native `cua` CLI directly as an MCP server:
+  ```bash
+  hermes config set mcp_servers.cua.command cua
+  hermes config set mcp_servers.cua.args '["mcp"]'
+  hermes mcp test cua
+  ```
+  This returns 156 tools (space_bash, create_space, persistent_agent_create, volume_read, etc.) and bypasses Python dependency resolution entirely.
+
+**Plugin ↔ skill note.** A plugin that exposes agent tools (e.g. `cua` MCP server) functions like a Hub/external skill: its identifier, source, scan verdict, and capability gap must appear in the Approved Skill Plan. If a plugin's only dependency is a native CLI with an `mcp` subcommand, the MCP server pattern substitutes for the plugin directly.
+
+**Scan verdict handling (mirrors §5):**
+- **Passed** → install as-is.
+- **CAUTION** → present the finding to the founder; install only with explicit amendment approval recorded before installation.
+- **High / platform mismatch** → record as `SKIPPED` with reason; do not install.
+
+**Receipts.** Record `hermes plugins list --plain --no-bundled` (all `enabled`; skipped/rejected show `not enabled`) and `hermes mcp test` for MCP servers. Platform-incompatible plugins record `SKIPPED` verbatim.
+
 ## Step 5 — Verification gates
 
 Do not claim Team Setup is complete until all required receipts exist:
