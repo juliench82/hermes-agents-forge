@@ -1,5 +1,19 @@
 # Changelog
 
+## [2026-10-26] — v0.8.2: Step 4.5 — Resolve and install Desktop plugins
+
+- New **Step 4.5 — Resolve and install Desktop plugins** sub-step, added to `hermes/llms.txt`,
+  `site/llms.txt`, and `hermes/skills/forge/SKILL.md` after the Desktop bot-pool capacity
+  (§4.4/§4.6 Autonomy wiring) section and before Step 5. Documents the recommended plugin set
+  (Tier 1 core, Tier 2 memory/debug, Tier 3 optional), the `hermes plugins install <name> --yes-deps --enable`
+  install procedure with verbatim `hermes plugins list --plain --no-bundled` receipt, and
+  skipped-plugin handling with reasons (`turn-usage` at founder request, `hermes-routines` Linux-only,
+  `hermes-cua-spaces` Python 3.14 wheel gap replaced with MCP server workaround registering native `cua` CLI).
+  Scan verdict handling mirrors §5: Passed → install, CAUTION → founder amendment approval required before
+  install, High/platform mismatch → SKIPPED with reason.
+- `hermes/llms.txt` and `site/llms.txt` kept byte-identical (verified with `diff`) per the
+  `check-llms-sync` CI gate.
+
 ## [2026-10-11] — v0.8.1: The per-platform toolset gate is verified, never assumed
 
 - `hermes/llms.txt` and `site/llms.txt` (v0.8.1): `hermes tools enable kanban` carries no
